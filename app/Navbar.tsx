@@ -1,12 +1,13 @@
 'use client'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { signOut } from "next-auth/react";
 
 const Navbar = () => {
     const currentPath = usePathname()
 
   return (
-    <div className="flex items-center w-full h-16 bg-base-100 px-48 border-b-2">
+    <div className="flex items-center w-full h-16 bg-base-100 px-14 border-b-2">
         <div className="justify-start w-2/5">
             <div className="dropdown">
                 <label tabIndex={0} className="btn btn-ghost lg:hidden">
@@ -47,9 +48,19 @@ const Links = (props:{currentPath:string}) => {
             label:"Portafolio",
             href:"/portafolio"
         },
+        {
+            label:"Cerrar Sesión",
+            href:"/signOut"
+        },
     ]
   return (
     links.map(link=>
+        link.href === "/signOut"?
+        <button
+            key={link.href}
+            className={`text-zinc-400 hover:text-zinc-700 transition-colors text-base`}
+            onClick={()=>signOut()}>{link.label}
+        </button>:
         <Link 
             className={`${link.href === props.currentPath?'text-zinc-900':'text-zinc-400'} hover:text-zinc-700 transition-colors text-base`}
             href={link.href}

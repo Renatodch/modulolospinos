@@ -1,6 +1,9 @@
+import { loginIsRequiredServer } from '@/lib/auth';
 import React from 'react'
 
-const Registrar = () => {
+const Registrar = async () => {
+  await loginIsRequiredServer();
+
   return (
     <div>Registrar</div>
   )
