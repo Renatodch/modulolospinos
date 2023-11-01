@@ -41,25 +41,26 @@ export default class UserController{
         
         return Users;
     } */
-    public GetUser=async(user_id:string):Promise<Entity<User>>=>{
-        let obj: Entity<User> = new Entity<User>(new User(),"");
+    public GetUSer=async(_id:string):Promise<Collection<User>|undefined>=>{
 
         try{
-            const doc = await this.GetUserSnapshot(user_id);
+            const doc = await this.GetUserSnapshot(_id);
             if(doc.exists()){
-                obj.Data = doc.data() as User;
-                obj._id = doc.id;
+                let obj:Collection<User> = {
+                    data:doc.data() as User,
+                    _id:doc.id
+                }
+                return obj
             }
         }catch(e){
             console.error("Error reading documents: ", e);
         }
-        return obj;
     }
     
    
     private GetUserSnapshot= async(_id:string):Promise<DocumentSnapshot<DocumentData>>=>{
-        let docRef:DocumentReference<DocumentData> = DataAccess.getInstance().GetUserDocRef(_id)
-        let snapshot = await DataAccess.getInstance().GetUserDocSnapShot(docRef);
+        let docRef:DocumentReference<DocumentData> = DataAccess.getInstance().GetDocRef(DataAccess.usersCollection,_id)
+        let snapshot = await DataAccess.getInstance().GetDocSnapShot(docRef);
         return snapshot;
     }
 
@@ -99,25 +100,4 @@ export default class UserController{
         return res;
     }
  */
-
-    public LoginUser=async (_id:string, pass:string):Promise<Collection<User>|undefined>=>{
-        try {
-            const docRef = DataAccess.getInstance().GetDocRef(DataAccess.usersCollection,_id)
-            let snapshot = await DataAccess.getInstance().GetDocSnapShot(docRef);
-            if(snapshot.exists()){
-                let user:User = (snapshot.data() as User)
-                if(user.password == pass){
-                    const collection:Collection<User> = {
-                        data: user,
-                        _id: _id
-                    }
-                    return collection;
-                }
-            }   
-        } catch (e) {
-            console.log("Error: ",e);
-        }
-    }
-
-
 }

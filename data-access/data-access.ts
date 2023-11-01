@@ -1,4 +1,4 @@
-import { User, Course, Collection } from "../collections/collections";
+import { User, Collection } from "../collections/collections";
 import { db } from "./config"
 import {collection,addDoc, getDocs, getDoc, doc, setDoc, deleteDoc, writeBatch,
 DocumentReference, query,where, DocumentData, DocumentSnapshot, Query, QueryDocumentSnapshot, WhereFilterOp, orderBy, limit, runTransaction, Timestamp, getDocsFromServer} from "firebase/firestore";
@@ -19,8 +19,8 @@ export default class DataAccess{
         return DataAccess.instance
     }
 
-    public GetDocRef = (collection:string, _id:string):DocumentReference<DocumentData>=>{
-        return doc(db, collection, _id==""?"new_id":_id);
+    public GetDocRef = (collectionName:string, _id:string):DocumentReference<DocumentData>=>{
+        return doc(db, collectionName, _id==""?"new_id":_id);
     }
     public GetDocSnapShot = async(docRef:DocumentReference<DocumentData>):Promise<DocumentSnapshot<DocumentData>>=>{
         let doc:any;

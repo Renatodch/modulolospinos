@@ -1,8 +1,8 @@
-import { loginIsRequiredServer } from '@/lib/auth';
+import LoginController from '@/controllers/login-controller';
 import React from 'react'
 
 const Registrar = async () => {
-  await loginIsRequiredServer();
+  await LoginController.getInstance().loginIsRequiredServer();
 
   return (
     <div>Registrar</div>

@@ -1,11 +1,11 @@
-export interface User{
-    fullname:string;
-    id:string;
+import { DefaultUser } from "next-auth";
+
+export interface User extends DefaultUser{
     password:string;
     type:string;
 }
 
-export interface Course{
+export interface _Course{
     fullname:string;
     id:string;
     password:string;
