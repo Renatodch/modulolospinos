@@ -1,7 +1,5 @@
 "use server"
-import Navbar from "@/components/Navbar";
 import { NextAuthProvider } from "../providers";
-import Footer from "@/components/Footer";
 //import { UserContext } from "../context";
 import {getUserByEmail, getUserById} from "@/lib/user-controller";
 import { useContext, useEffect, useState } from "react";
@@ -10,6 +8,8 @@ import {authConfig} from "@/lib/login-controller";
 import { User } from "@/entities/entities";
 import { UserContextProvider } from "../context";
 import { Session } from "next-auth";
+import Navbar from "@/components/navbar";
+import Footer from "@/components/footer";
 
 export default async function Layout({ children }: { children: any }) {
   let session= await getServerSession(authConfig);
