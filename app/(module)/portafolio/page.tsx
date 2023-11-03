@@ -1,8 +1,8 @@
-import LoginController from '@/controllers/login-controller';
+import { loginIsRequiredServer } from '@/lib/login-controller';
 import React from 'react'
 
 const Portafolio = async () => {
-  await LoginController.getInstance().loginIsRequiredServer();
+  await loginIsRequiredServer();
 
   return (
     <div>Portafolio</div>

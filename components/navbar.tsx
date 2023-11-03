@@ -1,11 +1,15 @@
-'use client'
+"use client"
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { signOut } from "next-auth/react";
 
-const Navbar = () => {
-    const currentPath = usePathname()
 
+function Navbar(){
+    const currentPath = usePathname()
+    const {user, } = useUserContext();
+    useEffect(()=>{
+        if(user?.id === "") signOut()
+    })
   return (
     <div className="flex items-center w-full h-16 bg-base-100 px-14 border-b-2">
         <div className="justify-start lg:w-2/5">
@@ -17,7 +21,7 @@ const Navbar = () => {
                     <Links currentPath={currentPath}/>
                 </ul>
             </div>
-            <Link href="/inicio" className="font-semibold normal-case text-2xl">modulolospinos</Link>
+            <Link href="/" className="font-semibold normal-case text-2xl">modulolospinos</Link>
         </div>
         <div className="justify-end w-3/5 hidden lg:flex">
             <ul className="menu menu-horizontal space-x-6">
@@ -25,16 +29,21 @@ const Navbar = () => {
             </ul>
         </div>
     </div>
+   
   )
 }
 
-import React from 'react'
+import React, { useContext, useEffect } from 'react'
+import { User } from '@/entities/entities';
+import { useUserContext } from '@/app/context';
 
-const Links = (props:{currentPath:string}) => {
+const Links = async (props:{currentPath:string}) => {
+    const {user, } = useUserContext();
+
     const links=[
         {
             label:"Inicio",
-            href:"/inicio"
+            href:"/"
         },
         {
             label:"Cursos",
@@ -53,6 +62,8 @@ const Links = (props:{currentPath:string}) => {
             href:"/signOut"
         },
     ]
+    user?.type && +user?.type === 0 && links.splice(2,1)
+
   return (
     links.map(link=>
         link.href === "/signOut"?

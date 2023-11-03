@@ -11,7 +11,3 @@ export interface _Course{
     password:string;
 }
 
-export interface Collection<T>{
-    data:T,
-    _id:string,
-}

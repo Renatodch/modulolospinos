@@ -12,11 +12,15 @@
   }
 }
 
-body {
+/* body {
+  height: 100vh;
+}
+*/
+.radix-themes{
   height: 100vh;
 }
 main{
   height: calc(100% - 9rem);
   min-height:350px;
   overflow: auto;
-}
+} 

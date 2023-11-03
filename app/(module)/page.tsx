@@ -4,11 +4,10 @@ import {BsFacebook} from "react-icons/bs"
 import {BsWhatsapp} from "react-icons/bs"
 import {BsYoutube} from "react-icons/bs"
 import { getServerSession } from "next-auth";
-import LoginController from "@/controllers/login-controller";
+import { loginIsRequiredServer } from "@/lib/login-controller";
 
 export default async function Home() {
-  await LoginController.getInstance().loginIsRequiredServer();
-  const session = await getServerSession(LoginController.getInstance().authConfig);
+  await loginIsRequiredServer();
 
   return (
     <div className="flex items-center justify-center py-16 px-32 w-full">

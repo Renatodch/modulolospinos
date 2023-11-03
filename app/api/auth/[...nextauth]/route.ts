@@ -1,6 +1,6 @@
-import LoginController from "@/controllers/login-controller";
+import { authConfig } from "@/lib/login-controller";
 import NextAuth from "next-auth/next";
 
-const handler = NextAuth(LoginController.getInstance().authConfig);
+const handler = NextAuth(authConfig);
 
 export { handler as GET, handler as POST };
