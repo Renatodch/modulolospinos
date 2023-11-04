@@ -1,11 +1,10 @@
-import { loginIsRequiredServer } from '@/lib/login-controller';
-import React from 'react'
+import Course from "@/components/course";
+import { loginIsRequiredServer } from "@/lib/login-controller";
+import React from "react";
 
-const Cursos = async () => {
-  await loginIsRequiredServer()
-  return (
-    <div>Cursos</div>
-  )
-}
+const Courses = async () => {
+  await loginIsRequiredServer();
+  return <Course />;
+};
 
-export default Cursos
+export default Courses;

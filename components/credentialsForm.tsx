@@ -10,13 +10,13 @@ export function CredentialsForm() {
   const [error, setError] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState<boolean | null>(null);
 
-  const handleSubmit = async (e:any) => {
+  const handleSubmit = async (e: any) => {
     e.preventDefault();
-    setSubmitted(true)
+    setSubmitted(true);
     const data = new FormData(e.currentTarget);
 
     const signInResponse = await signIn("credentials", {
-      id:  parseInt(data.get("id") as string),
+      id: parseInt(data.get("id") as string),
       password: data.get("password"),
       redirect: false,
     });
@@ -27,7 +27,7 @@ export function CredentialsForm() {
       console.log("Error: ", signInResponse);
       setError("usuario o contraseña incorrecto");
     }
-    setSubmitted(false)
+    setSubmitted(false);
   };
 
   return (
@@ -41,9 +41,27 @@ export function CredentialsForm() {
         </span>
       )}
       <Flex direction="column" gap="4">
-        <TextField.Input type="text" maxLength={4} minLength={4} size="3" name="id" color="gray" variant="surface" placeholder="Usuario" />
-        <TextField.Input size="3" type="password" name="password" color="gray" variant="surface" placeholder="Contraseña"/> 
-        <Button size="3" disabled={Boolean(submitted)}>Acceder</Button>
+        <TextField.Input
+          type="text"
+          maxLength={4}
+          minLength={4}
+          size="3"
+          name="id"
+          color="gray"
+          variant="surface"
+          placeholder="Usuario"
+        />
+        <TextField.Input
+          size="3"
+          type="password"
+          name="password"
+          color="gray"
+          variant="surface"
+          placeholder="Contraseña"
+        />
+        <Button size="3" disabled={Boolean(submitted)}>
+          Acceder
+        </Button>
       </Flex>
     </form>
   );
