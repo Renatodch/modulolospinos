@@ -1,29 +1,23 @@
 "use client";
 import { useUserContext } from "@/app/context";
-import { saveUser } from "@/lib/user-controller";
-import { User } from "@/types/types";
+import { saveProject } from "@/lib/project-controller";
+import { Project } from "@/types/types";
 import { Button, Dialog, Flex, TextField } from "@radix-ui/themes";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
-import {
-  AiFillEdit,
-  AiFillEye,
-  AiFillEyeInvisible,
-  AiOutlinePlusCircle,
-} from "react-icons/ai";
+import { AiFillEdit, AiOutlinePlusCircle } from "react-icons/ai";
 import NotAllowed from "./notAllowed";
 interface Props {
-  target?: User;
+  target?: Project;
 }
 
-const UserForm = ({ target }: Props) => {
+const ProjectForm = ({ target }: Props) => {
   const { user } = useUserContext();
   const router = useRouter();
   const isStudent = !user?.type || +user?.type === 0;
   const [error, setError] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState<boolean | null>(null);
-  const [passHidden, setPassHidden] = useState<boolean | null>(true);
   const [openDialog, setOpenDialog] = useState<boolean>(false);
 
   const {
@@ -34,47 +28,44 @@ const UserForm = ({ target }: Props) => {
   } = useForm();
   const onSubmit = async (data: FieldValues) => {
     setSubmitted(true);
-    const user: User = {
-      type: "0",
-      password: data.password,
-      name: data.name,
-      email: data.email,
+    const project: Project = {
       id: target?.id || 0,
+      title: data.title,
+      description: data.desc,
+      image1: data.image1,
+      image2: data.image2,
+      date_update: new Date(),
+      approved: target?.approved || false,
+      projectscore: target?.projectscore || 0,
+      id_user: +user?.id!,
     };
-    const res = await saveUser(user);
+    const res = await saveProject(project);
     if (!res) {
-      setError("Ocurrió un error registrando al usuario");
+      setError("Ocurrió un error registrando el proyecto");
     } else {
       setOpenDialog(false);
-      setPassHidden(true);
       reset();
       router.refresh();
     }
     setSubmitted(false);
   };
 
-  const togglePassword = () => {
-    setPassHidden(!passHidden);
-  };
   const toggleDialog = (e: boolean) => {
     setOpenDialog(e);
     if (!e) {
-      setPassHidden(true);
       setError("");
       reset();
     }
   };
 
   return isStudent ? (
-    <NotAllowed />
-  ) : (
     <Dialog.Root open={openDialog} onOpenChange={toggleDialog}>
       <Dialog.Trigger>
         <Flex justify={"start"}>
           {!target ? (
             <Button size="3">
               <AiOutlinePlusCircle size="20" />
-              Nuevo
+              Añadir nuevo proyecto
             </Button>
           ) : (
             <Button size="3">
@@ -86,9 +77,7 @@ const UserForm = ({ target }: Props) => {
 
       <Dialog.Content style={{ maxWidth: 450 }}>
         <Dialog.Title align={"center"}>
-          {!target
-            ? "Formulario de Nuevo Estudiante"
-            : "Formulario de Estudiante"}
+          {!target ? "Formulario de Proyecto Nuevo" : "Formulario de Proyecto"}
         </Dialog.Title>
         <Dialog.Description size="2" mb="4">
           {error && (
@@ -100,66 +89,75 @@ const UserForm = ({ target }: Props) => {
         <form className="w-full" onSubmit={handleSubmit(onSubmit)}>
           <Flex direction="column" gap="4">
             <TextField.Input
-              defaultValue={target?.name || ""}
-              maxLength={32}
+              defaultValue={target?.title || ""}
+              maxLength={48}
               size="3"
               color="gray"
               variant="surface"
-              placeholder="Nombres Completos*"
-              {...register("name", {
+              placeholder="Titulo*"
+              {...register("title", {
                 required: true,
-                maxLength: 32,
+                maxLength: 48,
               })}
             />
-            {errors.name?.type === "required" && (
+            {errors.title?.type === "required" && (
               <span role="alert" className="font-semibold text-red-500 ">
-                Es requerido el nombre del estudiante
+                Es requerido el titulo del proyecto
               </span>
             )}
             <TextField.Input
-              defaultValue={target?.email || ""}
+              defaultValue={target?.description || ""}
               maxLength={64}
               size="3"
               color="gray"
               variant="surface"
-              placeholder="Correo"
-              {...register("email", {
-                maxLength: 64,
-                pattern: /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
+              placeholder="Descripción"
+              {...register("desc", {
+                required: true,
+                maxLength: 255,
               })}
             />
-            {errors.email?.type === "pattern" && (
+            {errors.desc?.type === "required" && (
               <span role="alert" className="font-semibold text-red-500 ">
-                Correo electrónico inválido
+                Es requerida una descripción del proyecto
               </span>
             )}
             <TextField.Root>
               <TextField.Input
-                defaultValue={target?.password || ""}
+                defaultValue={target?.image1 || ""}
                 maxLength={32}
                 size="3"
-                type={passHidden ? "password" : "text"}
+                type="file"
                 color="gray"
                 variant="surface"
-                placeholder="Contraseña*"
-                {...register("password", {
-                  required: true,
-                  maxLength: 32,
+                placeholder="Imagen 1"
+                {...register("image1", {
+                  maxLength: 64,
                 })}
               />
-              <TextField.Slot>
-                <Button type="button" variant="ghost" onClick={togglePassword}>
-                  {passHidden ? (
-                    <AiFillEye size={20} />
-                  ) : (
-                    <AiFillEyeInvisible size={20} />
-                  )}
-                </Button>
-              </TextField.Slot>
             </TextField.Root>
             {errors.password?.type === "required" && (
               <span role="alert" className="font-semibold text-red-500 ">
-                Es requerida la contraseña del estudiante
+                ---
+              </span>
+            )}
+            <TextField.Root>
+              <TextField.Input
+                defaultValue={target?.image2 || ""}
+                maxLength={32}
+                size="3"
+                type="file"
+                color="gray"
+                variant="surface"
+                placeholder="Imagen 2"
+                {...register("image 2", {
+                  maxLength: 64,
+                })}
+              />
+            </TextField.Root>
+            {errors.password?.type === "required" && (
+              <span role="alert" className="font-semibold text-red-500 ">
+                ---
               </span>
             )}
 
@@ -178,7 +176,9 @@ const UserForm = ({ target }: Props) => {
         </form>
       </Dialog.Content>
     </Dialog.Root>
+  ) : (
+    <NotAllowed />
   );
 };
 
-export default UserForm;
+export default ProjectForm;

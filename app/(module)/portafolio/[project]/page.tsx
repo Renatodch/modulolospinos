@@ -1,8 +1,11 @@
 import Project from "@/components/project";
-import React from "react";
 
-const ProjectPage = (props: any) => {
-  return <Project id={props.project} />;
+interface Props {
+  params: { project: string };
+  searhParams: any;
+}
+const ProjectPage = (props: Props) => {
+  return <Project id={props.params.project} />;
 };
 
 export default ProjectPage;

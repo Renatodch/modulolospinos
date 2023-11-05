@@ -1,13 +1,15 @@
-import { Responses } from "@/utils/responses";
 import { sql } from "@vercel/postgres";
 import { NextAuthOptions, getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
-
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
-import { User } from "@/entities/entities";
-import { getUserByEmail } from "./user-controller";
-import { prisma } from "./prisma";
+import { User } from "@/types/types";
+import {
+  getUserByEmail,
+  getUserById,
+  getUserCourseByUserId,
+} from "./user-controller";
+import { prisma } from "../prisma/prisma";
 import { loginUser } from "./login-controller";
 
 export const authConfig: NextAuthOptions = {
@@ -16,9 +18,9 @@ export const authConfig: NextAuthOptions = {
       name: "Sign in",
       credentials: {
         id: {
-          label: "Email",
-          type: "email",
-          placeholder: "example@example.com",
+          label: "Id",
+          type: "string",
+          placeholder: "usuario",
         },
         password: { label: "Password", type: "password" },
       },
@@ -26,12 +28,11 @@ export const authConfig: NextAuthOptions = {
         if (!credentials || !credentials.id || !credentials.password)
           return null;
 
-        const res = await loginUser(credentials.id, credentials.password);
+        const res = await loginUser(+credentials.id, credentials.password);
 
         //In production DB, passwords should be encrypted using something like bcrypt...
         if (res) {
-          const user = { ...res, id: "" + res.id };
-          const { password, ...dbUserWithoutPassword } = user;
+          const { password, ...dbUserWithoutPassword } = res;
           return dbUserWithoutPassword as User;
         }
         return null;
@@ -45,11 +46,20 @@ export const authConfig: NextAuthOptions = {
   ],
   callbacks: {
     async session({ session, token, user }) {
+      const isGoogle = !!session.user?.image;
+      const id = token.sub;
+      const _user = isGoogle
+        ? await getUserByEmail(user?.email!)
+        : await getUserById(+id!);
+
+      const _user_course = await getUserCourseByUserId(_user?.id || 0);
+
       const _session = {
         ...session,
-        isGoogle: !!session.user?.image,
-        id: token.sub,
+        _user,
+        _user_course,
       };
+
       return _session;
     },
   },

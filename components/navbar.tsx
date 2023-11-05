@@ -2,12 +2,14 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
+import React, { useEffect } from "react";
+import { useUserContext } from "@/app/context";
 
 function Navbar() {
   const currentPath = usePathname();
   const { user } = useUserContext();
   useEffect(() => {
-    if (user?.id === "") signOut();
+    if (!user) signOut();
   });
   return (
     <div className="flex items-center w-full h-16 bg-base-100 px-14 border-b-2">
@@ -49,10 +51,6 @@ function Navbar() {
   );
 }
 
-import React, { useContext, useEffect } from "react";
-import { User } from "@/entities/entities";
-import { useUserContext } from "@/app/context";
-
 const Links = async (props: { currentPath: string }) => {
   const { user } = useUserContext();
 
@@ -62,8 +60,8 @@ const Links = async (props: { currentPath: string }) => {
       href: "/",
     },
     {
-      label: "Cursos",
-      href: "/cursos",
+      label: "Curso",
+      href: "/curso",
     },
     {
       label: "Estudiantes",

@@ -1,29 +1,40 @@
 "use server";
-import { Responses } from "@/utils/responses";
 
-import { NextAuthOptions, getServerSession } from "next-auth";
-import { useSession } from "next-auth/react";
-import { redirect, useRouter } from "next/navigation";
-import { Query, sql } from "@vercel/postgres";
-
-import CredentialsProvider from "next-auth/providers/credentials";
-import GoogleProvider from "next-auth/providers/google";
-import { User } from "@/entities/entities";
-import { prisma } from "./prisma";
+import { prisma } from "../prisma/prisma";
+import { Project, User } from "@/types/types";
 
 export const getProjects = async () => {
-  let res: User[] = [];
+  let res: Project[] = [];
   try {
-    const users = await prisma.usuario.findMany({
+    const projects = await prisma.proyecto.findMany({
       orderBy: {
         id: "asc",
       },
     });
-    if (users) {
-      users.forEach((u) => res.push({ ...u, id: "" + u.id }));
-    }
+    res = [...projects];
   } catch (e) {
     console.log("Error: ", e);
   }
   return res;
+};
+
+export const saveProject = async (project: Project) => {
+  const { id, ...data } = { ...project, date_update: new Date() };
+  try {
+    const res =
+      id === 0
+        ? prisma.proyecto.create({
+            data: data,
+          })
+        : prisma.proyecto.update({
+            where: {
+              id,
+            },
+            data: data,
+          });
+
+    return res;
+  } catch (e) {
+    console.log("Error: ", e);
+  }
 };

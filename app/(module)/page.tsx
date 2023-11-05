@@ -3,7 +3,6 @@ import logo from "../../public/logo.webp";
 import { BsFacebook } from "react-icons/bs";
 import { BsWhatsapp } from "react-icons/bs";
 import { BsYoutube } from "react-icons/bs";
-import { getServerSession } from "next-auth";
 import { loginIsRequiredServer } from "@/lib/login-controller";
 import Footer from "@/components/footer";
 

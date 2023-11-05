@@ -1,18 +1,18 @@
 "use client";
-import { User } from "@/entities/entities";
-import { deleteUserById, getUsers } from "@/lib/user-controller";
+import { deleteUserById } from "@/lib/user-controller";
+import { User } from "@/types/types";
 import { Button, Table, TextField } from "@radix-ui/themes";
-import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { AiFillDelete, AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import UserForm from "./userForm";
-import { useRouter } from "next/navigation";
 
 const UserList = ({ users }: { users: User[] }) => {
   const router = useRouter();
   const [onDelete, setOnDelete] = useState<boolean>(false);
   const [deletedIndex, setDeletedIndex] = useState<number | null>(null);
-  const handleDelete = async (id: string) => {
-    setDeletedIndex(parseInt(id));
+  const handleDelete = async (id: number) => {
+    setDeletedIndex(id);
     setOnDelete(true);
     await deleteUserById(id);
     setOnDelete(false);
@@ -47,7 +47,7 @@ const UserList = ({ users }: { users: User[] }) => {
               </Table.Cell>
               <Table.Cell width={100}>
                 <Button
-                  disabled={onDelete && parseInt(user.id) === deletedIndex}
+                  disabled={onDelete && user.id === deletedIndex}
                   onClick={() => handleDelete(user.id)}
                   color="red"
                   size="3"

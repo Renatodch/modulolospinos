@@ -7,11 +7,14 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "prisma:generate": "npx prisma generate",
+    "prisma:pull": "npx prisma db pull"
   },
   "dependencies": {
     "@prisma/client": "^5.5.2",
     "@radix-ui/themes": "^1.1.2",
+    "@vercel/blob": "^0.14.1",
     "next": "14.0.1",
     "next-auth": "^4.24.4",
     "react": "^18",

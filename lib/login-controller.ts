@@ -1,16 +1,17 @@
 "use server";
 
-import { getServerSession } from "next-auth";
+import { Session, getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
-import { prisma } from "./prisma";
+import { prisma } from "../prisma/prisma";
 import { authConfig } from "./auth-config";
+import { User, User_Course } from "@/types/types";
 
-export const loginUser = async (id: string, pass: string) => {
+export const loginUser = async (id: number, password: string) => {
   try {
     const res = await prisma.usuario.findFirst({
       where: {
-        id: parseInt(id),
-        password: pass,
+        id,
+        password,
       },
     });
     if (res) {
@@ -24,4 +25,16 @@ export const loginUser = async (id: string, pass: string) => {
 export async function loginIsRequiredServer() {
   const session = await getServerSession(authConfig);
   if (!session) return redirect("/login");
+}
+
+export async function getSession() {
+  const session = (await getServerSession(authConfig)) as Session & {
+    _user: User | null | undefined;
+    _user_course: User_Course | null | undefined;
+  };
+  return {
+    ...session,
+    _user: session?._user ?? undefined,
+    _user_course: session?._user_course ?? undefined,
+  };
 }
