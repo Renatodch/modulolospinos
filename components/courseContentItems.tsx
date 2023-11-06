@@ -3,7 +3,6 @@ import { Flex } from "@radix-ui/themes";
 import Link from "next/link";
 import { useState } from "react";
 import { AiFillYoutube } from "react-icons/ai";
-import { HiOutlineQuestionMarkCircle } from "react-icons/hi";
 
 interface Props {
   interactive?: boolean;
@@ -17,34 +16,24 @@ const CourseContentItems = ({ interactive, progress }: Props) => {
   );
 
   const styleClasses = `text-justify p-4 items-center gap-8 w-full flex ${
-    interactive && "hover:cursor-pointer hover:bg-gray-300"
+    interactive && "hover:cursor-pointer hover:bg-blue-200"
   }`;
 
   const items = [
     {
-      el: <AiFillYoutube size="24" />,
       text: "Qué es una fracción",
-      //value: "0",
     },
     {
-      el: <HiOutlineQuestionMarkCircle size="24" />,
       text: "Introducción a fracciones",
-      //value: "2",
     },
     {
-      el: <AiFillYoutube size="24" />,
       text: "Suma y resta de fracciones con denominadores comunes",
-      //value: "3",
     },
     {
-      el: <AiFillYoutube size="24" />,
       text: "Suma y resta de fracciones con denominadores diferentes",
-      //value: "4",
     },
     {
-      el: <AiFillYoutube size="24" />,
       text: "Tarea final del curso",
-      //value: "5",
     },
   ];
 
@@ -59,7 +48,7 @@ const CourseContentItems = ({ interactive, progress }: Props) => {
             <li
               key={index}
               className={`${styleClasses} ${
-                selectedIndex === index && interactive && "bg-gray-200"
+                selectedIndex === index && interactive && "bg-blue-100"
               } ${
                 index != 4 &&
                 index > _progress &&
@@ -76,12 +65,12 @@ const CourseContentItems = ({ interactive, progress }: Props) => {
                   href={{ pathname: `/curso/clases`, query: { item: index } }}
                   onClick={() => setSelectedIndex(index)}
                 >
-                  {i.el}
+                  <AiFillYoutube size="24" />
                   {i.text}
                 </Link>
               ) : (
                 <>
-                  {i.el}
+                  <AiFillYoutube size="24" />
                   {i.text}
                 </>
               )}
