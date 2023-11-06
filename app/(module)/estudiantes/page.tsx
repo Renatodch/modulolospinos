@@ -9,7 +9,7 @@ const StudentsPage = async () => {
   await loginIsRequiredServer();
   const { _user } = await getSession();
 
-  const isStudent = +(_user?.type || 0) === 0;
+  const isStudent = (_user?.type || 0) === 0;
 
   const users = await getUsers();
 

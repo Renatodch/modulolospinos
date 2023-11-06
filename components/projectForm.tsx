@@ -15,7 +15,7 @@ interface Props {
 const ProjectForm = ({ target }: Props) => {
   const { user } = useUserContext();
   const router = useRouter();
-  const isStudent = !user?.type || +user?.type === 0;
+  const isStudent = (user?.type || 0) === 0;
   const [error, setError] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState<boolean | null>(null);
   const [openDialog, setOpenDialog] = useState<boolean>(false);
@@ -34,9 +34,9 @@ const ProjectForm = ({ target }: Props) => {
       description: data.desc,
       image1: data.image1,
       image2: data.image2,
-      date_update: new Date(),
-      approved: target?.approved || false,
+      date_upload: new Date(),
       projectscore: target?.projectscore || 0,
+      state: target?.state || 0,
       id_user: +user?.id!,
     };
     const res = await saveProject(project);

@@ -1,9 +1,9 @@
 "use client";
+import { useUserContext } from "@/app/context";
+import { signOut } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { signOut } from "next-auth/react";
-import React, { useEffect } from "react";
-import { useUserContext } from "@/app/context";
+import { useEffect } from "react";
 
 function Navbar() {
   const currentPath = usePathname();
@@ -76,7 +76,7 @@ const Links = async (props: { currentPath: string }) => {
       href: "/signOut",
     },
   ];
-  user?.type && +user?.type === 0 && links.splice(2, 1);
+  (user?.type || 0) === 0 && links.splice(2, 1);
 
   return links.map((link) =>
     link.href === "/signOut" ? (

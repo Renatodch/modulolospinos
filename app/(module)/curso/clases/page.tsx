@@ -13,7 +13,7 @@ export default async function ClasesPage(props: any) {
   const item = +(props.searchParams.item ?? (_user_course?.progress || 0));
 
   const { _user } = await getSession();
-  const isStudent = +(_user?.type || 0) === 0;
+  const isStudent = (_user?.type || 0) === 0;
 
   const id_user = _user?.id || 0;
   let user_course: User_Course | null | undefined = await getUserCourseByUserId(
@@ -33,6 +33,9 @@ export default async function ClasesPage(props: any) {
             id_user,
             progress: 0,
             id: 0,
+            date_project_assigned: null,
+            tryouts: 0,
+            state: 0,
           }
     ));
   const progress = user_course?.progress || 0;

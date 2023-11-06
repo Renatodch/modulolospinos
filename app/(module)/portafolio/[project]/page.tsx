@@ -1,10 +1,6 @@
 import Project from "@/components/project";
 
-interface Props {
-  params: { project: string };
-  searhParams: any;
-}
-const ProjectPage = (props: Props) => {
+const ProjectPage = (props: any) => {
   return <Project id={props.params.project} />;
 };
 

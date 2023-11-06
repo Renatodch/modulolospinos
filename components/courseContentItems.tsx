@@ -59,8 +59,13 @@ const CourseContentItems = ({ interactive, progress }: Props) => {
             <li
               key={index}
               className={`${styleClasses} ${
-                selectedIndex === index && "bg-gray-200"
-              } ${index != 4 && index > _progress && "text-gray-400"}`}
+                selectedIndex === index && interactive && "bg-gray-200"
+              } ${
+                index != 4 &&
+                index > _progress &&
+                interactive &&
+                "text-gray-400"
+              }`}
               style={{
                 pointerEvents: index != 4 && index > _progress ? "none" : "all",
               }}

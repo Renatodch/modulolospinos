@@ -20,7 +20,7 @@ interface Props {
 const UserForm = ({ target }: Props) => {
   const { user } = useUserContext();
   const router = useRouter();
-  const isStudent = !user?.type || +user?.type === 0;
+  const isStudent = (user?.type || 0) === 0;
   const [error, setError] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState<boolean | null>(null);
   const [passHidden, setPassHidden] = useState<boolean | null>(true);
@@ -35,7 +35,7 @@ const UserForm = ({ target }: Props) => {
   const onSubmit = async (data: FieldValues) => {
     setSubmitted(true);
     const user: User = {
-      type: "0",
+      type: 0,
       password: data.password,
       name: data.name,
       email: data.email,

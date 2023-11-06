@@ -13,7 +13,7 @@ export const saveUser = async (user: User) => {
     const res =
       user.id === 0
         ? prisma.usuario.create({
-            data: data,
+            data,
           })
         : prisma.usuario.update({
             where: {
@@ -117,7 +117,7 @@ export const saveUserCourse = async (user_course: User_Course) => {
     const res =
       id === 0
         ? prisma.usuario_curso.create({
-            data: data,
+            data,
           })
         : prisma.usuario_curso.update({
             where: {

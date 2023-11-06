@@ -11,7 +11,7 @@ datasource db {
 model usuario {
   id            Int             @id @default(autoincrement())
   password      String          @db.VarChar(50)
-  type          String          @db.VarChar(50)
+  type          Int
   email         String          @db.VarChar(255)
   name          String          @db.VarChar(50)
   proyecto      proyecto[]
@@ -23,20 +23,22 @@ model proyecto {
   title        String   @db.VarChar(64)
   description  String?  @db.VarChar(255)
   image1       String?  @db.VarChar(255)
-  image2       String?  @db.VarChar(255)
-  date_update  DateTime @db.Timestamp(6)
-  approved     Boolean
+  date_upload  DateTime @db.Timestamp(6)
   projectscore Int?
+  state        Int
   id_user      Int?
   usuario      usuario? @relation(fields: [id_user], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model usuario_curso {
-  id              Int       @id @default(autoincrement())
-  date_start      DateTime  @db.Timestamp(6)
-  date_last_entry DateTime  @db.Timestamp(6)
-  date_end        DateTime? @db.Timestamp(6)
-  progress        Int
-  id_user         Int?
-  usuario         usuario?  @relation(fields: [id_user], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  id                    Int       @id @default(autoincrement())
+  date_start            DateTime  @db.Timestamp(6)
+  date_last_entry       DateTime  @db.Timestamp(6)
+  date_end              DateTime? @db.Timestamp(6)
+  date_project_assigned DateTime? @db.Timestamp(6)
+  state                 Int
+  tryouts               Int?
+  progress              Int
+  id_user               Int?
+  usuario               usuario?  @relation(fields: [id_user], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }

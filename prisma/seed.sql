@@ -5,7 +5,7 @@ DROP TABLE IF EXISTS usuario;
 CREATE TABLE usuario (
   id SERIAL PRIMARY KEY,
   password VARCHAR(50) NOT NULL,
-  type VARCHAR(50) NOT NULL,
+  type INT NOT NULL,
   email VARCHAR(255) NOT NULL,
   name VARCHAR(50) NOT NULL
 );
@@ -16,6 +16,9 @@ CREATE TABLE usuario_curso (
   date_start TIMESTAMP NOT NULL,
   date_last_entry TIMESTAMP NOT NULL,
   date_end TIMESTAMP,
+  date_project_assigned TIMESTAMP,
+  state INT NOT NULL,
+  tryouts INT,
   progress INT NOT NULL,
   id_user INT REFERENCES usuario(id)
 );
@@ -25,10 +28,9 @@ CREATE TABLE proyecto (
   title VARCHAR(64) NOT NULL,
   description VARCHAR(255),
   image1 VARCHAR(255),
-  image2 VARCHAR(255),
-  date_update TIMESTAMP NOT NULL,
-  approved BOOLEAN NOT NULL,
+  date_upload TIMESTAMP NOT NULL,
   projectScore INT,
+  state INT NOT NULL,
   id_user INT REFERENCES usuario(id)
 );
 

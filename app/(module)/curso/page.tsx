@@ -1,31 +1,19 @@
+import CourseContentItems from "@/components/courseContentItems";
 import CourseDetail from "@/components/courseDetail";
 import { getSession, loginIsRequiredServer } from "@/lib/login-controller";
-import React from "react";
-import { AiFillStar, AiFillYoutube } from "react-icons/ai";
-import { HiOutlineQuestionMarkCircle } from "react-icons/hi";
-import Image from "next/image";
-import mainPicture from "../../../public/curso.jpg";
 import { getUserCourseByUserId } from "@/lib/user-controller";
 import { User_Course } from "@/types/types";
-import {
-  Avatar,
-  Box,
-  Button,
-  DropdownMenu,
-  Flex,
-  Heading,
-  Inset,
-  ScrollArea,
-  Text,
-} from "@radix-ui/themes";
-import CourseContentItems from "@/components/courseContentItems";
+import { Avatar, Box, Flex, Heading, Text } from "@radix-ui/themes";
+import Image from "next/image";
+import { AiFillStar } from "react-icons/ai";
+import mainPicture from "../../../public/curso.jpg";
 
 const CoursePage = async () => {
   await loginIsRequiredServer();
   const stars = new Array(5).fill(0);
   const { _user } = await getSession();
   const id = _user?.id || 0;
-  const isStudent = +(_user?.type || 0) === 0;
+  const isStudent = (_user?.type || 0) === 0;
   const user_course: User_Course | null | undefined =
     await getUserCourseByUserId(id);
   return (
@@ -61,8 +49,9 @@ const CoursePage = async () => {
               <Text as="p">
                 Three fundamental aspects of typography are legibility,
                 readability, and aesthetics. Although in a non-technical sense
-                “legible” and “readable” are often used synonymously,
-                typographically they are separate but related concepts.
+                &quot;legible&quot; and &quot;readable&quot; are often used
+                synonymously, typographically they are separate but related
+                concepts.
               </Text>
             </Flex>
             <Heading size="4" mb="2" trim="start">
@@ -72,8 +61,9 @@ const CoursePage = async () => {
               <Text as="p">
                 Three fundamental aspects of typography are legibility,
                 readability, and aesthetics. Although in a non-technical sense
-                “legible” and “readable” are often used synonymously,
-                typographically they are separate but related concepts.
+                &quot;legible&quot; and &quot;readable&quot; are often used
+                synonymously, typographically they are separate but related
+                concepts.
               </Text>
             </Flex>
             <Heading size="4" mb="5" trim="start">
@@ -101,8 +91,8 @@ const CoursePage = async () => {
                   Audiencia
                 </p>
                 <li className="text-justify mx-8 mb-12 mt-8 list-disc">
-                  "Nuestra meta es fomentar y enriquecer tu proceso de
-                  aprendizaje en el área de las matemáticas"
+                  &quot;Nuestra meta es fomentar y enriquecer tu proceso de
+                  aprendizaje en el área de las matemáticas&quot;
                 </li>
               </ul>
             </div>

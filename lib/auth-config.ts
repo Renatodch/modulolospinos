@@ -1,16 +1,12 @@
-import { sql } from "@vercel/postgres";
-import { NextAuthOptions, getServerSession } from "next-auth";
-import { redirect } from "next/navigation";
+import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
-import { User } from "@/types/types";
+import { loginUser } from "./login-controller";
 import {
   getUserByEmail,
   getUserById,
   getUserCourseByUserId,
 } from "./user-controller";
-import { prisma } from "../prisma/prisma";
-import { loginUser } from "./login-controller";
 
 export const authConfig: NextAuthOptions = {
   providers: [
@@ -19,12 +15,12 @@ export const authConfig: NextAuthOptions = {
       credentials: {
         id: {
           label: "Id",
-          type: "string",
-          placeholder: "usuario",
+          type: "number",
+          placeholder: "0004",
         },
-        password: { label: "Password", type: "password" },
+        password: { label: "Password", type: "text" },
       },
-      authorize: async (credentials) => {
+      async authorize(credentials) {
         if (!credentials || !credentials.id || !credentials.password)
           return null;
 
@@ -32,8 +28,11 @@ export const authConfig: NextAuthOptions = {
 
         //In production DB, passwords should be encrypted using something like bcrypt...
         if (res) {
-          const { password, ...dbUserWithoutPassword } = res;
-          return dbUserWithoutPassword as User;
+          const { password, ...dbUserWithoutPassword } = {
+            ...res,
+            id: "" + res.id,
+          };
+          return dbUserWithoutPassword;
         }
         return null;
       },
