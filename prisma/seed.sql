@@ -17,8 +17,8 @@ CREATE TABLE usuario_curso (
   date_last_entry TIMESTAMP NOT NULL,
   date_end TIMESTAMP,
   date_project_assigned TIMESTAMP,
+  date_project_send_max TIMESTAMP,
   state INT NOT NULL,
-  tryouts INT,
   progress INT NOT NULL,
   id_user INT REFERENCES usuario(id)
 );
@@ -30,7 +30,7 @@ CREATE TABLE proyecto (
   image1 VARCHAR(255),
   date_upload TIMESTAMP NOT NULL,
   projectScore INT,
-  state INT NOT NULL,
+  comment VARCHAR(255),
   id_user INT REFERENCES usuario(id)
 );
 

@@ -34,22 +34,32 @@ const UserForm = ({ target }: Props) => {
   } = useForm();
   const onSubmit = async (data: FieldValues) => {
     setSubmitted(true);
-    const user: User = {
-      type: 0,
-      password: data.password,
-      name: data.name,
-      email: data.email,
-      id: target?.id || 0,
-    };
-    const res = await saveUser(user);
-    if (!res) {
+    try {
+      const user: User = {
+        type: 0,
+        password: data.password,
+        name: data.name,
+        email: data.email,
+        id: target?.id || 0,
+      };
+      const res = await saveUser(user);
+      if (!res) {
+        setError("Ocurrió un error registrando al usuario");
+        setPassHidden(true);
+        reset();
+      } else {
+        setError(null);
+        setPassHidden(true);
+        setOpenDialog(false);
+        reset();
+        router.refresh();
+      }
+    } catch (e) {
       setError("Ocurrió un error registrando al usuario");
-    } else {
-      setOpenDialog(false);
       setPassHidden(true);
       reset();
-      router.refresh();
     }
+
     setSubmitted(false);
   };
 
@@ -60,11 +70,10 @@ const UserForm = ({ target }: Props) => {
     setOpenDialog(e);
     if (!e) {
       setPassHidden(true);
-      setError("");
       reset();
+      setError(null);
     }
   };
-
   return isStudent ? (
     <NotAllowed />
   ) : (

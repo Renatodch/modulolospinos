@@ -83,7 +83,7 @@ const Links = async (props: { currentPath: string }) => {
       <button
         key={link.href}
         className={`text-zinc-400 hover:text-zinc-700 transition-colors text-base`}
-        onClick={() => signOut()}
+        onClick={() => signOut({ callbackUrl: "/login" })}
       >
         {link.label}
       </button>

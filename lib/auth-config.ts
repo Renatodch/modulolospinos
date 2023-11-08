@@ -2,11 +2,7 @@ import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import { loginUser } from "./login-controller";
-import {
-  getUserByEmail,
-  getUserById,
-  getUserCourseByUserId,
-} from "./user-controller";
+import { getUserByEmail, getUserById } from "./user-controller";
 
 export const authConfig: NextAuthOptions = {
   providers: [
@@ -51,12 +47,9 @@ export const authConfig: NextAuthOptions = {
         ? await getUserByEmail(user?.email!)
         : await getUserById(+id!);
 
-      const _user_course = await getUserCourseByUserId(_user?.id || 0);
-
       const _session = {
         ...session,
         _user,
-        _user_course,
       };
 
       return _session;

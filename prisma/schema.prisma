@@ -25,7 +25,7 @@ model proyecto {
   image1       String?  @db.VarChar(255)
   date_upload  DateTime @db.Timestamp(6)
   projectscore Int?
-  state        Int
+  comment      String?  @db.VarChar(255)
   id_user      Int?
   usuario      usuario? @relation(fields: [id_user], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
@@ -36,8 +36,8 @@ model usuario_curso {
   date_last_entry       DateTime  @db.Timestamp(6)
   date_end              DateTime? @db.Timestamp(6)
   date_project_assigned DateTime? @db.Timestamp(6)
+  date_project_send_max DateTime? @db.Timestamp(6)
   state                 Int
-  tryouts               Int?
   progress              Int
   id_user               Int?
   usuario               usuario?  @relation(fields: [id_user], references: [id], onDelete: NoAction, onUpdate: NoAction)

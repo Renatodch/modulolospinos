@@ -1,8 +1,12 @@
 import CourseContentItems from "@/components/courseContentItems";
 import CourseDetail from "@/components/courseDetail";
 import { getSession, loginIsRequiredServer } from "@/lib/login-controller";
-import { getUserCourseByUserId } from "@/lib/user-controller";
-import { User_Course } from "@/types/types";
+import { getProjectByUserId } from "@/lib/project-controller";
+import {
+  getCurrentNumberUserCourses,
+  getUserCourseByUserId,
+} from "@/lib/user-controller";
+import { Project, User_Course } from "@/types/types";
 import { Avatar, Box, Flex, Heading, Text } from "@radix-ui/themes";
 import Image from "next/image";
 import { AiFillStar } from "react-icons/ai";
@@ -10,12 +14,15 @@ import mainPicture from "../../../public/curso.jpg";
 
 const CoursePage = async () => {
   await loginIsRequiredServer();
+  const numberUsers = await getCurrentNumberUserCourses();
   const stars = new Array(5).fill(0);
   const { _user } = await getSession();
   const id = _user?.id || 0;
   const isStudent = (_user?.type || 0) === 0;
   const user_course: User_Course | null | undefined =
     await getUserCourseByUserId(id);
+  const project: Project | null | undefined = await getProjectByUserId(id);
+
   return (
     <div className="flex flex-col items-center justify-center w-full px-16 py-8 gap-6">
       <div className="flex flex-col items-start justify-center w-full">
@@ -35,7 +42,13 @@ const CoursePage = async () => {
           height={400}
           alt="imagen del curso"
         />
-        {isStudent && <CourseDetail userCourse={user_course} />}
+        {isStudent && (
+          <CourseDetail
+            userCourse={user_course}
+            numberUsers={numberUsers}
+            project={project}
+          />
+        )}
       </div>
       <div className="flex flex-col lg:flex-row items-start justify-center w-full gap-16">
         <div className="lg:w-2/3 w-full">

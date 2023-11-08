@@ -2,23 +2,27 @@
 import { useUserContext } from "@/app/context";
 import { saveProject } from "@/lib/project-controller";
 import { Project } from "@/types/types";
-import { Button, Dialog, Flex, TextField } from "@radix-ui/themes";
+import { Button, Dialog, Flex, TextArea, TextField } from "@radix-ui/themes";
+import type { PutBlobResult } from "@vercel/blob";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
-import { AiFillEdit, AiOutlinePlusCircle } from "react-icons/ai";
-import NotAllowed from "./notAllowed";
-interface Props {
-  target?: Project;
-}
 
-const ProjectForm = ({ target }: Props) => {
+import { AiFillFileImage, AiOutlinePlusCircle } from "react-icons/ai";
+
+const ProjectForm = () => {
+  const { setProject } = useUserContext();
   const { user } = useUserContext();
   const router = useRouter();
-  const isStudent = (user?.type || 0) === 0;
   const [error, setError] = useState<string | null>(null);
+  const [validFile, setValidFile] = useState<
+    "invalidType" | "invalidSize" | boolean
+  >(false);
   const [submitted, setSubmitted] = useState<boolean | null>(null);
   const [openDialog, setOpenDialog] = useState<boolean>(false);
+  const [image, setImage] = useState<File | null>(null);
+
+  const hiddenInputRef = useRef(null);
 
   const {
     register,
@@ -26,59 +30,102 @@ const ProjectForm = ({ target }: Props) => {
     formState: { errors },
     reset,
   } = useForm();
+
+  const { ref: registerRef, ...rest } = register("imagen1");
+
+  const handleUploadedFile = (event: any) => {
+    const maxSizeInBytes = 4.5 * 1024 * 1024;
+    const file = event.target.files[0];
+    if (file?.type.split("/")[0] !== "image") {
+      setImage(null);
+      setValidFile("invalidType");
+      return;
+    }
+    if (file.size > maxSizeInBytes) {
+      setImage(null);
+      setValidFile("invalidSize");
+      return;
+    }
+    setValidFile(true);
+    setImage(file);
+  };
+  const onUpload = () => (hiddenInputRef.current! as HTMLFormElement).click();
+
   const onSubmit = async (data: FieldValues) => {
     setSubmitted(true);
-    const project: Project = {
-      id: target?.id || 0,
-      title: data.title,
-      description: data.desc,
-      image1: data.image1,
-      image2: data.image2,
-      date_upload: new Date(),
-      projectscore: target?.projectscore || 0,
-      state: target?.state || 0,
-      id_user: +user?.id!,
-    };
-    const res = await saveProject(project);
-    if (!res) {
-      setError("Ocurrió un error registrando el proyecto");
-    } else {
-      setOpenDialog(false);
-      reset();
-      router.refresh();
+    try {
+      let newBlob;
+      if (image != null) {
+        const response = await fetch(
+          `/api/image/upload?filename=${image?.name}`,
+          {
+            method: "POST",
+            body: image,
+          }
+        );
+        newBlob = (await response.json()) as PutBlobResult;
+      }
+
+      const project: Project = {
+        id: 0,
+        title: data.title,
+        description: data.desc,
+        image1: newBlob?.url || null,
+        date_upload: new Date(),
+        projectscore: null,
+        comment: null,
+        id_user: user?.id || 0,
+      };
+
+      const res = await saveProject(project);
+      if (!res) {
+        whenError();
+      } else {
+        setValidFile(false);
+        setImage(null);
+        setError(null);
+        setOpenDialog(false);
+        reset();
+        router.refresh();
+        //setProject(res);
+      }
+    } catch (e) {
+      whenError();
     }
+
     setSubmitted(false);
   };
 
   const toggleDialog = (e: boolean) => {
     setOpenDialog(e);
     if (!e) {
-      setError("");
+      setValidFile(false);
+      setImage(null);
+      setError(null);
       reset();
     }
   };
-
-  return isStudent ? (
+  const whenError = () => {
+    setValidFile(false);
+    setImage(null);
+    setError("Ocurrió un error registrando el proyecto");
+    reset();
+  };
+  return (
     <Dialog.Root open={openDialog} onOpenChange={toggleDialog}>
       <Dialog.Trigger>
         <Flex justify={"start"}>
-          {!target ? (
+          {
             <Button size="3">
               <AiOutlinePlusCircle size="20" />
               Añadir nuevo proyecto
             </Button>
-          ) : (
-            <Button size="3">
-              <AiFillEdit size="20" />
-            </Button>
-          )}
+          }
         </Flex>
       </Dialog.Trigger>
 
       <Dialog.Content style={{ maxWidth: 450 }}>
-        <Dialog.Title align={"center"}>
-          {!target ? "Formulario de Proyecto Nuevo" : "Formulario de Proyecto"}
-        </Dialog.Title>
+        <Dialog.Title align={"center"}>"Formulario de Proyecto"</Dialog.Title>
         <Dialog.Description size="2" mb="4">
           {error && (
             <span className="p-4 mb-2 text-lg font-semibold text-white bg-red-500 rounded-md">
@@ -89,7 +136,7 @@ const ProjectForm = ({ target }: Props) => {
         <form className="w-full" onSubmit={handleSubmit(onSubmit)}>
           <Flex direction="column" gap="4">
             <TextField.Input
-              defaultValue={target?.title || ""}
+              id="title"
               maxLength={48}
               size="3"
               color="gray"
@@ -105,59 +152,46 @@ const ProjectForm = ({ target }: Props) => {
                 Es requerido el titulo del proyecto
               </span>
             )}
-            <TextField.Input
-              defaultValue={target?.description || ""}
-              maxLength={64}
+            <TextArea
+              id="desc"
+              maxLength={255}
               size="3"
               color="gray"
               variant="surface"
-              placeholder="Descripción"
-              {...register("desc", {
-                required: true,
-                maxLength: 255,
-              })}
+              {...register("desc")}
+              placeholder="Agregue una descripción o resumen de su proyecto"
             />
-            {errors.desc?.type === "required" && (
-              <span role="alert" className="font-semibold text-red-500 ">
-                Es requerida una descripción del proyecto
-              </span>
-            )}
-            <TextField.Root>
+
+            <label htmlFor="image">
+              A continuación podrá subir una Imagen representativa del proyecto
+              no mayor a 4.5 MB
+            </label>
+            <TextField.Root style={{ display: "none" }}>
               <TextField.Input
-                defaultValue={target?.image1 || ""}
-                maxLength={32}
-                size="3"
+                id="image"
+                {...rest}
+                maxLength={64}
+                accept="image/*"
+                onChange={handleUploadedFile}
                 type="file"
-                color="gray"
-                variant="surface"
-                placeholder="Imagen 1"
-                {...register("image1", {
-                  maxLength: 64,
-                })}
+                ref={hiddenInputRef}
               />
             </TextField.Root>
-            {errors.password?.type === "required" && (
+            <div className="flex justify-start gap-4">
+              <Button onClick={onUpload} type="button">
+                <AiFillFileImage />
+                Subir Imagen
+              </Button>
+              <p className="font-bold">{(image as File)?.name}</p>
+            </div>
+            {validFile === "invalidType" && (
               <span role="alert" className="font-semibold text-red-500 ">
-                ---
+                El archivo a subir debe ser una imagen
               </span>
             )}
-            <TextField.Root>
-              <TextField.Input
-                defaultValue={target?.image2 || ""}
-                maxLength={32}
-                size="3"
-                type="file"
-                color="gray"
-                variant="surface"
-                placeholder="Imagen 2"
-                {...register("image 2", {
-                  maxLength: 64,
-                })}
-              />
-            </TextField.Root>
-            {errors.password?.type === "required" && (
+            {validFile === "invalidSize" && (
               <span role="alert" className="font-semibold text-red-500 ">
-                ---
+                El archivo a subir no debe ser mayor de 4.5 MB
               </span>
             )}
 
@@ -176,8 +210,6 @@ const ProjectForm = ({ target }: Props) => {
         </form>
       </Dialog.Content>
     </Dialog.Root>
-  ) : (
-    <NotAllowed />
   );
 };
 

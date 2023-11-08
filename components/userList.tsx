@@ -33,7 +33,7 @@ const UserList = ({ users }: { users: User[] }) => {
       </Table.Header>
 
       <Table.Body>
-        {users.map((user, index) => {
+        {users.map((user) => {
           return (
             <Table.Row key={user.id}>
               <Table.RowHeaderCell width={100}>{user.id}</Table.RowHeaderCell>

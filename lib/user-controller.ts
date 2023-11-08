@@ -1,6 +1,7 @@
 "use server";
 import { User, User_Course } from "@/types/types";
 import { prisma } from "../prisma/prisma";
+import { deleteProjectsByUserId } from "./project-controller";
 
 export const saveUser = async (user: User) => {
   const data = {
@@ -12,10 +13,10 @@ export const saveUser = async (user: User) => {
   try {
     const res =
       user.id === 0
-        ? prisma.usuario.create({
+        ? await prisma.usuario.create({
             data,
           })
-        : prisma.usuario.update({
+        : await prisma.usuario.update({
             where: {
               id: +user.id,
             },
@@ -36,7 +37,7 @@ export const getUsers = async () => {
         id: "asc",
       },
     });
-    res = [...users];
+    res = users;
   } catch (e) {
     console.log("Error: ", e);
   }
@@ -46,18 +47,13 @@ export const getUsers = async () => {
 export const deleteUserById = async (id: number) => {
   try {
     let user: User | undefined;
-    const user_course = await prisma.usuario_curso.findFirst({
-      where: {
-        id_user: id,
-      },
-    });
+    const user_course = await getUserCourseByUserId(id);
     if (user_course) {
-      const user_course = await prisma.usuario_curso.deleteMany({
-        where: {
-          id_user: id,
-        },
-      });
-      user_course.count > 0 &&
+      const user_courses = await deleteUserCoursesByUserId(id);
+      const projects = await deleteProjectsByUserId(id);
+
+      user_courses.count > 0 &&
+        projects.count > 0 &&
         (user = await prisma.usuario.delete({
           where: {
             id,
@@ -73,6 +69,15 @@ export const deleteUserById = async (id: number) => {
 
     return user;
   } catch (e) {}
+};
+export const deleteUserCoursesByUserId = async (id_user: number) => {
+  const user_courses = await prisma.usuario_curso.deleteMany({
+    where: {
+      id_user,
+    },
+  });
+
+  return user_courses;
 };
 
 export const getUserById = async (id: number) => {
@@ -100,7 +105,7 @@ export const getUserByEmail = async (email: string) => {
   } catch (e) {}
 };
 
-export const getUserCourseByUserId = async (id_user: number) => {
+export const getUserCourseByUserId = async (id_user: number | null) => {
   try {
     const res = await prisma.usuario_curso.findFirst({
       where: {
@@ -111,21 +116,48 @@ export const getUserCourseByUserId = async (id_user: number) => {
   } catch (e) {}
 };
 
+export const getUserCourses = async () => {
+  let usuario_curso: User_Course[] = [];
+  try {
+    const res = await prisma.usuario_curso.findMany({
+      where: {
+        state: 0,
+      },
+      distinct: ["id_user"],
+    });
+    usuario_curso = res;
+  } catch (e) {}
+  return usuario_curso;
+};
+
+export const getCurrentNumberUserCourses = async () => {
+  let num = 0;
+  try {
+    const res = await prisma.usuario_curso.findMany({
+      where: {
+        state: 0,
+      },
+      distinct: ["id_user"],
+    });
+    num = res.length;
+  } catch (e) {}
+  return num;
+};
+
 export const saveUserCourse = async (user_course: User_Course) => {
   const { id, ...data } = { ...user_course };
   try {
     const res =
       id === 0
-        ? prisma.usuario_curso.create({
+        ? await prisma.usuario_curso.create({
             data,
           })
-        : prisma.usuario_curso.update({
+        : await prisma.usuario_curso.update({
             where: {
               id,
             },
             data,
           });
-
     return res;
   } catch (e) {
     console.log("Error: ", e);

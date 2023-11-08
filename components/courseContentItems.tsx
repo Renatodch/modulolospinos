@@ -49,14 +49,9 @@ const CourseContentItems = ({ interactive, progress }: Props) => {
               key={index}
               className={`${styleClasses} ${
                 selectedIndex === index && interactive && "bg-blue-100"
-              } ${
-                index != 4 &&
-                index > _progress &&
-                interactive &&
-                "text-gray-400"
-              }`}
+              } ${index > _progress + 1 && interactive && "text-gray-400"}`}
               style={{
-                pointerEvents: index != 4 && index > _progress ? "none" : "all",
+                pointerEvents: index > _progress + 1 ? "none" : "all",
               }}
             >
               {interactive ? (
