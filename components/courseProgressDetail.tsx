@@ -70,18 +70,21 @@ const CourseProgressDetail = ({
                 <div className="mt-4">No hay tareas pendientes</div>
               </>
             )}
-          {user_course && stateCourse === COURSE_IN_PROCESS && !project && (
-            <>
-              <div className="italic flex items-center gap-2 text-orange-400 ">
-                <GoAlertFill className="text-xl" />
-                {TOAST_PROJECT_PENDING}
-              </div>
-              <div className="mt-4">
-                La fecha máxima de entrega es hasta el día &nbsp;
-                {getDateString(user_course.date_project_send_max)}
-              </div>
-            </>
-          )}
+          {user_course &&
+            stateCourse === COURSE_IN_PROCESS &&
+            !project &&
+            progress === COURSE_LAST_ITEM_INDEX && (
+              <>
+                <div className="italic flex items-center gap-2 text-orange-400 ">
+                  <GoAlertFill className="text-xl" />
+                  {TOAST_PROJECT_PENDING}
+                </div>
+                <div className="mt-4">
+                  La fecha máxima de entrega es hasta el día &nbsp;
+                  {getDateString(user_course.date_project_send_max)}
+                </div>
+              </>
+            )}
           {user_course && stateCourse === COURSE_IN_PROCESS && project && (
             <>
               <div className="italic flex items-center gap-2">

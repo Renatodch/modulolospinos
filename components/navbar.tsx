@@ -3,7 +3,7 @@ import { useUserContext } from "@/app/context";
 import {
   COURSE_IN_PROCESS,
   STUDENT,
-  TOAST_PROJECT_PENDING,
+  getToastPendingProject,
 } from "@/types/types";
 import { signOut } from "next-auth/react";
 import Link from "next/link";
@@ -18,7 +18,20 @@ function Navbar() {
     user_course?.date_project_send_max &&
       !project &&
       user_course.state === COURSE_IN_PROCESS &&
-      toast.warning(TOAST_PROJECT_PENDING);
+      toast.promise(
+        new Promise((resolve, reject) => {
+          setTimeout(() => {
+            resolve(true);
+          }, 3000);
+        }),
+        {
+          finally: () => {
+            toast.warning(
+              getToastPendingProject(user_course.date_project_send_max)
+            );
+          },
+        }
+      );
   };
   useEffect(() => {
     if (!user) signOut({ callbackUrl: "/login" });
@@ -101,7 +114,7 @@ const Links = async (props: { currentPath: string }) => {
         {link.label}
       </button>
     ) : (
-      <Link
+      <a
         className={`${
           link.href === props.currentPath ? "text-zinc-900" : "text-zinc-400"
         } hover:text-zinc-700 transition-colors text-base`}
@@ -109,7 +122,7 @@ const Links = async (props: { currentPath: string }) => {
         key={link.href}
       >
         {link.label}
-      </Link>
+      </a>
     )
   );
 };

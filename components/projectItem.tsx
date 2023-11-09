@@ -2,7 +2,6 @@
 import { useUserContext } from "@/app/context";
 import { MIN_NOTE_APPROVED, Project, isTeacher } from "@/types/types";
 import { Strong } from "@radix-ui/themes";
-import Image from "next/image";
 import ProjectFormEval from "./projectFormEval";
 const ProjectItem = ({ project }: { project: Project | null | undefined }) => {
   const { user } = useUserContext();
@@ -12,10 +11,9 @@ const ProjectItem = ({ project }: { project: Project | null | undefined }) => {
       <p className="font-bold text-3xl w-full text-center mb-4">
         {project?.title}
       </p>
-      <p className="text-base w-full mb-4">{project?.description}</p>
 
       {project?.image1 && (
-        <Image
+        <img
           src={project?.image1}
           alt="Bold typography"
           className="mb-4"
@@ -27,6 +25,8 @@ const ProjectItem = ({ project }: { project: Project | null | undefined }) => {
           }}
         />
       )}
+
+      <p className="text-base w-full mb-4">{project?.description}</p>
 
       <div className="flex justify-between w-full lg:flex-row flex-col lg:gap-0 gap-6">
         {isTeacher(user?.type) && <ProjectFormEval target={project} />}

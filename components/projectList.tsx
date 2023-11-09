@@ -1,7 +1,6 @@
 "use client";
 import { MIN_NOTE_APPROVED, Project } from "@/types/types";
 import { Button, Card, Inset, Strong } from "@radix-ui/themes";
-import Image from "next/image";
 import Link from "next/link";
 const ProjectList = ({ projects }: { projects: Project[] }) => {
   return (
@@ -10,12 +9,12 @@ const ProjectList = ({ projects }: { projects: Project[] }) => {
         <Card
           key={p.id}
           size="2"
-          style={{ minWidth: "300px", height: "450px" }}
+          style={{ minWidth: "300px", maxWidth: "600px", height: "450px" }}
           className="flex-1"
         >
           <Inset side="top" pb="current">
             {p.image1 ? (
-              <Image
+              <img
                 src={p.image1}
                 alt="Bold typography"
                 style={{
