@@ -104,13 +104,13 @@ const CourseProgressDetail = ({
                 {stateCourse === COURSE_APPROVED && (
                   <>
                     <BiHappyAlt className="text-xl" />
-                    "Usted aprobó el curso"
+                    Usted aprobó el curso
                   </>
                 )}
                 {stateCourse === COURSE_REPROVED && (
                   <>
                     <FaSadCry className="text-xl" />
-                    "Usted reprobó el curso"
+                    Usted reprobó el curso
                   </>
                 )}
               </div>

@@ -128,7 +128,7 @@ const ProjectForm = () => {
       </Dialog.Trigger>
 
       <Dialog.Content style={{ maxWidth: 450 }}>
-        <Dialog.Title align={"center"}>"Formulario de Proyecto"</Dialog.Title>
+        <Dialog.Title align={"center"}>Formulario de Proyecto</Dialog.Title>
         <Dialog.Description size="2" mb="4"></Dialog.Description>
         <form className="w-full" onSubmit={handleSubmit(onSubmit)}>
           <Flex direction="column" gap="4">

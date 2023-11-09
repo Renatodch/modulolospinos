@@ -2,8 +2,8 @@
 import { useUserContext } from "@/app/context";
 import { MIN_NOTE_APPROVED, Project, isTeacher } from "@/types/types";
 import { Strong } from "@radix-ui/themes";
+import Image from "next/image";
 import ProjectFormEval from "./projectFormEval";
-
 const ProjectItem = ({ project }: { project: Project | null | undefined }) => {
   const { user } = useUserContext();
 
@@ -15,7 +15,7 @@ const ProjectItem = ({ project }: { project: Project | null | undefined }) => {
       <p className="text-base w-full mb-4">{project?.description}</p>
 
       {project?.image1 && (
-        <img
+        <Image
           src={project?.image1}
           alt="Bold typography"
           className="mb-4"
