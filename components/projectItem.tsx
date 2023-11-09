@@ -1,6 +1,6 @@
 "use client";
 import { useUserContext } from "@/app/context";
-import { MIN_NOTE_APPROVED, Project } from "@/types/types";
+import { MIN_NOTE_APPROVED, Project, isTeacher } from "@/types/types";
 import { Strong } from "@radix-ui/themes";
 import ProjectFormEval from "./projectFormEval";
 
@@ -29,9 +29,7 @@ const ProjectItem = ({ project }: { project: Project | null | undefined }) => {
       )}
 
       <div className="flex justify-between w-full lg:flex-row flex-col lg:gap-0 gap-6">
-        {(user?.type || user?.type === 1) && (
-          <ProjectFormEval target={project} />
-        )}
+        {isTeacher(user?.type) && <ProjectFormEval target={project} />}
         <div className="flex flex-col w-96">
           {project.projectscore && (
             <p className="text-xl">

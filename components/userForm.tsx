@@ -1,7 +1,11 @@
 "use client";
-import { useUserContext } from "@/app/context";
 import { saveUser } from "@/lib/user-controller";
-import { User } from "@/types/types";
+import {
+  STUDENT,
+  TOAST_BD_ERROR,
+  TOAST_USER_SAVE_SUCCESS,
+  User,
+} from "@/types/types";
 import { Button, Dialog, Flex, TextField } from "@radix-ui/themes";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -12,18 +16,15 @@ import {
   AiFillEyeInvisible,
   AiOutlinePlusCircle,
 } from "react-icons/ai";
-import NotAllowed from "./notAllowed";
+import { toast } from "sonner";
 interface Props {
   target?: User;
 }
 
 const UserForm = ({ target }: Props) => {
-  const { user } = useUserContext();
   const router = useRouter();
-  const isStudent = (user?.type || 0) === 0;
-  const [error, setError] = useState<string | null>(null);
-  const [submitted, setSubmitted] = useState<boolean | null>(null);
-  const [passHidden, setPassHidden] = useState<boolean | null>(true);
+  const [submitted, setSubmitted] = useState<boolean>(false);
+  const [passHidden, setPassHidden] = useState<boolean>(true);
   const [openDialog, setOpenDialog] = useState<boolean>(false);
 
   const {
@@ -36,7 +37,7 @@ const UserForm = ({ target }: Props) => {
     setSubmitted(true);
     try {
       const user: User = {
-        type: 0,
+        type: STUDENT,
         password: data.password,
         name: data.name,
         email: data.email,
@@ -44,18 +45,19 @@ const UserForm = ({ target }: Props) => {
       };
       const res = await saveUser(user);
       if (!res) {
-        setError("Ocurrió un error registrando al usuario");
+        toast.error(TOAST_BD_ERROR);
         setPassHidden(true);
+        setOpenDialog(false);
         reset();
       } else {
-        setError(null);
+        toast.success(TOAST_USER_SAVE_SUCCESS);
         setPassHidden(true);
         setOpenDialog(false);
         reset();
         router.refresh();
       }
     } catch (e) {
-      setError("Ocurrió un error registrando al usuario");
+      toast.error(TOAST_BD_ERROR);
       setPassHidden(true);
       reset();
     }
@@ -63,20 +65,15 @@ const UserForm = ({ target }: Props) => {
     setSubmitted(false);
   };
 
-  const togglePassword = () => {
-    setPassHidden(!passHidden);
-  };
+  const togglePassword = () => setPassHidden(!passHidden);
   const toggleDialog = (e: boolean) => {
     setOpenDialog(e);
     if (!e) {
       setPassHidden(true);
       reset();
-      setError(null);
     }
   };
-  return isStudent ? (
-    <NotAllowed />
-  ) : (
+  return (
     <Dialog.Root open={openDialog} onOpenChange={toggleDialog}>
       <Dialog.Trigger>
         <Flex justify={"start"}>
@@ -99,13 +96,7 @@ const UserForm = ({ target }: Props) => {
             ? "Formulario de Nuevo Estudiante"
             : "Formulario de Estudiante"}
         </Dialog.Title>
-        <Dialog.Description size="2" mb="4">
-          {error && (
-            <span className="p-4 mb-2 text-lg font-semibold text-white bg-red-500 rounded-md">
-              {error}
-            </span>
-          )}
-        </Dialog.Description>
+        <Dialog.Description size="2" mb="4"></Dialog.Description>
         <form className="w-full" onSubmit={handleSubmit(onSubmit)}>
           <Flex direction="column" gap="4">
             <TextField.Input
@@ -159,9 +150,9 @@ const UserForm = ({ target }: Props) => {
               <TextField.Slot>
                 <Button type="button" variant="ghost" onClick={togglePassword}>
                   {passHidden ? (
-                    <AiFillEye size={20} />
-                  ) : (
                     <AiFillEyeInvisible size={20} />
+                  ) : (
+                    <AiFillEye size={20} />
                   )}
                 </Button>
               </TextField.Slot>
@@ -176,7 +167,12 @@ const UserForm = ({ target }: Props) => {
           </Flex>
           <Flex gap="3" mt="4" justify="end">
             <Dialog.Close>
-              <Button size="3" variant="soft" color="gray">
+              <Button
+                size="3"
+                variant="soft"
+                color="gray"
+                disabled={Boolean(submitted)}
+              >
                 Cancelar
               </Button>
             </Dialog.Close>

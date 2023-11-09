@@ -2,11 +2,8 @@
 import { MIN_NOTE_APPROVED, Project } from "@/types/types";
 import { Button, Card, Inset, Strong } from "@radix-ui/themes";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 
 const ProjectList = ({ projects }: { projects: Project[] }) => {
-  const router = useRouter();
-
   return (
     <div className="flex flex-wrap gap-5 w-full">
       {projects.map((p, index) => (

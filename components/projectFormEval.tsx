@@ -1,17 +1,22 @@
 "use client";
 import { saveProject } from "@/lib/project-controller";
 import { getUserCourseByUserId, saveUserCourse } from "@/lib/user-controller";
-import { MIN_NOTE_APPROVED, Project } from "@/types/types";
+import {
+  MIN_NOTE_APPROVED,
+  Project,
+  TOAST_BD_ERROR,
+  TOAST_PROJECT_EVALUATED,
+} from "@/types/types";
 import { Button, Dialog, Flex, TextArea, TextField } from "@radix-ui/themes";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
 
 import { FiEdit } from "react-icons/fi";
+import { toast } from "sonner";
 
 const ProjectFormEval = ({ target }: { target: Project }) => {
   const router = useRouter();
-  const [error, setError] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState<boolean | null>(null);
   const [openDialog, setOpenDialog] = useState<boolean>(false);
 
@@ -45,7 +50,7 @@ const ProjectFormEval = ({ target }: { target: Project }) => {
         if (!p || !uc) {
           whenError();
         } else {
-          setError(null);
+          toast.success(TOAST_PROJECT_EVALUATED);
           setOpenDialog(false);
           router.refresh();
         }
@@ -60,12 +65,11 @@ const ProjectFormEval = ({ target }: { target: Project }) => {
   const toggleDialog = (e: boolean) => {
     setOpenDialog(e);
     if (!e) {
-      setError(null);
       reset();
     }
   };
   const whenError = () => {
-    setError("Ocurrió un error en la actualización");
+    toast.error(TOAST_BD_ERROR);
     reset();
   };
   return (
@@ -85,13 +89,7 @@ const ProjectFormEval = ({ target }: { target: Project }) => {
         <Dialog.Title align={"center"}>
           Formulario de Evaluación de Proyecto
         </Dialog.Title>
-        <Dialog.Description size="2" mb="4">
-          {error && (
-            <p className="p-4 mb-2 w-full text-base font-semibold text-white bg-red-500 rounded-md">
-              {error}
-            </p>
-          )}
-        </Dialog.Description>
+        <Dialog.Description size="2" mb="4"></Dialog.Description>
         <form className="w-full" onSubmit={handleSubmit(onSubmit)}>
           <Flex direction="column" gap="4">
             <TextField.Input

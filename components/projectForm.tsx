@@ -1,7 +1,11 @@
 "use client";
 import { useUserContext } from "@/app/context";
 import { saveProject } from "@/lib/project-controller";
-import { Project } from "@/types/types";
+import {
+  Project,
+  TOAST_BD_ERROR,
+  TOAST_PROJECT_SAVE_SUCCESS,
+} from "@/types/types";
 import { Button, Dialog, Flex, TextArea, TextField } from "@radix-ui/themes";
 import type { PutBlobResult } from "@vercel/blob";
 import { useRouter } from "next/navigation";
@@ -9,19 +13,18 @@ import { useRef, useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
 
 import { AiFillFileImage, AiOutlinePlusCircle } from "react-icons/ai";
+import { toast } from "sonner";
 
 const ProjectForm = () => {
-  const { setProject } = useUserContext();
-  const { user } = useUserContext();
+  const { user, project } = useUserContext();
+  const [_project, _setProject] = useState<Project | null>(null);
   const router = useRouter();
-  const [error, setError] = useState<string | null>(null);
   const [validFile, setValidFile] = useState<
     "invalidType" | "invalidSize" | boolean
   >(false);
-  const [submitted, setSubmitted] = useState<boolean | null>(null);
+  const [submitted, setSubmitted] = useState<boolean>(false);
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const [image, setImage] = useState<File | null>(null);
-
   const hiddenInputRef = useRef(null);
 
   const {
@@ -53,6 +56,7 @@ const ProjectForm = () => {
 
   const onSubmit = async (data: FieldValues) => {
     setSubmitted(true);
+    let temp: Project | null = null;
     try {
       let newBlob;
       if (image != null) {
@@ -66,7 +70,7 @@ const ProjectForm = () => {
         newBlob = (await response.json()) as PutBlobResult;
       }
 
-      const project: Project = {
+      temp = {
         id: 0,
         title: data.title,
         description: data.desc,
@@ -77,22 +81,21 @@ const ProjectForm = () => {
         id_user: user?.id || 0,
       };
 
-      const res = await saveProject(project);
+      const res = await saveProject(temp);
       if (!res) {
         whenError();
       } else {
+        toast.success(TOAST_PROJECT_SAVE_SUCCESS);
         setValidFile(false);
         setImage(null);
-        setError(null);
         setOpenDialog(false);
         reset();
         router.refresh();
-        //setProject(res);
       }
     } catch (e) {
       whenError();
     }
-
+    _setProject(temp);
     setSubmitted(false);
   };
 
@@ -101,38 +104,32 @@ const ProjectForm = () => {
     if (!e) {
       setValidFile(false);
       setImage(null);
-      setError(null);
+      _setProject(null);
       reset();
     }
   };
   const whenError = () => {
     setValidFile(false);
     setImage(null);
-    setError("Ocurrió un error registrando el proyecto");
+    toast.error(TOAST_BD_ERROR);
+    _setProject(null);
     reset();
   };
+
   return (
     <Dialog.Root open={openDialog} onOpenChange={toggleDialog}>
       <Dialog.Trigger>
         <Flex justify={"start"}>
-          {
-            <Button size="3">
-              <AiOutlinePlusCircle size="20" />
-              Añadir nuevo proyecto
-            </Button>
-          }
+          <Button size="3" disabled={!!project || !!_project}>
+            <AiOutlinePlusCircle size="20" />
+            Añadir nuevo proyecto
+          </Button>
         </Flex>
       </Dialog.Trigger>
 
       <Dialog.Content style={{ maxWidth: 450 }}>
         <Dialog.Title align={"center"}>"Formulario de Proyecto"</Dialog.Title>
-        <Dialog.Description size="2" mb="4">
-          {error && (
-            <span className="p-4 mb-2 text-lg font-semibold text-white bg-red-500 rounded-md">
-              {error}
-            </span>
-          )}
-        </Dialog.Description>
+        <Dialog.Description size="2" mb="4"></Dialog.Description>
         <form className="w-full" onSubmit={handleSubmit(onSubmit)}>
           <Flex direction="column" gap="4">
             <TextField.Input
@@ -199,7 +196,12 @@ const ProjectForm = () => {
           </Flex>
           <Flex gap="3" mt="4" justify="end">
             <Dialog.Close>
-              <Button size="3" variant="soft" color="gray">
+              <Button
+                size="3"
+                variant="soft"
+                color="gray"
+                disabled={Boolean(submitted)}
+              >
                 Cancelar
               </Button>
             </Dialog.Close>

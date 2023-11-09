@@ -29,10 +29,13 @@ export const saveUser = async (user: User) => {
   }
 };
 
-export const getUsers = async () => {
+export const getUsers = async (type: number = 0) => {
   let res: User[] = [];
   try {
     const users = await prisma.usuario.findMany({
+      where: {
+        type,
+      },
       orderBy: {
         id: "asc",
       },

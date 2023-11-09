@@ -9,7 +9,6 @@ export default async function Layout({ children }: { children: any }) {
   const { _user } = await getSession();
   const _user_course = await getUserCourseByUserId(_user?.id || 0);
   const _project = await getProjectByUserId(_user?.id || 0);
-
   return (
     <UserContextProvider
       _user={_user}

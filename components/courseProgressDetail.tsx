@@ -6,6 +6,7 @@ import {
   COURSE_LAST_ITEM_INDEX,
   COURSE_REPROVED,
   Project,
+  TOAST_PROJECT_PENDING,
   User_Course,
 } from "@/types/types";
 import {
@@ -73,7 +74,7 @@ const CourseProgressDetail = ({
             <>
               <div className="italic flex items-center gap-2 text-orange-400 ">
                 <GoAlertFill className="text-xl" />
-                Tiene pendiente subir su proyecto
+                {TOAST_PROJECT_PENDING}
               </div>
               <div className="mt-4">
                 La fecha máxima de entrega es hasta el día &nbsp;

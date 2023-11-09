@@ -39,18 +39,6 @@ INSERT INTO usuario (password, type, email, name) VALUES ('1234', '0', '', 'Alum
 INSERT INTO usuario (password, type, email, name) VALUES ('1234', '0', '', 'Alumno 2');
 INSERT INTO usuario (password, type, email, name) VALUES ('1234', '1', 'lucerito.sagas21@gmail.com', 'Docente 2');
 INSERT INTO usuario (password, type, email, name) VALUES ('123', '0', 'alejandraquiroztoribio@gmail.com', 'Ale 14');
+INSERT INTO usuario (password, type, email, name) VALUES ('1234', '2', 'lucerito.sagas21@gmail.com', 'Desarrollador');
 
-INSERT INTO proyecto (title, description, image1, image2, date_update, approved, projectScore, id_user)
-VALUES ('Project 1', 'Description for Project 1', 'image1.jpg', 'image2.jpg', '2023-11-01 12:00:00', true, 85, 1);
 
-INSERT INTO proyecto (title, description, image1, image2, date_update, approved, projectScore, id_user)
-VALUES ('Project 2', 'Description for Project 2', 'image3.jpg', 'image4.jpg', '2023-11-02 13:15:00', false, 92, 1);
-
-INSERT INTO proyecto (title, description, image1, image2, date_update, approved, projectScore, id_user)
-VALUES ('Project 3', 'Description for Project 3', 'image5.jpg', 'image6.jpg', '2023-11-03 14:30:00', true, 78, 1);
-
-INSERT INTO proyecto (title, description, image1, image2, date_update, approved, projectScore, id_user)
-VALUES ('Project 4', 'Description for Project 4', 'image7.jpg', 'image8.jpg', '2023-11-04 15:45:00', false, 67, 1);
-
-INSERT INTO proyecto (title, description, image1, image2, date_update, approved, projectScore, id_user)
-VALUES ('Project 5', 'Description for Project 5', 'image9.jpg', 'image10.jpg', '2023-11-05 16:00:00', true, 73, 1);

@@ -1,10 +1,11 @@
 "use client";
 import { deleteUserById } from "@/lib/user-controller";
-import { User } from "@/types/types";
+import { TOAST_USER_DELETE_SUCCESS, User } from "@/types/types";
 import { Button, Table, TextField } from "@radix-ui/themes";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { AiFillDelete, AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
+import { toast } from "sonner";
 import UserForm from "./userForm";
 
 const UserList = ({ users }: { users: User[] }) => {
@@ -17,6 +18,7 @@ const UserList = ({ users }: { users: User[] }) => {
     await deleteUserById(id);
     setOnDelete(false);
     setDeletedIndex(null);
+    toast.success(TOAST_USER_DELETE_SUCCESS);
     router.refresh();
   };
   return (
@@ -82,9 +84,9 @@ const PasswordField = (props: { password: string }) => {
       <TextField.Slot>
         <Button type="button" variant="ghost" onClick={togglePassword}>
           {passHidden ? (
-            <AiFillEye size={20} />
-          ) : (
             <AiFillEyeInvisible size={20} />
+          ) : (
+            <AiFillEye size={20} />
           )}
         </Button>
       </TextField.Slot>

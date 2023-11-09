@@ -1,15 +1,28 @@
 "use client";
 import { useUserContext } from "@/app/context";
+import {
+  COURSE_IN_PROCESS,
+  STUDENT,
+  TOAST_PROJECT_PENDING,
+} from "@/types/types";
 import { signOut } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
+import { toast } from "sonner";
 
 function Navbar() {
   const currentPath = usePathname();
-  const { user } = useUserContext();
+  const { user, user_course, project } = useUserContext();
+  const alertState = () => {
+    user_course?.date_project_send_max &&
+      !project &&
+      user_course.state === COURSE_IN_PROCESS &&
+      toast.warning(TOAST_PROJECT_PENDING);
+  };
   useEffect(() => {
-    if (!user) signOut();
+    if (!user) signOut({ callbackUrl: "/login" });
+    alertState();
   });
   return (
     <div className="flex items-center w-full h-16 bg-base-100 px-14 border-b-2">
@@ -76,7 +89,7 @@ const Links = async (props: { currentPath: string }) => {
       href: "/signOut",
     },
   ];
-  (user?.type || 0) === 0 && links.splice(2, 1);
+  (user?.type || STUDENT) === STUDENT && links.splice(2, 1);
 
   return links.map((link) =>
     link.href === "/signOut" ? (

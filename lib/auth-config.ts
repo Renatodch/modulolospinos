@@ -22,7 +22,6 @@ export const authConfig: NextAuthOptions = {
 
         const res = await loginUser(+credentials.id, credentials.password);
 
-        //In production DB, passwords should be encrypted using something like bcrypt...
         if (res) {
           const { password, ...dbUserWithoutPassword } = {
             ...res,
@@ -44,9 +43,8 @@ export const authConfig: NextAuthOptions = {
       const isGoogle = !!session.user?.image;
       const id = token.sub;
       const _user = isGoogle
-        ? await getUserByEmail(user?.email!)
+        ? await getUserByEmail(session.user?.email!)
         : await getUserById(+id!);
-
       const _session = {
         ...session,
         _user,

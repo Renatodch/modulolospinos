@@ -1,3 +1,5 @@
+import { getDateString } from "@/lib/date-lib";
+
 export interface User {
   id: number;
   password: string;
@@ -41,3 +43,25 @@ export const PROJECT_PENDING = 0;
 export const COURSE_REPROVED = 2;
 export const COURSE_APPROVED = 1;
 export const COURSE_IN_PROCESS = 0;
+export const DEVELOPER = 2;
+export const TEACHER = 1;
+export const STUDENT = 0;
+
+export function isStudent(type: number | null | undefined) {
+  const _type = type || STUDENT;
+  return _type === STUDENT || _type === DEVELOPER;
+}
+export function isTeacher(type: number | null | undefined) {
+  const _type = type || STUDENT;
+  return _type === TEACHER || _type === DEVELOPER;
+}
+
+export const TOAST_USER_DELETE_SUCCESS = "Usuario borrado con éxito";
+export const TOAST_USER_SAVE_SUCCESS = "Usuario guardado con éxito";
+export const TOAST_PROJECT_EVALUATED = "Se calificó el proyecto";
+export const TOAST_PROJECT_SAVE_SUCCESS = "Proyecto subido con éxito";
+export const TOAST_BD_ERROR = "Ocurrió un error con la operación";
+export const TOAST_PROJECT_PENDING = "Tiene pendiente subir un proyecto";
+
+export const getToastPendingProject = (date?: Date | null) =>
+  `Tiene pendiente el envio de su proyecto hasta el día ${getDateString(date)}`;

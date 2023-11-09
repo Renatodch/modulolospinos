@@ -40,8 +40,7 @@ const ClassItem = ({ item, maxDateToSend }: Props) => {
       ).padStart(
         2,
         "0"
-      )}. Tendrá 1 intento permitido, y si el proyecto es reprobado podrá volver a intentarlo 2 veces más
-       reiniciándose el tiempo de la realización de 1 día`,
+      )}. Tendrá 1 intento permitido, y si el proyecto es reprobado reprobará el curso`,
     },
   ];
   return (

@@ -5,7 +5,7 @@ import CourseContentItems from "@/components/courseContentItems";
 import NotAllowed from "@/components/notAllowed";
 import { getSession, loginIsRequiredServer } from "@/lib/login-controller";
 import { getUserCourseByUserId, saveUserCourse } from "@/lib/user-controller";
-import { COURSE_LAST_ITEM_INDEX, User_Course } from "@/types/types";
+import { COURSE_LAST_ITEM_INDEX, User_Course, isStudent } from "@/types/types";
 
 export default async function ClasesPage(props: any) {
   await loginIsRequiredServer();
@@ -16,9 +16,9 @@ export default async function ClasesPage(props: any) {
   );
 
   const item = +(props.searchParams.item ?? (user_course?.progress || 0));
-  const isStudent = (_user?.type || 0) === 0;
+  const allowed = isStudent(_user?.type || 0);
 
-  if (isStudent) {
+  if (allowed) {
     const currentDate = new Date();
 
     if (user_course) {
@@ -60,7 +60,7 @@ export default async function ClasesPage(props: any) {
     }
   }
 
-  return isStudent ? (
+  return allowed ? (
     <div className="flex items-start justify-center w-full px-16 py-8 gap-6">
       <div className=" w-1/3 h-max" style={{ height: "500px" }}>
         <CourseContentItems interactive progress={user_course?.progress || 0} />

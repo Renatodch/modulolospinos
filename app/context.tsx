@@ -7,6 +7,7 @@ import {
   useContext,
   useState,
 } from "react";
+import { Toaster } from "sonner";
 
 interface UserContextProps {
   user?: User | null;
@@ -40,6 +41,7 @@ export const UserContextProvider = (props: {
       value={{ user, setUser, user_course, setUserCourse, project, setProject }}
     >
       {props.children}
+      <Toaster richColors />
     </UserContext.Provider>
   );
 };

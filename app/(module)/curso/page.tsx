@@ -6,7 +6,7 @@ import {
   getCurrentNumberUserCourses,
   getUserCourseByUserId,
 } from "@/lib/user-controller";
-import { Project, User_Course } from "@/types/types";
+import { Project, User_Course, isStudent } from "@/types/types";
 import { Avatar, Box, Flex, Heading, Text } from "@radix-ui/themes";
 import Image from "next/image";
 import { AiFillStar } from "react-icons/ai";
@@ -18,7 +18,6 @@ const CoursePage = async () => {
   const stars = new Array(5).fill(0);
   const { _user } = await getSession();
   const id = _user?.id || 0;
-  const isStudent = (_user?.type || 0) === 0;
   const user_course: User_Course | null | undefined =
     await getUserCourseByUserId(id);
   const project: Project | null | undefined = await getProjectByUserId(id);
@@ -42,7 +41,7 @@ const CoursePage = async () => {
           height={400}
           alt="imagen del curso"
         />
-        {isStudent && (
+        {isStudent(_user?.type) && (
           <CourseDetail
             userCourse={user_course}
             numberUsers={numberUsers}
