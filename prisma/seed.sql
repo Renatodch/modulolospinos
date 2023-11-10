@@ -44,6 +44,10 @@ INSERT INTO usuario (password, type, email, name) VALUES ('123', '1', '', 'Estud
 
 
 /********** Simula proyecto que no se subio a tiempo ****/
+
+delete from proyecto where id_user=6;
+delete from usuario_curso where id_user=6;
+
 UPDATE usuario_curso
 SET 
 	state= 0,
@@ -55,6 +59,5 @@ delete from proyecto where id_user=2
 
 http://localhost:3000/api/cron
 
-delete from proyecto where id_user=6
-delete from usuario_curso where id_user=6
+
 /****************************************************/
