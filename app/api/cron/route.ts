@@ -16,12 +16,14 @@ export async function GET() {
   const late_user_courses: User_Course[] = [];
 
   for (const uc of user_courses) {
+    console.log("today: ", new Date());
+    console.log("dateSendMax: ", uc.date_project_send_max);
     if (
       !uc.id_user ||
       uc.progress < COURSE_LAST_ITEM_INDEX ||
       uc.state > COURSE_IN_PROCESS
     )
-      return NextResponse.json([]);
+      continue;
 
     const dateSendMax = uc?.date_project_send_max;
     const state = await EvaluateProjectByDate(uc.id_user, dateSendMax);
