@@ -18,20 +18,12 @@ function Navbar() {
     user_course?.date_project_send_max &&
       !project &&
       user_course.state === COURSE_IN_PROCESS &&
-      toast.promise(
-        new Promise((resolve, reject) => {
-          setTimeout(() => {
-            resolve(true);
-          }, 3000);
-        }),
-        {
-          finally: () => {
-            toast.warning(
-              getToastPendingProject(user_course.date_project_send_max)
-            );
-          },
-        }
-      );
+      setTimeout(() => {
+        toast.warning(
+          getToastPendingProject(user_course.date_project_send_max),
+          { duration: 5000 }
+        );
+      }, 500);
   };
   useEffect(() => {
     if (!user) signOut({ callbackUrl: "/login" });
