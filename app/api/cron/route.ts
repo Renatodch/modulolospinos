@@ -1,6 +1,9 @@
 import { getProjectByUserId } from "@/lib/project-controller";
-import { getUserCourses } from "@/lib/user-controller";
+import { getUserCourses, saveUserCourse } from "@/lib/user-controller";
 import {
+  COURSE_IN_PROCESS,
+  COURSE_LAST_ITEM_INDEX,
+  COURSE_REPROVED,
   IN_PROGRESS,
   PROJECT_PENDING,
   PROJECT_REPROVED,
@@ -12,11 +15,10 @@ export async function GET() {
   const user_courses = await getUserCourses();
   const late_user_courses: User_Course[] = [];
 
-  return NextResponse.json({ ok: true });
-
-  /*   for (const uc of user_courses) {
-    console.log("today: ", new Date());
-    console.log("dateSendMax: ", uc.date_project_send_max);
+  const today = new Date();
+  let maxDate;
+  for (const uc of user_courses) {
+    maxDate = uc.date_project_send_max;
     if (
       !uc.id_user ||
       uc.progress < COURSE_LAST_ITEM_INDEX ||
@@ -32,7 +34,12 @@ export async function GET() {
     }
   }
 
-  return NextResponse.json(late_user_courses); */
+  return NextResponse.json({
+    reproved: late_user_courses,
+    ok: true,
+    today,
+    maxDate,
+  });
 }
 
 async function EvaluateProjectByDate(
