@@ -1,6 +1,7 @@
 "use client";
 import { MIN_NOTE_APPROVED, Project } from "@/types/types";
 import { Button, Card, Inset, Strong } from "@radix-ui/themes";
+import Image from "next/image";
 import Link from "next/link";
 const ProjectList = ({ projects }: { projects: Project[] }) => {
   return (
@@ -14,9 +15,9 @@ const ProjectList = ({ projects }: { projects: Project[] }) => {
         >
           <Inset side="top" pb="current">
             {p.image1 ? (
-              <img
+              <Image
                 src={p.image1}
-                alt="Bold typography"
+                alt=""
                 style={{
                   display: "block",
                   width: "100%",
