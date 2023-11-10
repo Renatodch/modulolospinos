@@ -15,6 +15,8 @@ export async function GET() {
   const user_courses = await getUserCourses();
   const late_user_courses: User_Course[] = [];
 
+  return NextResponse.json({ ok: true });
+
   for (const uc of user_courses) {
     console.log("today: ", new Date());
     console.log("dateSendMax: ", uc.date_project_send_max);
