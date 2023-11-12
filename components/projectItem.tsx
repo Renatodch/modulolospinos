@@ -13,17 +13,21 @@ const ProjectItem = ({ project }: { project: Project | null | undefined }) => {
         {project?.title}
       </p>
       {project?.image1 && (
-        <Image
-          src={project?.image1}
-          alt=""
-          className="mb-4"
+        <div
           style={{
-            display: "block",
-            width: "100%",
             height: "500px",
             backgroundColor: "gray",
+            position: "relative",
+            width: "100%",
           }}
-        />
+        >
+          <Image
+            src={project?.image1}
+            fill
+            alt={project.title}
+            className="mb-4"
+          />
+        </div>
       )}
 
       <p className="text-base w-full mb-4">{project?.description}</p>

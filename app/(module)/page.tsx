@@ -1,10 +1,8 @@
-import Image from "next/image";
-import logo from "../../public/logo.webp";
-import { BsFacebook } from "react-icons/bs";
-import { BsWhatsapp } from "react-icons/bs";
-import { BsYoutube } from "react-icons/bs";
-import { loginIsRequiredServer } from "@/lib/login-controller";
 import Footer from "@/components/footer";
+import { loginIsRequiredServer } from "@/lib/login-controller";
+import Image from "next/image";
+import { BsFacebook, BsWhatsapp, BsYoutube } from "react-icons/bs";
+import logo from "../../public/logo.webp";
 
 export default async function Home() {
   await loginIsRequiredServer();

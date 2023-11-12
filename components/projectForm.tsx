@@ -16,8 +16,7 @@ import { AiFillFileImage, AiOutlinePlusCircle } from "react-icons/ai";
 import { toast } from "sonner";
 
 const ProjectForm = () => {
-  const { user, project } = useUserContext();
-  const [_project, _setProject] = useState<Project | null>(null);
+  const { user, project, setProject } = useUserContext();
   const router = useRouter();
   const [validFile, setValidFile] = useState<
     "invalidType" | "invalidSize" | boolean
@@ -56,7 +55,7 @@ const ProjectForm = () => {
 
   const onSubmit = async (data: FieldValues) => {
     setSubmitted(true);
-    let temp: Project | null = null;
+    let temp: Project | null | undefined = null;
     try {
       let newBlob;
       if (image != null) {
@@ -90,13 +89,13 @@ const ProjectForm = () => {
         setImage(null);
         setOpenDialog(false);
         reset();
-        router.refresh();
       }
     } catch (e) {
       whenError();
     }
-    _setProject(temp);
     setSubmitted(false);
+    setProject(temp);
+    router.refresh();
   };
 
   const toggleDialog = (e: boolean) => {
@@ -104,7 +103,7 @@ const ProjectForm = () => {
     if (!e) {
       setValidFile(false);
       setImage(null);
-      _setProject(null);
+      setProject(null);
       reset();
     }
   };
@@ -112,7 +111,7 @@ const ProjectForm = () => {
     setValidFile(false);
     setImage(null);
     toast.error(TOAST_BD_ERROR);
-    _setProject(null);
+    setProject(null);
     reset();
   };
 
@@ -120,7 +119,7 @@ const ProjectForm = () => {
     <Dialog.Root open={openDialog} onOpenChange={toggleDialog}>
       <Dialog.Trigger>
         <Flex justify={"start"}>
-          <Button size="3" disabled={!!project || !!_project}>
+          <Button size="3" disabled={!!project}>
             <AiOutlinePlusCircle size="20" />
             Añadir nuevo proyecto
           </Button>

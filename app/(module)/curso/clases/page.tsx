@@ -15,7 +15,7 @@ export default async function ClasesPage(props: any) {
     id_user
   );
 
-  const item = +(props.searchParams.item ?? (user_course?.progress || 0));
+  const item = +(props.searchParams?.item ?? (user_course?.progress || 0));
   const allowed = isStudent(_user?.type || 0);
 
   if (allowed) {

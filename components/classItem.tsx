@@ -1,3 +1,4 @@
+"use client";
 import { getDay, getMonth } from "@/lib/date-lib";
 import { ScrollArea } from "@radix-ui/themes";
 import ProjectForm from "./projectForm";

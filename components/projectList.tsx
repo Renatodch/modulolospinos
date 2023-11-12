@@ -10,27 +10,25 @@ const ProjectList = ({ projects }: { projects: Project[] }) => {
         <Card
           key={p.id}
           size="2"
-          style={{ minWidth: "300px", maxWidth: "600px", height: "450px" }}
+          style={{ minWidth: "440px", maxWidth: "440px", height: "450px" }}
           className="flex-1"
         >
-          <Inset side="top" pb="current">
+          <Inset
+            side="top"
+            style={{
+              height: "240px",
+              backgroundColor: "gray",
+              position: "relative",
+            }}
+          >
             {p.image1 ? (
-              <Image
-                src={p.image1}
-                alt=""
-                style={{
-                  display: "block",
-                  width: "100%",
-                  height: "240px",
-                  backgroundColor: "gray",
-                }}
-              />
+              <Image src={p.image1} fill alt={p.title} />
             ) : (
-              <div style={{ height: "240px", backgroundColor: "gray" }}></div>
+              <div style={{ height: "100%" }}></div>
             )}
           </Inset>
           <p
-            className="text-justify mb-4"
+            className="text-justify mt-4 mb-4"
             style={{
               display: "-webkit-box",
               textOverflow: "ellipsis",

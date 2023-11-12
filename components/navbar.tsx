@@ -11,9 +11,8 @@ import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 import { toast } from "sonner";
 
-function Navbar() {
+function Navbar({ user, user_course, project }: any) {
   const currentPath = usePathname();
-  const { user, user_course, project } = useUserContext();
   const alertState = () => {
     user_course?.date_project_send_max &&
       !project &&
@@ -106,7 +105,7 @@ const Links = async (props: { currentPath: string }) => {
         {link.label}
       </button>
     ) : (
-      <a
+      <Link
         className={`${
           link.href === props.currentPath ? "text-zinc-900" : "text-zinc-400"
         } hover:text-zinc-700 transition-colors text-base`}
@@ -114,7 +113,7 @@ const Links = async (props: { currentPath: string }) => {
         key={link.href}
       >
         {link.label}
-      </a>
+      </Link>
     )
   );
 };
