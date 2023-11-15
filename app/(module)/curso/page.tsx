@@ -1,12 +1,12 @@
 import CourseContentItems from "@/components/courseContentItems";
 import CourseDetail from "@/components/courseDetail";
-import { getSession, loginIsRequiredServer } from "@/lib/login-controller";
-import { getProjectByUserId } from "@/lib/project-controller";
+import { getTaskByUserId } from "@/controllers/task.controller";
 import {
   getCurrentNumberUserCourses,
   getUserCourseByUserId,
-} from "@/lib/user-controller";
-import { Project, User_Course, isStudent } from "@/types/types";
+} from "@/controllers/user-course.controller";
+import { getSession, loginIsRequiredServer } from "@/lib/auth-config";
+import { Task, User_Course, isStudent } from "@/model/types";
 import { Avatar, Box, Flex, Heading, Text } from "@radix-ui/themes";
 import Image from "next/image";
 import { AiFillStar } from "react-icons/ai";
@@ -20,7 +20,7 @@ const CoursePage = async () => {
   const id = _user?.id || 0;
   const user_course: User_Course | null | undefined =
     await getUserCourseByUserId(id);
-  const project: Project | null | undefined = await getProjectByUserId(id);
+  const project: Task | null | undefined = await getTaskByUserId(id);
 
   return (
     <div className="flex flex-col items-center justify-center w-full px-16 py-8 gap-6">

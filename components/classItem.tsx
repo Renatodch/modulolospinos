@@ -1,87 +1,102 @@
 "use client";
-import { getDay, getMonth } from "@/lib/date-lib";
+import { getDateString } from "@/lib/date-lib";
+import { Activity, PROJECT, SUBJECTS_COURSE, TaskDone } from "@/model/types";
 import { ScrollArea } from "@radix-ui/themes";
+import AnswerForm from "./answerForm";
 import ProjectForm from "./projectForm";
 
 interface Props {
   item: number;
-  maxDateToSend?: Date | null;
+  activities?: Activity[] | null;
+  maxDateToSend?: Date;
+  dateAssigned?: Date;
+  tasksDone?: TaskDone[];
 }
-const ClassItem = ({ item, maxDateToSend }: Props) => {
-  const descStyleClasses = "h-2/6 mt-4 w-full text-justify pr-2";
-  const itemList = [
-    {
-      url: "https://www.youtube.com/embed/g2rI5mAWPeU?si=gaIOzQXC2YIck04Q",
-      description: "Descripcion del video 1",
-    },
-    {
-      url: "https://www.youtube.com/embed/grlbI4ZgzXA?si=cwo501nM1bxquX2R",
-      description: "Descripcion del video 2",
-    },
-    {
-      url: "https://www.youtube.com/embed/qJtoI1ipxs8?si=3lhYpUKrMrkFhmtb",
-      description: "Descripcion del video 3",
-    },
-    {
-      url: "https://www.youtube.com/embed/Ew9yAW7bf7U?si=xU_jO-6wOf2_5jTF",
-      description: "Descripcion del video 4",
-    },
-    {
-      url: "",
-      description: `A continuación deberá llenar y subir un formulario con datos de su proyecto de fin de curso, el tiempo de
-      la realización es de 1 día por lo que
-        la fecha máxima de entrega es hasta el dia ${getDay(
-          maxDateToSend?.getDay() || 1
-        )} ${maxDateToSend?.getDate()} de ${getMonth(
-        maxDateToSend?.getMonth() || 1
-      )} del ${maxDateToSend?.getFullYear()} a las ${(
-        "" + (maxDateToSend?.getHours() || "00")
-      ).padStart(2, "0")}:${(
-        "" + (maxDateToSend?.getMinutes() || "00")
-      ).padStart(
-        2,
-        "0"
-      )}. Tendrá 1 intento permitido, y si el proyecto es reprobado reprobará el curso`,
-    },
-  ];
+const ClassItem = ({
+  item,
+  activities,
+  maxDateToSend,
+  dateAssigned,
+  tasksDone,
+}: Props) => {
+  const subject = SUBJECTS_COURSE[item];
   return (
     <ScrollArea
       className="px-3 py-3 shadow-sm shadow-gray-400"
-      style={{ height: "500px" }}
+      style={{ height: "560px" }}
       type="always"
       scrollbars="vertical"
     >
-      {itemList.map((i, index) => {
-        return (
-          index === item && (
-            <div
-              key={i.url}
-              style={{ height: "500px" }}
-              className="self-stretch w-full   flex flex-col justify-center items-center  h-3/6"
-            >
-              {item < 4 ? (
-                <iframe
-                  style={{ width: "100%", height: "100%" }}
-                  width="560"
-                  height="315"
-                  src={i.url}
-                  title="YouTube video player"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                ></iframe>
-              ) : (
-                <p className="font-bold text-lg">Proyecto final del curso</p>
-              )}
-              <div className={descStyleClasses}>{i.description}</div>
-              {item === 4 && (
-                <div className="flex justify-end w-full h-1/6">
-                  <ProjectForm />
-                </div>
-              )}
-            </div>
-          )
-        );
-      })}
+      <div
+        style={{ height: "800px" }}
+        className=" w-full   flex flex-col justify-center items-center "
+      >
+        <div className="font-semibold text-xl mb-2">{subject.title}</div>
+        {subject.url && (
+          <iframe
+            style={{ width: "100%", height: "100%" }}
+            width="560"
+            height="315"
+            src={subject.url}
+            title="YouTube video player"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          ></iframe>
+        )}
+        {subject.description && (
+          <div className="m-4 w-full text-justify pr-2">
+            {subject.description}
+          </div>
+        )}
+        <div className="font-semibold text-xl m-4">Actividades</div>
+
+        {activities?.map((a, index) => (
+          <div key={index} className="w-full">
+            <TaskActivity
+              isdone={tasksDone?.find((t) => t.id_activity === a.id)?.done}
+              activity={a}
+              maxDateToSend={maxDateToSend}
+              dateAssigned={dateAssigned}
+            />
+          </div>
+        ))}
+      </div>
     </ScrollArea>
+  );
+};
+
+const TaskActivity = ({
+  activity,
+  maxDateToSend,
+  dateAssigned,
+  isdone,
+}: {
+  activity: Activity;
+  maxDateToSend?: Date;
+  dateAssigned?: Date;
+  isdone?: boolean;
+}) => {
+  return (
+    <div className=" w-full flex flex-col justify-center items-center mb-4 pt-4 border-t-4">
+      <div className=" font-semibold text-md w-full mb-2">{activity.title}</div>
+      <div className=" w-full text-md mb-4">{activity.description}</div>
+      <div className=" w-full flex  justify-end items-center ">
+        {activity.type === PROJECT ? (
+          <ProjectForm activity={activity} isdone />
+        ) : (
+          <AnswerForm activity={activity} isdone />
+        )}
+      </div>
+      <div className=" w-full flex flex-col items-start text-xs ">
+        <span>
+          <strong>Fecha asignada:&nbsp;</strong>
+          {getDateString(dateAssigned)}
+        </span>
+        <span>
+          <strong>Fecha máxima:&nbsp;</strong>
+          {getDateString(maxDateToSend)}
+        </span>
+      </div>
+    </div>
   );
 };
 

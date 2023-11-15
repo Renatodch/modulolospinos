@@ -5,10 +5,11 @@ import {
   COURSE_IN_PROCESS,
   COURSE_LAST_ITEM_INDEX,
   COURSE_REPROVED,
-  Project,
+  PRIMARY_COLOR,
+  Task,
   TOAST_PROJECT_PENDING,
   User_Course,
-} from "@/types/types";
+} from "@/model/types";
 import {
   Button,
   Dialog,
@@ -29,7 +30,7 @@ const CourseProgressDetail = ({
   user_course,
 }: {
   user_course: User_Course | null | undefined;
-  project: Project | null | undefined;
+  project: Task | null | undefined;
 }) => {
   const [open, setOpen] = useState<boolean>(false);
   const stateCourse = user_course?.state || 0;
@@ -43,7 +44,11 @@ const CourseProgressDetail = ({
     <Dialog.Root open={open}>
       <Dialog.Trigger>
         <Tooltip content="Click para ver mas detalles">
-          <IconButton onClick={handleClick} radius="full">
+          <IconButton
+            style={{ backgroundColor: PRIMARY_COLOR }}
+            onClick={handleClick}
+            radius="full"
+          >
             <FcInspection />
           </IconButton>
         </Tooltip>
@@ -126,7 +131,7 @@ const CourseProgressDetail = ({
                     stateCourse === COURSE_REPROVED && "text-red-600"
                   } text-xl`}
                 >
-                  {project.projectscore}
+                  {project.score}
                 </span>
               </div>
               <div className="mt-4 flex flex-col">

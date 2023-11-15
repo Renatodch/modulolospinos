@@ -1,12 +1,12 @@
 "use client";
-import { MIN_NOTE_APPROVED, Project } from "@/types/types";
+import { MIN_NOTE_APPROVED, PRIMARY_COLOR, Task } from "@/model/types";
 import { Button, Card, Inset, Strong } from "@radix-ui/themes";
 import Image from "next/image";
 import Link from "next/link";
-const ProjectList = ({ projects }: { projects: Project[] }) => {
+const ProjectList = ({ projects }: { projects: Task[] }) => {
   return (
     <div className="flex flex-wrap gap-5 w-full">
-      {projects.map((p, index) => (
+      {projects.map((p) => (
         <Card
           key={p.id}
           size="2"
@@ -54,19 +54,19 @@ const ProjectList = ({ projects }: { projects: Project[] }) => {
             {p.description}
           </p>
           <div className="w-full flex justify-between items-center">
-            {p.projectscore === null && <p className="text-base">Pendiente</p>}
-            {p.projectscore && (
+            {p.score === null && <p className="text-base">Pendiente</p>}
+            {p.score && (
               <p
                 className={`${
-                  p.projectscore >= MIN_NOTE_APPROVED
+                  p.score >= MIN_NOTE_APPROVED
                     ? "text-green-600"
                     : "text-red-600"
                 } text-base`}
               >
-                {p.projectscore}/20
+                {p.score}/20
               </p>
             )}
-            <Button size="3">
+            <Button size="3" style={{ backgroundColor: PRIMARY_COLOR }}>
               <Link href={`portafolio/${p.id}`}>Ver</Link>
             </Button>
           </div>

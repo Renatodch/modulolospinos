@@ -1,6 +1,6 @@
 "use client";
-import { deleteUserById } from "@/lib/user-controller";
-import { TOAST_USER_DELETE_SUCCESS, User } from "@/types/types";
+import { deleteUserById } from "@/controllers/user.controller";
+import { TOAST_USER_DELETE_SUCCESS, User } from "@/model/types";
 import { Button, Table, TextField } from "@radix-ui/themes";
 import { useRouter } from "next/navigation";
 import { useState } from "react";

@@ -1,10 +1,10 @@
 "use client";
 import { useUserContext } from "@/app/context";
-import { MIN_NOTE_APPROVED, Project, isTeacher } from "@/types/types";
+import { MIN_NOTE_APPROVED, Task, isTeacher } from "@/model/types";
 import { Strong } from "@radix-ui/themes";
 import Image from "next/image";
-import ProjectFormEval from "./projectFormEval";
-const ProjectItem = ({ project }: { project: Project | null | undefined }) => {
+import ProjectFormEval from "./taskFormEval";
+const ProjectItem = ({ project }: { project: Task | null | undefined }) => {
   const { user } = useUserContext();
 
   return project ? (
@@ -35,17 +35,17 @@ const ProjectItem = ({ project }: { project: Project | null | undefined }) => {
       <div className="flex justify-between w-full lg:flex-row flex-col lg:gap-0 gap-6">
         {isTeacher(user?.type) && <ProjectFormEval target={project} />}
         <div className="flex flex-col w-96">
-          {project.projectscore && (
+          {project.score && (
             <p className="text-xl">
               <Strong>Nota:&nbsp;</Strong>
               <span
                 className={`${
-                  project.projectscore > MIN_NOTE_APPROVED
+                  project.score > MIN_NOTE_APPROVED
                     ? "text-green-600"
                     : "text-red-600"
                 }`}
               >
-                {project.projectscore}
+                {project.score}
               </span>
             </p>
           )}

@@ -1,12 +1,19 @@
 "use client";
-import { saveProject } from "@/lib/project-controller";
-import { getUserCourseByUserId, saveUserCourse } from "@/lib/user-controller";
+import { saveTask } from "@/controllers/task.controller";
 import {
+  getUserCourseByUserId,
+  saveUserCourse,
+} from "@/controllers/user-course.controller";
+import {
+  COURSE_APPROVED,
+  COURSE_REPROVED,
   MIN_NOTE_APPROVED,
-  Project,
+  PRIMARY_COLOR,
   TOAST_BD_ERROR,
   TOAST_PROJECT_EVALUATED,
-} from "@/types/types";
+  Task,
+  User_Course,
+} from "@/model/types";
 import { Button, Dialog, Flex, TextArea, TextField } from "@radix-ui/themes";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -15,7 +22,7 @@ import { FieldValues, useForm } from "react-hook-form";
 import { FiEdit } from "react-icons/fi";
 import { toast } from "sonner";
 
-const ProjectFormEval = ({ target }: { target: Project }) => {
+const TaskFormEval = ({ target }: { target: Task }) => {
   const router = useRouter();
   const [submitted, setSubmitted] = useState<boolean | null>(null);
   const [openDialog, setOpenDialog] = useState<boolean>(false);
@@ -30,54 +37,55 @@ const ProjectFormEval = ({ target }: { target: Project }) => {
   const onSubmit = async (data: FieldValues) => {
     setSubmitted(true);
     try {
-      const user_course = await getUserCourseByUserId(target.id_user);
+      let user_course: User_Course | null | undefined =
+        await getUserCourseByUserId(target.id_user);
       if (user_course) {
-        const project: Project = {
+        let project: Task | undefined = {
           id: target.id,
           title: target.title,
           description: target.description,
           image1: target.image1,
           date_upload: target.date_upload,
-          projectscore: +data.score,
+          score: +data.score,
           comment: data.comment,
+          type: target.type,
           id_user: target.id_user,
+          id_activity: target.id_activity,
         };
-        let p = await saveProject(project);
-        let uc = await saveUserCourse({
-          ...user_course,
-          state: +data.score >= MIN_NOTE_APPROVED ? 1 : 2,
-        });
-        if (!p || !uc) {
-          whenError();
-        } else {
-          toast.success(TOAST_PROJECT_EVALUATED);
-          setOpenDialog(false);
-          router.refresh();
-        }
+        project = await saveTask(project);
+        user_course = project
+          ? await saveUserCourse({
+              ...user_course,
+              state:
+                +data.score >= MIN_NOTE_APPROVED
+                  ? COURSE_APPROVED
+                  : COURSE_REPROVED,
+            })
+          : undefined;
+
+        !project || !user_course
+          ? toast.error(TOAST_BD_ERROR)
+          : toast.success(TOAST_PROJECT_EVALUATED);
       }
     } catch (e) {
-      whenError();
+      toast.error(TOAST_BD_ERROR);
     }
-
     setSubmitted(false);
+    router.refresh();
+    reset();
+    setOpenDialog(false);
   };
 
   const toggleDialog = (e: boolean) => {
     setOpenDialog(e);
-    if (!e) {
-      reset();
-    }
-  };
-  const whenError = () => {
-    toast.error(TOAST_BD_ERROR);
-    reset();
+    !e && reset();
   };
   return (
     <Dialog.Root open={openDialog} onOpenChange={toggleDialog}>
       <Dialog.Trigger>
         <Flex justify={"start"}>
           {
-            <Button size="3">
+            <Button size="3" style={{ backgroundColor: PRIMARY_COLOR }}>
               <FiEdit size="20" />
               Evaluar
             </Button>
@@ -87,13 +95,13 @@ const ProjectFormEval = ({ target }: { target: Project }) => {
 
       <Dialog.Content style={{ maxWidth: 450 }}>
         <Dialog.Title align={"center"}>
-          Formulario de Evaluación de Proyecto
+          Formulario de Evaluación de Tarea
         </Dialog.Title>
         <Dialog.Description size="2" mb="4"></Dialog.Description>
         <form className="w-full" onSubmit={handleSubmit(onSubmit)}>
           <Flex direction="column" gap="4">
             <TextField.Input
-              defaultValue={target.projectscore ?? 0}
+              defaultValue={target.score ?? 0}
               size="3"
               color="gray"
               variant="surface"
@@ -142,7 +150,11 @@ const ProjectFormEval = ({ target }: { target: Project }) => {
                 Cancelar
               </Button>
             </Dialog.Close>
-            <Button size="3" disabled={Boolean(submitted)}>
+            <Button
+              size="3"
+              disabled={Boolean(submitted)}
+              style={{ backgroundColor: PRIMARY_COLOR }}
+            >
               Guardar
             </Button>
           </Flex>
@@ -152,4 +164,4 @@ const ProjectFormEval = ({ target }: { target: Project }) => {
   );
 };
 
-export default ProjectFormEval;
+export default TaskFormEval;

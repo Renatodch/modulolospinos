@@ -12,3 +12,9 @@
   }
 }
 
+a.rubric_link{
+  color:blue;
+}
+a.rubric_link:hover{
+  text-decoration: underline;
+}

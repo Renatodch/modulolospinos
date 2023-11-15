@@ -1,11 +1,12 @@
 "use client";
-import { saveUser } from "@/lib/user-controller";
+import { saveUser } from "@/controllers/user.controller";
 import {
+  PRIMARY_COLOR,
   STUDENT,
   TOAST_BD_ERROR,
   TOAST_USER_SAVE_SUCCESS,
   User,
-} from "@/types/types";
+} from "@/model/types";
 import { Button, Dialog, Flex, TextField } from "@radix-ui/themes";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -33,18 +34,19 @@ const UserForm = ({ target }: Props) => {
     formState: { errors },
     reset,
   } = useForm();
+
   const onSubmit = async (data: FieldValues) => {
     setSubmitted(true);
     try {
-      const user: User = {
+      let temp: User | undefined = {
         type: STUDENT,
         password: data.password,
         name: data.name,
         email: data.email,
         id: target?.id || 0,
       };
-      const res = await saveUser(user);
-      if (!res) {
+      temp = await saveUser(temp);
+      if (!temp) {
         toast.error(TOAST_BD_ERROR);
         setPassHidden(true);
         setOpenDialog(false);
@@ -78,12 +80,12 @@ const UserForm = ({ target }: Props) => {
       <Dialog.Trigger>
         <Flex justify={"start"}>
           {!target ? (
-            <Button size="3">
+            <Button size="3" style={{ backgroundColor: PRIMARY_COLOR }}>
               <AiOutlinePlusCircle size="20" />
               Nuevo
             </Button>
           ) : (
-            <Button size="3">
+            <Button size="3" style={{ backgroundColor: PRIMARY_COLOR }}>
               <AiFillEdit size="20" />
             </Button>
           )}
@@ -144,7 +146,6 @@ const UserForm = ({ target }: Props) => {
                 placeholder="Contraseña*"
                 {...register("password", {
                   required: true,
-                  maxLength: 32,
                 })}
               />
               <TextField.Slot>
@@ -176,7 +177,11 @@ const UserForm = ({ target }: Props) => {
                 Cancelar
               </Button>
             </Dialog.Close>
-            <Button size="3" disabled={Boolean(submitted)}>
+            <Button
+              size="3"
+              disabled={Boolean(submitted)}
+              style={{ backgroundColor: PRIMARY_COLOR }}
+            >
               Guardar
             </Button>
           </Flex>

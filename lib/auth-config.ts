@@ -1,8 +1,13 @@
-import { NextAuthOptions } from "next-auth";
+import {
+  getUserByEmail,
+  getUserById,
+  loginUser,
+} from "@/controllers/user.controller";
+import { User } from "@/model/types";
+import { NextAuthOptions, Session, getServerSession } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
-import { loginUser } from "./login-controller";
-import { getUserByEmail, getUserById } from "./user-controller";
+import { redirect } from "next/navigation";
 
 export const authConfig: NextAuthOptions = {
   providers: [
@@ -45,6 +50,7 @@ export const authConfig: NextAuthOptions = {
       const _user = isGoogle
         ? await getUserByEmail(session.user?.email!)
         : await getUserById(+id!);
+
       const _session = {
         ...session,
         _user,
@@ -52,5 +58,27 @@ export const authConfig: NextAuthOptions = {
 
       return _session;
     },
+
+    async signIn({ user }) {
+      const isGoogle = !!user?.image;
+      const isValid = isGoogle ? await getUserByEmail(user?.email!) : true;
+
+      return isValid ? true : "/login";
+    },
   },
 };
+
+export async function loginIsRequiredServer() {
+  const session = await getServerSession(authConfig);
+  if (!session) return redirect("/login");
+}
+
+export async function getSession() {
+  const session = (await getServerSession(authConfig)) as Session & {
+    _user: User | null | undefined;
+  };
+  return {
+    ...session,
+    _user: session?._user ?? undefined,
+  };
+}

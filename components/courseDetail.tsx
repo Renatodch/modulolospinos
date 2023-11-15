@@ -1,5 +1,10 @@
 "use client";
-import { COURSE_IN_PROCESS, Project, User_Course } from "@/types/types";
+import {
+  COURSE_IN_PROCESS,
+  PRIMARY_COLOR,
+  Task,
+  User_Course,
+} from "@/model/types";
 import { Button, Flex, Inset, Slider } from "@radix-ui/themes";
 import Link from "next/link";
 import { AiOutlineClockCircle } from "react-icons/ai";
@@ -10,14 +15,10 @@ import CourseProgressDetail from "./courseProgressDetail";
 
 interface Props {
   userCourse: User_Course | undefined | null;
-  project: Project | undefined | null;
+  project: Task | undefined | null;
   numberUsers: number;
 }
 const CourseDetail = ({ userCourse, project, numberUsers }: Props) => {
-  //const { user_course } = useUserContext();
-  //const _user_course = userCourse ?? user_course;
-  //const { project } = useUserContext();
-
   const progress = userCourse?.progress || 0;
   const state = userCourse?.state || 0;
   const progrePercent = 20 * (progress + +(state === 1));
@@ -44,6 +45,7 @@ const CourseDetail = ({ userCourse, project, numberUsers }: Props) => {
             disabled={Boolean(
               userCourse && userCourse?.state > COURSE_IN_PROCESS
             )}
+            style={{ backgroundColor: PRIMARY_COLOR }}
           >
             <Link
               href="/curso/clases"

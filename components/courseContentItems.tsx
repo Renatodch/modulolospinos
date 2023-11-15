@@ -1,4 +1,5 @@
 "use client";
+import { SUBJECTS_COURSE } from "@/model/types";
 import { Flex } from "@radix-ui/themes";
 import Link from "next/link";
 import { useState } from "react";
@@ -19,24 +20,6 @@ const CourseContentItems = ({ interactive, progress }: Props) => {
     interactive && "hover:cursor-pointer hover:bg-blue-200"
   }`;
 
-  const items = [
-    {
-      text: "Qué es una fracción",
-    },
-    {
-      text: "Introducción a fracciones",
-    },
-    {
-      text: "Suma y resta de fracciones con denominadores comunes",
-    },
-    {
-      text: "Suma y resta de fracciones con denominadores diferentes",
-    },
-    {
-      text: "Tarea final del curso",
-    },
-  ];
-
   return (
     <Flex direction="column" gap="4">
       <div className="w-full flex-col border-4 border-gray-300 rounded-md ">
@@ -44,7 +27,7 @@ const CourseContentItems = ({ interactive, progress }: Props) => {
           <p className="font-bold text-lg">Introducción a fracciones</p>
         </div>
         <ul className="w-full flex flex-col items-start justify-center overflow-hidden">
-          {items.map((i, index) => (
+          {SUBJECTS_COURSE.map((i, index) => (
             <li
               key={index}
               className={`${styleClasses} ${
@@ -61,12 +44,12 @@ const CourseContentItems = ({ interactive, progress }: Props) => {
                   onClick={() => setSelectedIndex(index)}
                 >
                   <AiFillYoutube size="24" />
-                  {i.text}
+                  {i.title}
                 </Link>
               ) : (
                 <>
                   <AiFillYoutube size="24" />
-                  {i.text}
+                  {i.title}
                 </>
               )}
             </li>

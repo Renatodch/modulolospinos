@@ -1,5 +1,5 @@
 import Footer from "@/components/footer";
-import { loginIsRequiredServer } from "@/lib/login-controller";
+import { loginIsRequiredServer } from "@/lib/auth-config";
 import Image from "next/image";
 import { BsFacebook, BsWhatsapp, BsYoutube } from "react-icons/bs";
 import logo from "../../public/logo.webp";

@@ -1,5 +1,5 @@
 "use client";
-import { Project, User, User_Course } from "@/types/types";
+import { Task, User, User_Course } from "@/model/types";
 import {
   Dispatch,
   SetStateAction,
@@ -14,8 +14,8 @@ interface UserContextProps {
   setUser: Dispatch<SetStateAction<User | null | undefined>>;
   user_course?: User_Course | null;
   setUserCourse: Dispatch<SetStateAction<User_Course | null | undefined>>;
-  project?: Project | null;
-  setProject: Dispatch<SetStateAction<Project | null | undefined>>;
+  task?: Task | null;
+  setTask: Dispatch<SetStateAction<Task | null | undefined>>;
 }
 
 const UserContext = createContext<UserContextProps>({
@@ -23,25 +23,26 @@ const UserContext = createContext<UserContextProps>({
   setUser: () => undefined,
   user_course: undefined,
   setUserCourse: () => undefined,
-  project: undefined,
-  setProject: () => undefined,
+  task: undefined,
+  setTask: () => undefined,
 });
 
 export const UserContextProvider = (props: {
   children: any;
   _user?: User | null;
   _user_course?: User_Course | null;
-  _project?: Project | null;
+  _task?: Task | null;
 }) => {
   const [user, setUser] = useState(props._user);
   const [user_course, setUserCourse] = useState(props._user_course);
-  const [project, setProject] = useState(props._project);
+  const [task, setTask] = useState(props._task);
+
   return (
     <UserContext.Provider
-      value={{ user, setUser, user_course, setUserCourse, project, setProject }}
+      value={{ user, setUser, user_course, setUserCourse, task, setTask }}
     >
       {props.children}
-      <Toaster richColors />
+      <Toaster richColors visibleToasts={1} />
     </UserContext.Provider>
   );
 };

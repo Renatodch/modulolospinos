@@ -1,13 +1,16 @@
 "use client";
 import { useUserContext } from "@/app/context";
-import { saveProject } from "@/lib/project-controller";
+import { saveTask } from "@/controllers/task.controller";
 import {
-  Project,
+  Activity,
+  PRIMARY_COLOR,
+  PROJECT,
   TOAST_BD_ERROR,
   TOAST_PROJECT_SAVE_SUCCESS,
-} from "@/types/types";
+  Task,
+} from "@/model/types";
 import { Button, Dialog, Flex, TextArea, TextField } from "@radix-ui/themes";
-import type { PutBlobResult } from "@vercel/blob";
+import { PutBlobResult } from "@vercel/blob";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
@@ -15,8 +18,14 @@ import { FieldValues, useForm } from "react-hook-form";
 import { AiFillFileImage, AiOutlinePlusCircle } from "react-icons/ai";
 import { toast } from "sonner";
 
-const ProjectForm = () => {
-  const { user, project, setProject } = useUserContext();
+const ProjectForm = ({
+  activity,
+  isdone,
+}: {
+  activity: Activity;
+  isdone: boolean;
+}) => {
+  const { user, task, setTask } = useUserContext();
   const router = useRouter();
   const [validFile, setValidFile] = useState<
     "invalidType" | "invalidSize" | boolean
@@ -32,10 +41,9 @@ const ProjectForm = () => {
     formState: { errors },
     reset,
   } = useForm();
+  const { ...rest } = register("image1");
 
-  const { ref: registerRef, ...rest } = register("imagen1");
-
-  const handleUploadedFile = (event: any) => {
+  const handleUploadedImage = (event: any) => {
     const maxSizeInBytes = 4.5 * 1024 * 1024;
     const file = event.target.files[0];
     if (file?.type.split("/")[0] !== "image") {
@@ -55,71 +63,64 @@ const ProjectForm = () => {
 
   const onSubmit = async (data: FieldValues) => {
     setSubmitted(true);
-    let temp: Project | null | undefined = null;
+    let temp: Task | undefined = {
+      id: 0,
+      title: data.title,
+      description: data.desc,
+      image1: null,
+      date_upload: new Date(),
+      score: null,
+      comment: null,
+      type: PROJECT,
+      id_activity: activity.id,
+      id_user: user?.id || 0,
+    };
+
     try {
-      let newBlob;
       if (image != null) {
         const response = await fetch(
-          `/api/image/upload?filename=${image?.name}`,
+          `/api/file/upload?filename=${image?.name}`,
           {
             method: "POST",
             body: image,
           }
         );
-        newBlob = (await response.json()) as PutBlobResult;
+        const blob = (await response.json()) as PutBlobResult;
+        if (!blob) throw new Error("Image was not loaded correctly");
+        temp.image1 = blob.url;
       }
 
-      temp = {
-        id: 0,
-        title: data.title,
-        description: data.desc,
-        image1: newBlob?.url || null,
-        date_upload: new Date(),
-        projectscore: null,
-        comment: null,
-        id_user: user?.id || 0,
-      };
-
-      const res = await saveProject(temp);
-      if (!res) {
-        whenError();
-      } else {
-        toast.success(TOAST_PROJECT_SAVE_SUCCESS);
-        setValidFile(false);
-        setImage(null);
-        setOpenDialog(false);
-        reset();
-      }
+      temp = await saveTask(temp);
+      !temp
+        ? toast.error(TOAST_BD_ERROR)
+        : toast.success(TOAST_PROJECT_SAVE_SUCCESS);
     } catch (e) {
-      whenError();
+      toast.error(TOAST_BD_ERROR);
     }
+
+    setTask(temp);
     setSubmitted(false);
-    setProject(temp);
+    setValidFile(false);
+    setImage(null);
+    reset();
+    setOpenDialog(false);
     router.refresh();
   };
 
   const toggleDialog = (e: boolean) => {
     setOpenDialog(e);
-    if (!e) {
-      setValidFile(false);
-      setImage(null);
-      setProject(null);
-      reset();
-    }
-  };
-  const whenError = () => {
-    setValidFile(false);
-    setImage(null);
-    toast.error(TOAST_BD_ERROR);
-    setProject(null);
-    reset();
+    !e && reset();
   };
 
   return (
     <Dialog.Root open={openDialog} onOpenChange={toggleDialog}>
       <Dialog.Trigger>
         <Flex justify={"start"}>
-          <Button size="3" disabled={!!project}>
+          <Button
+            size="3"
+            disabled={isdone}
+            style={{ backgroundColor: PRIMARY_COLOR }}
+          >
             <AiOutlinePlusCircle size="20" />
             Añadir nuevo proyecto
           </Button>
@@ -166,9 +167,8 @@ const ProjectForm = () => {
               <TextField.Input
                 id="image"
                 {...rest}
-                maxLength={64}
                 accept="image/*"
-                onChange={handleUploadedFile}
+                onChange={handleUploadedImage}
                 type="file"
                 ref={hiddenInputRef}
               />
@@ -204,7 +204,11 @@ const ProjectForm = () => {
                 Cancelar
               </Button>
             </Dialog.Close>
-            <Button size="3" disabled={Boolean(submitted)}>
+            <Button
+              size="3"
+              disabled={Boolean(submitted)}
+              style={{ backgroundColor: PRIMARY_COLOR }}
+            >
               Guardar
             </Button>
           </Flex>

@@ -8,37 +8,52 @@ datasource db {
   directUrl = env("POSTGRES_URL_NON_POOLING")
 }
 
-model usuario {
-  id            Int             @id @default(autoincrement())
-  password      String          @db.VarChar(50)
-  type          Int
-  email         String          @db.VarChar(255)
-  name          String          @db.VarChar(50)
-  proyecto      proyecto[]
-  usuario_curso usuario_curso[]
+model activity {
+  id          Int     @id @default(autoincrement())
+  title       String  @db.VarChar(32)
+  description String  @db.VarChar(255)
+  rubric      String? @db.VarChar(255)
+  subject     Int
+  type        Int
+  id_user     Int?
+  user        user?   @relation(fields: [id_user], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  task        task[]
 }
 
-model proyecto {
-  id           Int      @id @default(autoincrement())
-  title        String   @db.VarChar(64)
-  description  String?  @db.VarChar(255)
-  image1       String?  @db.VarChar(255)
-  date_upload  DateTime @db.Timestamp(6)
-  projectscore Int?
-  comment      String?  @db.VarChar(255)
-  id_user      Int?
-  usuario      usuario? @relation(fields: [id_user], references: [id], onDelete: NoAction, onUpdate: NoAction)
+model task {
+  id          Int       @id @default(autoincrement())
+  title       String    @db.VarChar(64)
+  description String?   @db.VarChar(255)
+  image1      String?   @db.VarChar(255)
+  date_upload DateTime  @db.Timestamp(6)
+  score       Int?
+  comment     String?   @db.VarChar(255)
+  type        Int
+  id_activity Int?
+  id_user     Int?
+  activity    activity? @relation(fields: [id_activity], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user        user?     @relation(fields: [id_user], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
-model usuario_curso {
+model user {
+  id          Int           @id @default(autoincrement())
+  password    String        @db.VarChar(50)
+  type        Int
+  email       String        @db.VarChar(255)
+  name        String        @db.VarChar(50)
+  activity    activity[]
+  task        task[]
+  user_course user_course[]
+}
+
+model user_course {
   id                    Int       @id @default(autoincrement())
   date_start            DateTime  @db.Timestamp(6)
-  date_last_entry       DateTime  @db.Timestamp(6)
-  date_end              DateTime? @db.Timestamp(6)
+  date_update           DateTime  @db.Timestamp(6)
   date_project_assigned DateTime? @db.Timestamp(6)
   date_project_send_max DateTime? @db.Timestamp(6)
   state                 Int
   progress              Int
   id_user               Int?
-  usuario               usuario?  @relation(fields: [id_user], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user                  user?     @relation(fields: [id_user], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
