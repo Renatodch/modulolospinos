@@ -64,7 +64,7 @@ const ActivityList = ({ activities }: { activities: Activity[] }) => {
                     DESCARGAR RUBRICA
                   </Link>
                 ) : (
-                  "Sin Rúbrica"
+                  <span className="italic">Sin Rúbrica</span>
                 )}
               </Table.Cell>
               <Table.Cell width={100}>

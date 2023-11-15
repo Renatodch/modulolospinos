@@ -1,18 +1,10 @@
 "use client";
 import { saveTask } from "@/controllers/task.controller";
 import {
-  getUserCourseByUserId,
-  saveUserCourse,
-} from "@/controllers/user-course.controller";
-import {
-  COURSE_APPROVED,
-  COURSE_REPROVED,
-  MIN_NOTE_APPROVED,
   PRIMARY_COLOR,
   TOAST_BD_ERROR,
-  TOAST_PROJECT_EVALUATED,
+  TOAST_TASK_EVALUATED,
   Task,
-  User_Course,
 } from "@/model/types";
 import { Button, Dialog, Flex, TextArea, TextField } from "@radix-ui/themes";
 import { useRouter } from "next/navigation";
@@ -37,36 +29,23 @@ const TaskFormEval = ({ target }: { target: Task }) => {
   const onSubmit = async (data: FieldValues) => {
     setSubmitted(true);
     try {
-      let user_course: User_Course | null | undefined =
-        await getUserCourseByUserId(target.id_user);
-      if (user_course) {
-        let project: Task | undefined = {
-          id: target.id,
-          title: target.title,
-          description: target.description,
-          image1: target.image1,
-          date_upload: target.date_upload,
-          score: +data.score,
-          comment: data.comment,
-          type: target.type,
-          id_user: target.id_user,
-          id_activity: target.id_activity,
-        };
-        project = await saveTask(project);
-        user_course = project
-          ? await saveUserCourse({
-              ...user_course,
-              state:
-                +data.score >= MIN_NOTE_APPROVED
-                  ? COURSE_APPROVED
-                  : COURSE_REPROVED,
-            })
-          : undefined;
+      let project: Task | undefined = {
+        id: target.id,
+        title: target.title,
+        description: target.description,
+        image1: target.image1,
+        date_upload: target.date_upload,
+        score: +data.score,
+        comment: data.comment,
+        type: target.type,
+        id_user: target.id_user,
+        id_activity: target.id_activity,
+      };
+      project = await saveTask(project);
 
-        !project || !user_course
-          ? toast.error(TOAST_BD_ERROR)
-          : toast.success(TOAST_PROJECT_EVALUATED);
-      }
+      !project
+        ? toast.error(TOAST_BD_ERROR)
+        : toast.success(TOAST_TASK_EVALUATED);
     } catch (e) {
       toast.error(TOAST_BD_ERROR);
     }

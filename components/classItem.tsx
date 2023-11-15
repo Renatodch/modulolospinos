@@ -1,25 +1,25 @@
 "use client";
 import { getDateString } from "@/lib/date-lib";
-import { Activity, PROJECT, SUBJECTS_COURSE, TaskDone } from "@/model/types";
+import {
+  PROJECT,
+  SUBJECTS_COURSE,
+  TaskActivityDetail,
+  User_Course,
+} from "@/model/types";
 import { ScrollArea } from "@radix-ui/themes";
+import Link from "next/link";
 import AnswerForm from "./answerForm";
 import ProjectForm from "./projectForm";
 
 interface Props {
   item: number;
-  activities?: Activity[] | null;
-  maxDateToSend?: Date;
-  dateAssigned?: Date;
-  tasksDone?: TaskDone[];
+  tasksDetail?: TaskActivityDetail[];
+  userCourse?: User_Course | undefined | null;
 }
-const ClassItem = ({
-  item,
-  activities,
-  maxDateToSend,
-  dateAssigned,
-  tasksDone,
-}: Props) => {
-  const subject = SUBJECTS_COURSE[item];
+const ClassItem = ({ item, tasksDetail, userCourse }: Props) => {
+  const subject = SUBJECTS_COURSE[item] || SUBJECTS_COURSE[0];
+  const noActivities = !tasksDetail?.some((t) => t.subject === item);
+
   return (
     <ScrollArea
       className="px-3 py-3 shadow-sm shadow-gray-400"
@@ -27,14 +27,16 @@ const ClassItem = ({
       type="always"
       scrollbars="vertical"
     >
-      <div
-        style={{ height: "800px" }}
-        className=" w-full   flex flex-col justify-center items-center "
-      >
+      <div className=" w-full   flex flex-col justify-start items-center ">
+        <div className="w-full italic text-xs flex justify.end mb-4">
+          <span>
+            Empezó el curso el día {getDateString(userCourse?.date_start)}
+          </span>
+        </div>
         <div className="font-semibold text-xl mb-2">{subject.title}</div>
         {subject.url && (
           <iframe
-            style={{ width: "100%", height: "100%" }}
+            style={{ width: "100%", height: "350px" }}
             width="560"
             height="315"
             src={subject.url}
@@ -47,53 +49,55 @@ const ClassItem = ({
             {subject.description}
           </div>
         )}
-        <div className="font-semibold text-xl m-4">Actividades</div>
+        {!noActivities ? (
+          <>
+            <div className="font-semibold text-xl m-4">Actividades</div>
 
-        {activities?.map((a, index) => (
-          <div key={index} className="w-full">
-            <TaskActivity
-              isdone={tasksDone?.find((t) => t.id_activity === a.id)?.done}
-              activity={a}
-              maxDateToSend={maxDateToSend}
-              dateAssigned={dateAssigned}
-            />
-          </div>
-        ))}
+            {tasksDetail?.map((a, index) => (
+              <div key={index} className="w-full">
+                <TaskActivity task={a} />
+              </div>
+            ))}
+          </>
+        ) : (
+          <span className="italic text-xl m-4">
+            No existen actividades para este tema
+          </span>
+        )}
       </div>
     </ScrollArea>
   );
 };
 
-const TaskActivity = ({
-  activity,
-  maxDateToSend,
-  dateAssigned,
-  isdone,
-}: {
-  activity: Activity;
-  maxDateToSend?: Date;
-  dateAssigned?: Date;
-  isdone?: boolean;
-}) => {
+const TaskActivity = ({ task }: { task: TaskActivityDetail }) => {
   return (
     <div className=" w-full flex flex-col justify-center items-center mb-4 pt-4 border-t-4">
-      <div className=" font-semibold text-md w-full mb-2">{activity.title}</div>
-      <div className=" w-full text-md mb-4">{activity.description}</div>
-      <div className=" w-full flex  justify-end items-center ">
-        {activity.type === PROJECT ? (
-          <ProjectForm activity={activity} isdone />
-        ) : (
-          <AnswerForm activity={activity} isdone />
-        )}
+      <div className=" font-semibold text-md w-full mb-2">
+        {task.activity_title}
+      </div>
+      <div className=" w-full text-md mb-4">{task.activity_description}</div>
+      <div className=" w-full flex  justify-between items-center ">
+        <div className="text-md">
+          {task.rubric ? (
+            <Link href={task.rubric} className="rubric_link">
+              DESCARGAR RUBRICA
+            </Link>
+          ) : (
+            <span className="italic">Sin Rúbrica</span>
+          )}
+        </div>
+        <div>
+          {task.activity_type === PROJECT ? (
+            <ProjectForm taskActivityDetail={task} />
+          ) : (
+            <AnswerForm taskActivityDetail={task} />
+          )}
+        </div>
       </div>
       <div className=" w-full flex flex-col items-start text-xs ">
         <span>
-          <strong>Fecha asignada:&nbsp;</strong>
-          {getDateString(dateAssigned)}
-        </span>
-        <span>
-          <strong>Fecha máxima:&nbsp;</strong>
-          {getDateString(maxDateToSend)}
+          <strong>Fecha de vencimiento:&nbsp;</strong>
+          {getDateString(task.date_max)}
         </span>
       </div>
     </div>

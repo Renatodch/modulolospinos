@@ -59,7 +59,7 @@ export const getActivities = async () => {
   try {
     const activities = await prisma.activity.findMany({
       orderBy: {
-        id: "asc",
+        subject: "asc",
       },
     });
     res = activities;

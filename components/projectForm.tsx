@@ -2,12 +2,12 @@
 import { useUserContext } from "@/app/context";
 import { saveTask } from "@/controllers/task.controller";
 import {
-  Activity,
   PRIMARY_COLOR,
   PROJECT,
   TOAST_BD_ERROR,
   TOAST_PROJECT_SAVE_SUCCESS,
   Task,
+  TaskActivityDetail,
 } from "@/model/types";
 import { Button, Dialog, Flex, TextArea, TextField } from "@radix-ui/themes";
 import { PutBlobResult } from "@vercel/blob";
@@ -19,19 +19,18 @@ import { AiFillFileImage, AiOutlinePlusCircle } from "react-icons/ai";
 import { toast } from "sonner";
 
 const ProjectForm = ({
-  activity,
-  isdone,
+  taskActivityDetail,
 }: {
-  activity: Activity;
-  isdone: boolean;
+  taskActivityDetail: TaskActivityDetail;
 }) => {
-  const { user, task, setTask } = useUserContext();
+  const { user } = useUserContext();
   const router = useRouter();
   const [validFile, setValidFile] = useState<
     "invalidType" | "invalidSize" | boolean
   >(false);
   const [submitted, setSubmitted] = useState<boolean>(false);
   const [openDialog, setOpenDialog] = useState<boolean>(false);
+  const [task, setTask] = useState<Task | null | undefined>(null);
   const [image, setImage] = useState<File | null>(null);
   const hiddenInputRef = useRef(null);
 
@@ -72,7 +71,7 @@ const ProjectForm = ({
       score: null,
       comment: null,
       type: PROJECT,
-      id_activity: activity.id,
+      id_activity: taskActivityDetail.id_activity,
       id_user: user?.id || 0,
     };
 
@@ -118,7 +117,7 @@ const ProjectForm = ({
         <Flex justify={"start"}>
           <Button
             size="3"
-            disabled={isdone}
+            disabled={taskActivityDetail.done || !!task}
             style={{ backgroundColor: PRIMARY_COLOR }}
           >
             <AiOutlinePlusCircle size="20" />

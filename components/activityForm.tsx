@@ -69,6 +69,7 @@ const ActivityForm = ({ target }: { target?: Activity }) => {
       rubric: null,
       subject: +data.subject,
       type: +data.type,
+      date_max: new Date(data.dateMax),
       id_user: user?.id || 0,
     };
 
@@ -243,6 +244,22 @@ const ActivityForm = ({ target }: { target?: Activity }) => {
               {...register("desc")}
               placeholder="Descripción de la actividad"
             />
+            <TextField.Root>
+              <TextField.Input
+                defaultValue={
+                  target?.date_max
+                    ? `${target.date_max.toISOString().substring(0, 16)}`
+                    : new Date().toISOString().substring(0, 16)
+                }
+                size="3"
+                type="datetime-local"
+                color="gray"
+                variant="surface"
+                placeholder="Fecha de vencimiento"
+                {...register("dateMax")}
+              />
+            </TextField.Root>
+
             <label htmlFor="rubrica">
               Rúbrica de la actividad no mayor a 4.5 MB
             </label>
@@ -257,7 +274,11 @@ const ActivityForm = ({ target }: { target?: Activity }) => {
               />
             </TextField.Root>
             <div className="flex justify-start gap-4">
-              <Button onClick={onUpload} type="button" disabled={!!target}>
+              <Button
+                onClick={onUpload}
+                type="button"
+                disabled={!!target?.rubric}
+              >
                 <FaFileAlt />
                 Subir Rúbrica
               </Button>

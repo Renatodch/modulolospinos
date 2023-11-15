@@ -1,11 +1,13 @@
 import CourseContentItems from "@/components/courseContentItems";
 import CourseDetail from "@/components/courseDetail";
-import { getTaskByUserId } from "@/controllers/task.controller";
+import { getActivities } from "@/controllers/activity.controller";
+import { getTasksByUserId } from "@/controllers/task.controller";
 import {
   getCurrentNumberUserCourses,
   getUserCourseByUserId,
 } from "@/controllers/user-course.controller";
 import { getSession, loginIsRequiredServer } from "@/lib/auth-config";
+import { getTasksActivityDetail } from "@/lib/utils";
 import { Task, User_Course, isStudent } from "@/model/types";
 import { Avatar, Box, Flex, Heading, Text } from "@radix-ui/themes";
 import Image from "next/image";
@@ -14,14 +16,15 @@ import mainPicture from "../../../public/curso.jpg";
 
 const CoursePage = async () => {
   await loginIsRequiredServer();
-  const numberUsers = await getCurrentNumberUserCourses();
-  const stars = new Array(5).fill(0);
   const { _user } = await getSession();
   const id = _user?.id || 0;
+  const number_users = await getCurrentNumberUserCourses();
+  const stars = new Array(5).fill(0);
   const user_course: User_Course | null | undefined =
     await getUserCourseByUserId(id);
-  const project: Task | null | undefined = await getTaskByUserId(id);
-
+  const tasks: Task[] | null | undefined = await getTasksByUserId(id);
+  const activities = await getActivities();
+  const tasksDetail = getTasksActivityDetail(activities, tasks);
   return (
     <div className="flex flex-col items-center justify-center w-full px-16 py-8 gap-6">
       <div className="flex flex-col items-start justify-center w-full">
@@ -43,9 +46,9 @@ const CoursePage = async () => {
         />
         {isStudent(_user?.type) && (
           <CourseDetail
-            userCourse={user_course}
-            numberUsers={numberUsers}
-            project={project}
+            user_course={user_course}
+            number_users={number_users}
+            tasksDetail={tasksDetail}
           />
         )}
       </div>

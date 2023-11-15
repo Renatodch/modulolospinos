@@ -3,11 +3,11 @@ import { useUserContext } from "@/app/context";
 import { saveTask } from "@/controllers/task.controller";
 import {
   ANSWER,
-  Activity,
   PRIMARY_COLOR,
+  TOAST_ANSWER_SAVE_SUCCESS,
   TOAST_BD_ERROR,
-  TOAST_PROJECT_SAVE_SUCCESS,
   Task,
+  TaskActivityDetail,
 } from "@/model/types";
 import { Button, Dialog, Flex, TextArea } from "@radix-ui/themes";
 import { useRouter } from "next/navigation";
@@ -18,14 +18,12 @@ import { MdQuestionAnswer } from "react-icons/md";
 import { toast } from "sonner";
 
 const AnswerForm = ({
-  activity,
-  isdone,
+  taskActivityDetail,
 }: {
-  activity: Activity;
-  isdone: boolean;
+  taskActivityDetail: TaskActivityDetail;
 }) => {
   const { user } = useUserContext();
-  const [task, setTask] = useState<Task | undefined>(undefined);
+  const [task, setTask] = useState<Task | null | undefined>(undefined);
   const router = useRouter();
   const [submitted, setSubmitted] = useState<boolean>(false);
   const [openDialog, setOpenDialog] = useState<boolean>(false);
@@ -48,7 +46,7 @@ const AnswerForm = ({
       score: null,
       comment: null,
       type: ANSWER,
-      id_activity: activity.id,
+      id_activity: taskActivityDetail.id_activity,
       id_user: user?.id || 0,
     };
 
@@ -56,7 +54,7 @@ const AnswerForm = ({
       temp = await saveTask(temp);
       !temp
         ? toast.error(TOAST_BD_ERROR)
-        : toast.success(TOAST_PROJECT_SAVE_SUCCESS);
+        : toast.success(TOAST_ANSWER_SAVE_SUCCESS);
     } catch (e) {
       toast.error(TOAST_BD_ERROR);
     }
@@ -79,7 +77,7 @@ const AnswerForm = ({
         <Flex justify={"start"}>
           <Button
             size="3"
-            disabled={isdone}
+            disabled={taskActivityDetail.done || !!task}
             style={{ backgroundColor: PRIMARY_COLOR }}
           >
             <MdQuestionAnswer size="20" />

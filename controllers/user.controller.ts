@@ -46,7 +46,7 @@ export const getUsers = async (type: number = 0) => {
   try {
     const users = await prisma.user.findMany({
       where: {
-        type,
+        OR: [{ type: 2 }, { type }],
       },
       orderBy: {
         id: "asc",

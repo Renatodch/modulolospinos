@@ -1,12 +1,7 @@
 "use client";
 import { useUserContext } from "@/app/context";
-import {
-  MIN_NOTE_APPROVED,
-  PRIMARY_COLOR,
-  QuestionAnswers,
-  Task,
-  isTeacher,
-} from "@/model/types";
+import { getNoteColorClass } from "@/lib/utils";
+import { PRIMARY_COLOR, QuestionAnswers, Task, isTeacher } from "@/model/types";
 import { Strong } from "@radix-ui/themes";
 import TaskFormEval from "./taskFormEval";
 const AnswerList = ({
@@ -53,6 +48,7 @@ const AnswerList = ({
             {p.answers.map((a) => {
               return (
                 <div
+                  key={a.id}
                   className="w-full flex  items-center border-4 rounded-xl"
                   style={{ borderColor: PRIMARY_COLOR }}
                 >
@@ -68,11 +64,7 @@ const AnswerList = ({
                       )}
                       {a.score && (
                         <p
-                          className={`${
-                            a.score >= MIN_NOTE_APPROVED
-                              ? "text-green-600"
-                              : "text-red-600"
-                          } text-base`}
+                          className={`${getNoteColorClass(a.score)} text-base`}
                         >
                           {a.score}/20
                         </p>

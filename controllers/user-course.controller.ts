@@ -27,9 +27,6 @@ export const getUserCourses = async () => {
   let user_courses: User_Course[] = [];
   try {
     const res = await prisma.user_course.findMany({
-      where: {
-        state: 0,
-      },
       distinct: ["id_user"],
     });
     user_courses = res;

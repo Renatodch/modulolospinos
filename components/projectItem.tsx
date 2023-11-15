@@ -1,6 +1,7 @@
 "use client";
 import { useUserContext } from "@/app/context";
-import { MIN_NOTE_APPROVED, Task, isTeacher } from "@/model/types";
+import { getNoteColorClass } from "@/lib/utils";
+import { Task, isTeacher } from "@/model/types";
 import { Strong } from "@radix-ui/themes";
 import Image from "next/image";
 import ProjectFormEval from "./taskFormEval";
@@ -38,13 +39,7 @@ const ProjectItem = ({ project }: { project: Task | null | undefined }) => {
           {project.score && (
             <p className="text-xl">
               <Strong>Nota:&nbsp;</Strong>
-              <span
-                className={`${
-                  project.score > MIN_NOTE_APPROVED
-                    ? "text-green-600"
-                    : "text-red-600"
-                }`}
-              >
+              <span className={`${getNoteColorClass(project.score)}`}>
                 {project.score}
               </span>
             </p>

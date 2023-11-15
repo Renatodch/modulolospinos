@@ -2,18 +2,11 @@
 import { useUserContext } from "@/app/context";
 import { getTaskByUserId } from "@/controllers/task.controller";
 import { getUserCourseByUserId } from "@/controllers/user-course.controller";
-import {
-  COURSE_IN_PROCESS,
-  PRIMARY_COLOR,
-  STUDENT,
-  TEACHER,
-  getToastPendingProject,
-} from "@/model/types";
+import { PRIMARY_COLOR, STUDENT, TEACHER } from "@/model/types";
 import { signOut } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
-import { toast } from "sonner";
 
 const Links = () => {
   const { user } = useUserContext();
@@ -25,15 +18,15 @@ const Links = () => {
     const user_course = await getUserCourseByUserId(user?.id || 0);
     const project = await getTaskByUserId(user?.id || 0);
 
-    user_course?.date_project_send_max &&
+    /* user_course?.date_project_send_max &&
       !project &&
-      user_course.state === COURSE_IN_PROCESS &&
+      user_course.state === IN_PROGRESS &&
       toast.warning(
         getToastPendingProject(user_course?.date_project_send_max),
         {
           duration: 5000,
         }
-      );
+      ); */
   };
 
   const links = [
