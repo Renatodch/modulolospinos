@@ -15,6 +15,7 @@ export const getTasksActivityDetail = (
     const task = tasks.find((t) => t.id_activity === a.id);
     return {
       done: !!task,
+      id_task: task?.id ?? 0,
       id_activity: a.id,
       subject: a.subject,
       activity_title: a.title,
@@ -25,6 +26,9 @@ export const getTasksActivityDetail = (
       evaluated: !(task?.score === null || task?.score === undefined),
       score: task?.score,
       rubric: a.rubric,
+      image: task?.image1,
+      task_title: task?.title ?? "",
+      task_description: task?.description ?? null,
     };
   });
   return tasksDetail;

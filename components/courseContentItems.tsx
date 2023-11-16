@@ -39,16 +39,18 @@ const CourseContentItems = ({ interactive, progress }: Props) => {
             >
               {interactive ? (
                 <Link
-                  className="flex gap-4"
                   href={{ pathname: `/curso/clases`, query: { item: index } }}
                   onClick={() => setSelectedIndex(index)}
                 >
-                  <AiFillYoutube size="24" />
-                  {i.title}
+                  <AiFillYoutube
+                    size="24"
+                    style={{ display: "inline-block" }}
+                  />
+                  <span className="ml-3">{i.title}</span>
                 </Link>
               ) : (
                 <>
-                  <AiFillYoutube size="24" />
+                  <AiFillYoutube size="24" style={{ minWidth: 50 }} />
                   {i.title}
                 </>
               )}

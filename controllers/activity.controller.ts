@@ -81,6 +81,21 @@ export const getActivitiesAnswer = async () => {
   } catch (e) {}
   return res;
 };
+export const getActivitiesProject = async () => {
+  let res: Activity[] = [];
+  try {
+    const activities = await prisma.activity.findMany({
+      orderBy: {
+        id: "asc",
+      },
+      where: {
+        type: 1,
+      },
+    });
+    res = activities;
+  } catch (e) {}
+  return res;
+};
 export const getActivitiesBySubject = async (subject: number) => {
   let res: Activity[] = [];
   try {

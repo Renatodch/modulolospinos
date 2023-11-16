@@ -73,6 +73,14 @@ const AnswerList = ({
                         <TaskFormEval target={a as Task} />
                       )}
                     </div>
+                    {a.comment && (
+                      <div className="w-full p-4">
+                        <span>
+                          <strong>Comentario:&nbsp;</strong>
+                          {a.comment}
+                        </span>
+                      </div>
+                    )}
                   </div>
                 </div>
               );

@@ -25,6 +25,7 @@ const CoursePage = async () => {
   const tasks: Task[] | null | undefined = await getTasksByUserId(id);
   const activities = await getActivities();
   const tasksDetail = getTasksActivityDetail(activities, tasks);
+
   return (
     <div className="flex flex-col items-center justify-center w-full px-16 py-8 gap-6">
       <div className="flex flex-col items-start justify-center w-full">

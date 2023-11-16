@@ -32,12 +32,18 @@ export const deleteTasksByUserId = async (id_user: number) => {
   return tasks;
 };
 
-export const getTasks = async (type?: number) => {
+export const getTasks = async (
+  type?: number,
+  id_user?: number,
+  id_activity?: number
+) => {
   let res: Task[] = [];
   try {
     const tasks = await prisma.task.findMany({
       where: {
         type,
+        id_user,
+        id_activity,
       },
       orderBy: {
         id: "asc",
@@ -77,8 +83,8 @@ export const getTasksByUserId = async (id_user: number, type?: number) => {
   return res;
 };
 export const getTasksByUserIdAndActivityId = async (
-  id_user: number,
-  id_activity: number
+  id_user?: number,
+  id_activity?: number
 ) => {
   let res: Task[] = [];
   try {

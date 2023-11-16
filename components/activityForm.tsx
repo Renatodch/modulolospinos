@@ -18,6 +18,7 @@ import {
   TextField,
 } from "@radix-ui/themes";
 import { PutBlobResult } from "@vercel/blob";
+import moment from "moment";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { Controller, FieldValues, useForm } from "react-hook-form";
@@ -59,7 +60,6 @@ const ActivityForm = ({ target }: { target?: Activity }) => {
     setRubric(file);
   };
   const onUpload = () => (hiddenInputRef.current! as HTMLFormElement).click();
-
   const onSubmit = async (data: FieldValues) => {
     setSubmitted(true);
     let temp: Activity | undefined = {
@@ -94,10 +94,10 @@ const ActivityForm = ({ target }: { target?: Activity }) => {
       toast.error(TOAST_BD_ERROR);
     }
     setSubmitted(false);
-    router.refresh();
     setValidFile(false);
     setRubric(null);
     reset();
+    router.refresh();
     setOpenDialog(false);
   };
 
@@ -248,8 +248,10 @@ const ActivityForm = ({ target }: { target?: Activity }) => {
               <TextField.Input
                 defaultValue={
                   target?.date_max
-                    ? `${target.date_max.toISOString().substring(0, 16)}`
-                    : new Date().toISOString().substring(0, 16)
+                    ? `${moment(target.date_max)
+                        .toISOString(true)
+                        .substring(0, 16)}`
+                    : new Date().toLocaleDateString().substring(0, 16)
                 }
                 size="3"
                 type="datetime-local"

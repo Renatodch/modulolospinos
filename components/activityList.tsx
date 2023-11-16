@@ -1,9 +1,11 @@
 "use client";
 import { deleteActivityById } from "@/controllers/activity.controller";
+import { getTasks } from "@/controllers/task.controller";
 import {
   ACTIVITY_TYPES,
   Activity,
   SUBJECTS_COURSE,
+  TOAST_ACTIVITY_DELETE_ERROR,
   TOAST_ACTIVITY_DELETE_SUCCESS,
 } from "@/model/types";
 import { Button, Table } from "@radix-ui/themes";
@@ -21,10 +23,16 @@ const ActivityList = ({ activities }: { activities: Activity[] }) => {
   const handleDeleteActivity = async (id: number) => {
     setDeletedIndex(id);
     setOnDelete(true);
-    await deleteActivityById(id);
+
+    const tasks = await getTasks(undefined, undefined, id);
+    if (tasks.length > 0) {
+      toast.error(TOAST_ACTIVITY_DELETE_ERROR);
+    } else {
+      await deleteActivityById(id);
+      toast.success(TOAST_ACTIVITY_DELETE_SUCCESS);
+    }
     setOnDelete(false);
     setDeletedIndex(null);
-    toast.success(TOAST_ACTIVITY_DELETE_SUCCESS);
     router.refresh();
   };
   return (

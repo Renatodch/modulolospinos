@@ -28,6 +28,7 @@ const CourseProgressDetail = ({
   const [open, setOpen] = useState<boolean>(false);
   const pendingTask = tasksDetail.some((t) => !t.done);
   const pendingEvaluateTask = tasksDetail.some((t) => t.done && !t.evaluated);
+  const done = tasksDetail.every((t) => t.done && t.evaluated);
   const evaluatedTask = tasksDetail.some((t) => t.done && t.evaluated);
   const tasksDone = tasksDetail.filter((t) => t.done && !t.evaluated);
   const tasksEvaluated = tasksDetail.filter((t) => t.done && t.evaluated);
@@ -72,38 +73,38 @@ const CourseProgressDetail = ({
 
           {user_course &&
             user_course.state === IN_PROGRESS &&
-            (pendingTask || pendingEvaluateTask) &&
-            user_course.progress === COURSE_LAST_ITEM_INDEX && (
+            (pendingTask || pendingEvaluateTask || evaluatedTask || done) && (
               <>
                 {pendingTask && (
-                  <>
-                    <div className="italic flex items-center gap-2 text-orange-500 border-t-2 mt-4 pt-2">
-                      <GoAlertFill style={{ width: 50 }} />
-                      {tasksPending.length > 1
-                        ? `Tiene ${tasksPending.length} tareas pendientes`
-                        : `Tiene ${tasksPending.length} tarea pendiente`}
-                    </div>
-                  </>
+                  <div className="italic flex items-center gap-2 text-orange-500 border-t-2 mt-4 pt-2">
+                    <GoAlertFill style={{ width: 50 }} />
+                    {tasksPending.length > 1
+                      ? `Tiene ${tasksPending.length} tareas pendientes`
+                      : `Tiene ${tasksPending.length} tarea pendiente`}
+                  </div>
                 )}
                 {pendingEvaluateTask && (
-                  <>
-                    <div className="italic flex items-center gap-2 text-gray-700">
-                      <GrInProgress style={{ width: 50 }} />
-                      {tasksDone.length > 1
-                        ? `Tiene ${tasksDone.length} tareas subidas que aun no han sido evaluadas`
-                        : `Tiene ${tasksDone.length} tarea subida que aun no ha sido evaluada`}
-                    </div>
-                  </>
+                  <div className="italic flex items-center gap-2 text-gray-700 mt-4 pt-2">
+                    <GrInProgress style={{ width: 50 }} />
+                    {tasksDone.length > 1
+                      ? `Tiene ${tasksDone.length} tareas subidas que aun no han sido evaluadas`
+                      : `Tiene ${tasksDone.length} tarea subida que aun no ha sido evaluada`}
+                  </div>
                 )}
                 {evaluatedTask && (
-                  <>
-                    <div className="italic flex items-center gap-2 text-green-700">
-                      <FaCheck style={{ width: 50 }} />
-                      {tasksEvaluated.length > 1
-                        ? `Tiene ${tasksEvaluated.length} tareas que han sido evaluadas`
-                        : `Tiene ${tasksEvaluated.length} tarea que ha sido evaluada`}
-                    </div>
-                  </>
+                  <div className="italic flex items-center gap-2 text-green-700 mt-4 pt-2">
+                    <FaCheck style={{ width: 50 }} />
+                    {tasksEvaluated.length > 1
+                      ? `Tiene ${tasksEvaluated.length} tareas que han sido evaluadas`
+                      : `Tiene ${tasksEvaluated.length} tarea que ha sido evaluada`}
+                  </div>
+                )}
+                {done && (
+                  <div className="italic flex items-center gap-2 text-green-700 mt-4 pt-2">
+                    <FaCheck style={{ width: 50 }} />
+                    Ha terminado de hacer el curso y todas las actividades
+                    pendientes han sido completadas y evaluadas.
+                  </div>
                 )}
               </>
             )}

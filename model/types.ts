@@ -42,6 +42,7 @@ export interface Task {
 
 export interface TaskActivityDetail {
   done: boolean;
+  id_task: number;
   id_activity: number;
   subject: number;
   activity_title: string;
@@ -52,6 +53,9 @@ export interface TaskActivityDetail {
   evaluated: boolean;
   score?: number | null;
   rubric?: string | null;
+  image?: string | null;
+  task_title: string;
+  task_description: string | null;
 }
 
 export interface User_Progress {
@@ -149,6 +153,8 @@ export const TOAST_TASK_EVALUATED = "Se calificó la tarea";
 export const TOAST_PROJECT_SAVE_SUCCESS = "Proyecto subido con éxito";
 export const TOAST_ANSWER_SAVE_SUCCESS = "Se envió su respuesta";
 
+export const TOAST_ACTIVITY_DELETE_ERROR =
+  "Actividad no se puede borrar porque ya hay tareas para ella";
 export const TOAST_ACTIVITY_DELETE_SUCCESS = "Actividad borrada con éxito";
 export const TOAST_ACTIVITY_SAVE_SUCCESS = "Actitividad guardada con éxito";
 
