@@ -81,7 +81,8 @@ export const APPROVED = 1;
 export const USER_PROGRESS = [
   { value: NOT_INIT, label: "NO INICIADO" },
   { value: IN_PROGRESS, label: "EN PROGRESO" },
-  { value: COMPLETED, label: "COMPLETO EVALUADO" },
+  { value: APPROVED, label: "APROBADO" },
+  { value: REPROVED, label: "DESAPROBADO" },
 ];
 
 export const PRIMARY_COLOR = "#98bf64";
@@ -172,6 +173,8 @@ export const TOAST_TASKS_PENDING =
   "Tiene tareas pendientes para las siguientes actividades";
 export const TOAST_USER_COURSE_NOT_STARTED =
   "El usuario no ha iniciado el curso";
+export const TOAST_USER_COURSE_NOT_COMPLETED =
+  "El usuario aun no completa el curso, le faltan tareas o no esta al día con el tema";
 export const TOAST_USER_COURSE_SAVE_NOTE_NOT_CHANGE =
   "No hubieron cambios en el promedio";
 export const TOAST_USER_COURSE_SAVE_NOTE_SUCCESS =

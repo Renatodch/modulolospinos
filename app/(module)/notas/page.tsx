@@ -5,7 +5,7 @@ import { getActivities } from "@/controllers/activity.controller";
 import { getTasksByUserId } from "@/controllers/task.controller";
 import { getUserCourseByUserId } from "@/controllers/user-course.controller";
 import { getSession, loginIsRequiredServer } from "@/lib/auth-config";
-import { getTasksActivityDetail } from "@/lib/utils";
+import { getFormatedNote, getTasksActivityDetail } from "@/lib/utils";
 import {
   MIN_NOTE_APPROVED,
   PRIMARY_COLOR,
@@ -115,7 +115,7 @@ const CalificationPage = async () => {
                               justify="center"
                               style={{ padding: 12 }}
                             >
-                              {t.score}
+                              {t.score?.toString().padStart(2, "0")}
                             </Table.Cell>
                           </Table.Row>
                         );
@@ -129,7 +129,7 @@ const CalificationPage = async () => {
                               : "text-red-600"
                           } font-semibold text-center`}
                         >
-                          {pc.toFixed(1)}
+                          {pc.toFixed(1).padStart(2, "0")}
                         </Table.Cell>
                       </Table.Row>
                     </Table.Body>
@@ -151,7 +151,7 @@ const CalificationPage = async () => {
                 avgFinal >= MIN_NOTE_APPROVED ? "text-blue-600" : "text-red-600"
               } font-semibold text-lg text-center`}
             >
-              {user_course ? avgFinal.toFixed(1) : ""}
+              {user_course && getFormatedNote(avgFinal)}
             </Table.Cell>
           </Table.Row>
         </Table.Body>

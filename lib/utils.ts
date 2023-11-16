@@ -34,3 +34,6 @@ export const getTasksActivityDetail = (
     });
   return tasksDetail;
 };
+
+export const getFormatedNote = (note: number) =>
+  Number.isInteger(note) ? note.toString().padStart(2, "0") : note.toFixed(1);

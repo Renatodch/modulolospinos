@@ -57,13 +57,7 @@ const CourseDetail = ({
       setLoaded(true);
     };
     update();
-  }, []);
-
-  /*   const ste = user_course?.state ?? 0;
-  const progress = user_course?.progress ?? 0;
-  const value =
-    20 * ((user_course?.progress ?? 0) + +(user_course?.state === APPROVED));
-  const progressPercent = value; */
+  }, [id_user]);
 
   const handleStartCourseClick = async () => {
     if (uc) {

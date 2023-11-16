@@ -167,7 +167,7 @@ const alertState = async (id: number) => {
       cancel: { onClick: () => undefined, label: "cerrar" },
     });
 
-  if (pendingActivitiesLen) {
+  if (pendingActivitiesLen > 0 && user_course) {
     pendingActivities.forEach((a) => {
       a.date_max &&
         toast.info(getToastPendingActivities(a), {

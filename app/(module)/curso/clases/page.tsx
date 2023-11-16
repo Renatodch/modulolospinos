@@ -24,18 +24,15 @@ import PuffLoader from "react-spinners/PuffLoader";
 
 export default function ClasesPage(props: any) {
   const { user } = useUserContext();
-
   const [user_course, setUserCourse] = useState<User_Course | undefined | null>(
     undefined
   );
   const [loaded, setLoaded] = useState<boolean>(false);
   const [initCourse, setInitCourse] = useState<boolean>(true);
-
-  if (user?.type === TEACHER) return <NotAllowed />;
-  const id_user = user?.id || 0;
   const [tasksDetail, setTasksDetail] = useState<TaskActivityDetail[]>([]);
   const [progress, setProgress] = useState<number>(0);
   const [selected, setSelected] = useState<number>(0);
+  const id_user = user?.id || 0;
 
   useEffect(() => {
     const updateData = async () => {
@@ -43,22 +40,24 @@ export default function ClasesPage(props: any) {
       if (!userCourse) setInitCourse(false);
       else setInitCourse(true);
 
-      const progress = userCourse?.progress ?? 0;
+      const _progress = userCourse?.progress ?? 0;
 
-      const activities = await getActivitiesBySubject(progress);
+      const activities = await getActivitiesBySubject(_progress);
       const tasks = await getTasksByUserId(id_user);
       const _tasksDetail = getTasksActivityDetail(activities, tasks).filter(
-        (t) => t.subject === progress
+        (t) => t.subject === _progress
       );
 
       setTasksDetail(_tasksDetail);
-      setProgress(progress);
-      setSelected(progress);
+      setProgress(_progress);
+      setSelected(_progress);
       setUserCourse(userCourse);
       setLoaded(true);
     };
     updateData();
-  }, []);
+  }, [id_user]);
+
+  if (user?.type === TEACHER) return <NotAllowed />;
 
   const HandleClickLink = async (index: number) => {
     setLoaded(false);

@@ -1,4 +1,6 @@
 "use client";
+import { getActivities } from "@/controllers/activity.controller";
+import { getTasksByUserId } from "@/controllers/task.controller";
 import {
   getUserCourseByUserId,
   saveUserCourse,
@@ -7,20 +9,20 @@ import { deleteUserById } from "@/controllers/user.controller";
 import { getTasksActivityDetail } from "@/lib/utils";
 import {
   APPROVED,
-  Activity,
-  COMPLETED,
+  COURSE_LAST_ITEM_INDEX,
   MIN_NOTE_APPROVED,
+  NOT_INIT,
   REPROVED,
   SUBJECTS_COURSE,
   TOAST_BD_ERROR,
+  TOAST_USER_COURSE_NOT_COMPLETED,
   TOAST_USER_COURSE_NOT_STARTED,
   TOAST_USER_COURSE_SAVE_NOTE_NOT_CHANGE,
   TOAST_USER_COURSE_SAVE_NOTE_SUCCESS,
   TOAST_USER_DELETE_SUCCESS,
-  Task,
   USER_PROGRESS,
   User,
-  User_Progress,
+  User_Course,
 } from "@/model/types";
 import { Button, Table, TextField } from "@radix-ui/themes";
 import { useRouter } from "next/navigation";
@@ -32,14 +34,10 @@ import UserForm from "./userForm";
 
 const UserList = ({
   users,
-  user_progress,
-  tasks,
-  activities,
+  user_courses,
 }: {
   users: User[];
-  user_progress: User_Progress[];
-  tasks: Task[];
-  activities: Activity[];
+  user_courses: User_Course[];
 }) => {
   const router = useRouter();
   const [onDelete, setOnDelete] = useState<boolean>(false);
@@ -64,11 +62,21 @@ const UserList = ({
       let temp = await getUserCourseByUserId(id);
       if (!temp) {
         toast.error(TOAST_USER_COURSE_NOT_STARTED);
+        reset();
         return;
       }
-
-      const userTasks = tasks.filter((t) => t.id_user === id);
+      const activities = await getActivities();
+      const userTasks = await getTasksByUserId(id);
       const tasksDetail = getTasksActivityDetail(activities, userTasks);
+
+      if (
+        temp.progress < COURSE_LAST_ITEM_INDEX ||
+        tasksDetail.some((t) => !t.done || !t.evaluated)
+      ) {
+        toast.error(TOAST_USER_COURSE_NOT_COMPLETED, { duration: 5000 });
+        reset();
+        return;
+      }
 
       let avgFinal = 0;
       for (let s of SUBJECTS_COURSE) {
@@ -125,11 +133,11 @@ const UserList = ({
 
       <Table.Body>
         {users.map((user) => {
-          const up: User_Progress | undefined = user_progress.find(
-            (n) => n.id === user.id
-          );
-          const avgFinal = up?.avgFinal ?? -1;
-          const state = USER_PROGRESS.find((u) => u.value === up?.state)!;
+          const uc = user_courses.find((u) => u.id_user === user.id);
+          const avgFinal = uc?.average ?? -1;
+          const state =
+            USER_PROGRESS.find((u) => u.value === uc?.state) ??
+            USER_PROGRESS.find((u) => u.value === NOT_INIT)!;
           return (
             <Table.Row key={user.id}>
               <Table.RowHeaderCell width={100}>{user.id}</Table.RowHeaderCell>
@@ -156,7 +164,7 @@ const UserList = ({
                 <Button
                   disabled={
                     (onCompute && user.id === computedIndex) ||
-                    state.value < COMPLETED
+                    state.value === NOT_INIT
                   }
                   onClick={() => handleCompute(user.id)}
                   color="green"

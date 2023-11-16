@@ -56,13 +56,13 @@ INSERT INTO "user" (password, type, email, name) VALUES ('1234', '2', 'lucerito.
 INSERT INTO "user" (password, type, email, name) VALUES ('123', '1', '', 'Estudiante');
 
 
-INSERT INTO activity (title, description, subject, type, id_user) VALUES ('Actividad Pregunta', 'Pregunta 1', 0, 0, 6);
-INSERT INTO activity (title, description, subject, type, date_max, id_user) VALUES ('Actividad Pregunta', 'Pregunta 2', 0, 0, '2023-11-19 12:00:00', 6);
-INSERT INTO activity (title, description, subject, type, date_max, id_user) VALUES ('Actividad Pregunta', 'Pregunta 3', 1, 0, '2023-11-20 12:00:00', 6);
-INSERT INTO activity (title, description, subject, type,  id_user) VALUES ('Actividad Proyecto', 'Proyecto 1', 1, 1, 6);
-INSERT INTO activity (title, description, subject, type, date_max, id_user) VALUES ('Actividad Pregunta', 'Pregunta 4', 3, 0, '2023-11-21 12:00:00', 6);
-INSERT INTO activity (title, description, subject, type, date_max, id_user) VALUES ('Actividad Proyecto', 'Proyecto 2', 4, 1, '2023-11-22 12:00:00', 6);
-INSERT INTO activity (title, description, subject, type, date_max, id_user) VALUES ('Actividad Proyecto', 'Proyecto 3', 4, 1, '2023-11-22 12:00:00', 6);
+INSERT INTO activity (title, description, subject, type, id_user) VALUES ('Actividad Pregunta 1-1', 'Pregunta 1', 0, 0, 6);
+INSERT INTO activity (title, description, subject, type, date_max, id_user) VALUES ('Actividad Pregunta 2-1', 'Pregunta 2', 0, 0, '2023-11-19 12:00:00', 6);
+INSERT INTO activity (title, description, subject, type, date_max, id_user) VALUES ('Actividad Pregunta 1-2', 'Pregunta 3', 1, 0, '2023-11-20 12:00:00', 6);
+INSERT INTO activity (title, description, subject, type,  id_user) VALUES ('Actividad Proyecto 2-2', 'Proyecto 1', 1, 1, 6);
+INSERT INTO activity (title, description, subject, type, date_max, id_user) VALUES ('Actividad Pregunta 1-3', 'Pregunta 4', 3, 0, '2023-11-21 12:00:00', 6);
+INSERT INTO activity (title, description, subject, type, date_max, id_user) VALUES ('Actividad Proyecto 1-4', 'Proyecto 2', 4, 1, '2023-11-22 12:00:00', 6);
+INSERT INTO activity (title, description, subject, type, date_max, id_user) VALUES ('Actividad Proyecto 2-4', 'Proyecto 3', 4, 1, '2023-11-22 12:00:00', 6);
 
 /******* starter *************/
 INSERT INTO user_course (date_start,date_update,state,progress,id_user) VALUES ('2023-11-14 23:59:59', '2023-11-14 23:59:59',0, 0, 6);
@@ -112,3 +112,15 @@ INSERT INTO task (title, description, date_upload, type, id_activity, id_user, s
 INSERT INTO task (title, description, date_upload, type, id_activity, id_user, score) VALUES ('Tarea Pregunta', 'Tarea de Pregunta 4','2023-11-21 23:59:00', 0, 5, 6, 20);
 INSERT INTO task (title, description, date_upload, type, id_activity, id_user, score) VALUES ('Tarea Proyecto', 'Tarea de Proyecto 2','2023-11-22 23:59:00', 1, 6, 6, 20);
 INSERT INTO task (title, description, date_upload, type, id_activity, id_user, score) VALUES ('Tarea Proyecto', 'Tarea de Proyecto 3','2023-11-22 23:59:00', 1, 7, 6, 20);
+
+
+/******* all evaluated : reproved *******/
+INSERT INTO user_course (date_start,date_update,state,progress,id_user) VALUES ('2023-11-14 23:59:59', '2023-11-14 23:59:59',0, 4, 6);
+
+INSERT INTO task (title, description, date_upload, type, id_activity, id_user, score) VALUES ('Tarea Pregunta', 'Tarea de Pregunta 1','2023-11-19 23:59:00', 0, 1, 6, 10);
+INSERT INTO task (title, description, date_upload, type, id_activity, id_user, score) VALUES ('Tarea Pregunta', 'Tarea de Pregunta 2','2023-11-19 23:59:00', 0, 2, 6, 10);
+INSERT INTO task (title, description, date_upload, type, id_activity, id_user, score) VALUES ('Tarea Pregunta', 'Tarea de Pregunta 3','2023-11-20 23:59:00', 0, 3, 6, 10);
+INSERT INTO task (title, description, date_upload, type, id_activity, id_user, score) VALUES ('Tarea Proyecto', 'Tarea de Proyecto 1','2023-11-20 23:59:00', 1, 4, 6, 10);
+INSERT INTO task (title, description, date_upload, type, id_activity, id_user, score) VALUES ('Tarea Pregunta', 'Tarea de Pregunta 4','2023-11-21 23:59:00', 0, 5, 6, 10);
+INSERT INTO task (title, description, date_upload, type, id_activity, id_user, score) VALUES ('Tarea Proyecto', 'Tarea de Proyecto 2','2023-11-22 23:59:00', 1, 6, 6, 1);
+INSERT INTO task (title, description, date_upload, type, id_activity, id_user, score) VALUES ('Tarea Proyecto', 'Tarea de Proyecto 3','2023-11-22 23:59:00', 1, 7, 6, 1);
