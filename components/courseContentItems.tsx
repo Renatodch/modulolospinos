@@ -7,13 +7,13 @@ import { AiFillYoutube } from "react-icons/ai";
 
 interface Props {
   interactive?: boolean;
-  progress?: number | null;
+  progress: number;
+  selected: number;
 }
 
-const CourseContentItems = ({ interactive, progress }: Props) => {
-  const _progress = progress || 0;
+const CourseContentItems = ({ interactive, progress, selected }: Props) => {
   const [selectedIndex, setSelectedIndex] = useState<number | null | undefined>(
-    _progress
+    selected
   );
 
   const styleClasses = `text-justify p-4 items-center gap-8 w-full flex ${
@@ -32,9 +32,9 @@ const CourseContentItems = ({ interactive, progress }: Props) => {
               key={index}
               className={`${styleClasses} ${
                 selectedIndex === index && interactive && "bg-blue-100"
-              } ${index > _progress + 1 && interactive && "text-gray-400"}`}
+              } ${index > progress + 1 && interactive && "text-gray-400"}`}
               style={{
-                pointerEvents: index > _progress + 1 ? "none" : "all",
+                pointerEvents: index > progress + 1 ? "none" : "all",
               }}
             >
               {interactive ? (

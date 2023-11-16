@@ -54,39 +54,3 @@ INSERT INTO "user" (password, type, email, name) VALUES ('ariana159', '1', 'luce
 INSERT INTO "user" (password, type, email, name) VALUES ('123', '0', 'alejandraquiroztoribio@gmail.com', 'Ale 14');
 INSERT INTO "user" (password, type, email, name) VALUES ('1234', '2', 'lucerito.sagas21@gmail.com', 'Desarrollador');
 INSERT INTO "user" (password, type, email, name) VALUES ('123', '1', '', 'Estudiante');
-
-INSERT INTO activity (title, description, subject, type, date_max, id_user) VALUES ('Actividad Pregunta', 'Pregunta 1', 0, 0, '2023-11-19 12:00:00', 6);
-INSERT INTO activity (title, description, subject, type, date_max, id_user) VALUES ('Actividad Pregunta', 'Pregunta 2', 0, 0, '2023-11-19 12:00:00', 6);
-INSERT INTO activity (title, description, subject, type, date_max, id_user) VALUES ('Actividad Pregunta', 'Pregunta 3', 1, 0, '2023-11-20 12:00:00', 6);
-INSERT INTO activity (title, description, subject, type, date_max, id_user) VALUES ('Actividad Proyecto', 'Proyecto 1', 1, 1, '2023-11-20 12:00:00', 6);
-INSERT INTO activity (title, description, subject, type, date_max, id_user) VALUES ('Actividad Pregunta', 'Pregunta 4', 3, 0, '2023-11-21 12:00:00', 6);
-INSERT INTO activity (title, description, subject, type, date_max, id_user) VALUES ('Actividad Proyecto', 'Proyecto 2', 4, 1, '2023-11-22 12:00:00', 6);
-INSERT INTO activity (title, description, subject, type, date_max, id_user) VALUES ('Actividad Proyecto', 'Proyecto 3', 4, 1, '2023-11-22 12:00:00', 6);
-
-INSERT INTO user_course (date_start,date_update,state,progress,id_user) VALUES ('2023-11-14 23:59:59', '2023-11-14 23:59:59',0, 0, 6);
-
-INSERT INTO task (title, description, date_upload, type, id_activity, id_user) VALUES ('Tarea Pregunta', 'Tarea de Pregunta 1','2023-11-19 23:59:00', 0, 1, 6);
-INSERT INTO task (title, description, date_upload, type, id_activity, id_user) VALUES ('Tarea Pregunta', 'Tarea de Pregunta 2','2023-11-19 23:59:00', 0, 2, 6);
-INSERT INTO task (title, description, date_upload, type, id_activity, id_user) VALUES ('Tarea Pregunta', 'Tarea de Pregunta 3','2023-11-20 23:59:00', 0, 3, 6);
-INSERT INTO task (title, description, date_upload, type, id_activity, id_user) VALUES ('Tarea Proyecto', 'Tarea de Proyecto 1','2023-11-20 23:59:00', 1, 4, 6);
-INSERT INTO task (title, description, date_upload, type, id_activity, id_user) VALUES ('Tarea Pregunta', 'Tarea de Pregunta 4','2023-11-21 23:59:00', 0, 5, 6);
-INSERT INTO task (title, description, date_upload, type, id_activity, id_user) VALUES ('Tarea Proyecto', 'Tarea de Proyecto 2','2023-11-22 23:59:00', 1, 6, 6);
-INSERT INTO task (title, description, date_upload, type, id_activity, id_user) VALUES ('Tarea Proyecto', 'Tarea de Proyecto 3','2023-11-22 23:59:00', 1, 7, 6);
-
-/********** Simula proyecto que no se subio a tiempo ****/
-
-delete from task where id_user=6;
-delete from user_course where id_user=6;
-
-UPDATE user_course
-SET 
-	state= 0,
-	Date_project_send_max = DATE '2023-11-02',
-    Date_project_assigned = DATE '2023-11-01'
-WHERE id_user = 6;
-
-
-http://localhost:3000/api/cron
-
-
-/****************************************************/

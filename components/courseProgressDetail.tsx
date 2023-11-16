@@ -29,13 +29,14 @@ const CourseProgressDetail = ({
   const inprogress = !!user_course && state === IN_PROGRESS;
   const endcourse = !!user_course && state > IN_PROGRESS;
 
-  const subject = user_course?.progress ?? 0;
-  const currentTasksDetail = tasksDetail.filter((t) => t.subject <= subject);
+  const progress = user_course?.progress ?? 0;
+  const currentTasksDetail = tasksDetail.filter((t) => t.subject <= progress);
   const totalActivities = tasksDetail.length;
 
   const noActivity =
-    (currentTasksDetail.length === 0 && inprogress) ||
-    (currentTasksDetail.every((t) => t.done) && inprogress);
+    (currentTasksDetail.length === 0 ||
+      currentTasksDetail.every((t) => t.done)) &&
+    inprogress;
 
   const pendingTask = currentTasksDetail.some((t) => !t.done) && inprogress;
 
@@ -45,7 +46,7 @@ const CourseProgressDetail = ({
   const done =
     currentTasksDetail.filter((t) => t.evaluated).length === totalActivities &&
     inprogress &&
-    subject === COURSE_LAST_ITEM_INDEX;
+    progress === COURSE_LAST_ITEM_INDEX;
 
   const evaluatedTask =
     currentTasksDetail.some((t) => t.evaluated) && inprogress;

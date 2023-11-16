@@ -17,14 +17,10 @@ import { Activity, TEACHER, Task, TaskActivityDetail } from "@/model/types";
 export default async function ClasesPage(props: any) {
   await loginIsRequiredServer();
   const { _user } = await getSession();
-  const id_user = _user?.id || 0;
-  let user_course = await getUserCourseByUserId(id_user);
   if (_user?.type === TEACHER) return <NotAllowed />;
 
-  let activities: Activity[] = [];
-  let tasks: Task[] = [];
-  let tasksDetail: TaskActivityDetail[] = [];
-  let item = 0;
+  const id_user = _user?.id || 0;
+  let user_course = await getUserCourseByUserId(id_user);
 
   if (!user_course)
     user_course = await saveUserCourse({
@@ -37,8 +33,12 @@ export default async function ClasesPage(props: any) {
       id_user,
     });
 
+  let activities: Activity[] = [];
+  let tasks: Task[] = [];
+  let tasksDetail: TaskActivityDetail[] = [];
+  let item = 0;
+
   if (user_course) {
-    const currentDate = new Date();
     const paramNull = props.searchParams?.item === undefined;
     item = +(props.searchParams?.item ?? 0);
 
@@ -46,7 +46,7 @@ export default async function ClasesPage(props: any) {
       user_course = await saveUserCourse({
         ...user_course,
         progress: item,
-        date_update: currentDate,
+        date_update: new Date(),
       });
     } else {
       paramNull && (item = user_course.progress);
@@ -56,20 +56,24 @@ export default async function ClasesPage(props: any) {
     tasksDetail = getTasksActivityDetail(activities, tasks).filter(
       (t) => t.subject === item
     );
-  }
 
-  return (
-    <div className="flex items-start justify-center w-full px-16 py-8 gap-6">
-      <div className=" w-1/3 h-max" style={{ height: "500px" }}>
-        <CourseContentItems interactive progress={user_course?.progress || 0} />
+    return (
+      <div className="flex items-start justify-center w-full px-16 py-8 gap-6">
+        <div className=" w-1/3 h-max" style={{ height: "500px" }}>
+          <CourseContentItems
+            interactive
+            progress={user_course?.progress ?? 0}
+            selected={item}
+          />
+        </div>
+        <div className=" w-2/3 ">
+          <ClassItem
+            item={item}
+            tasksDetail={tasksDetail}
+            userCourse={user_course}
+          />
+        </div>
       </div>
-      <div className=" w-2/3 ">
-        <ClassItem
-          item={item}
-          tasksDetail={tasksDetail}
-          userCourse={user_course}
-        />
-      </div>
-    </div>
-  );
+    );
+  } else return <NotAllowed />;
 }
