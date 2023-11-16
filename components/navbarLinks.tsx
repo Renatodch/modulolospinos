@@ -169,10 +169,11 @@ const alertState = async (id: number) => {
 
   if (pendingActivitiesLen) {
     pendingActivities.forEach((a) => {
-      toast.info(getToastPendingActivities(a), {
-        duration: 5000,
-        cancel: { onClick: () => undefined, label: "cerrar" },
-      });
+      a.date_max &&
+        toast.info(getToastPendingActivities(a), {
+          duration: 5000,
+          cancel: { onClick: () => undefined, label: "cerrar" },
+        });
     });
   }
 };

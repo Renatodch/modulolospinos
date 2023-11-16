@@ -1,6 +1,7 @@
 "use client";
 import { getDateString } from "@/lib/date-lib";
 import {
+  NO_DATE_MAX_MESSAGE_TASK,
   PROJECT,
   SUBJECTS_COURSE,
   TaskActivityDetail,
@@ -97,8 +98,14 @@ const TaskActivity = ({ task }: { task: TaskActivityDetail }) => {
       </div>
       <div className=" w-full flex flex-col items-start text-xs ">
         <span>
-          <strong>Fecha de vencimiento:&nbsp;</strong>
-          {getDateString(task.date_max)}
+          {task.date_max ? (
+            <>
+              <strong>Fecha de vencimiento:&nbsp;</strong>
+              {getDateString(task.date_max)}
+            </>
+          ) : (
+            <strong>{NO_DATE_MAX_MESSAGE_TASK}</strong>
+          )}
         </span>
       </div>
     </div>

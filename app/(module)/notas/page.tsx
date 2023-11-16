@@ -51,12 +51,17 @@ const CalificationPage = async () => {
               (t) => t.subject === s.value
             );
             const len = tasksDetailBySubject.length;
-            const notesBySubject = tasksDetailBySubject.map((n) =>
+            const notes = tasksDetailBySubject.map((n) =>
               n.score === null || n.score === undefined ? 0 : n.score
             );
             const avg: number =
-              notesBySubject.reduce((acc, current) => acc + current, 0) / len;
-            const pc = (s.weight / 100) * (len > 0 ? avg : 20);
+              len > 0
+                ? notes.reduce((acc, current) => acc + current, 0) / len
+                : user_course && user_course?.progress >= s.value
+                ? 20
+                : 0;
+
+            const pc = (s.weight / 100) * avg;
             avgFinal += pc;
             return (
               <Table.Row key={i}>

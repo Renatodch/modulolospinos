@@ -58,26 +58,30 @@ export interface TaskActivityDetail {
   task_description: string | null;
 }
 
+export interface QuestionAnswers {
+  title: string;
+  question: string;
+  date_max: Date | null;
+  answers: Task[];
+}
+
 export interface User_Progress {
   id: number | null;
   state: number;
   avgFinal: number | null;
 }
-export interface QuestionAnswers {
-  title: string;
-  question: string;
-  answers: Task[];
-}
+
+export const NOT_INIT = -1;
+export const IN_PROGRESS = 0;
+export const COMPLETED = 1;
 
 export const REPROVED = 2;
 export const APPROVED = 1;
-export const IN_PROGRESS = 0;
-export const NOT_INIT = -1;
 
 export const USER_PROGRESS = [
   { value: NOT_INIT, label: "NO INICIADO" },
   { value: IN_PROGRESS, label: "EN PROGRESO" },
-  { value: 1, label: "COMPLETO EVALUADO" },
+  { value: COMPLETED, label: "COMPLETO EVALUADO" },
 ];
 
 export const PRIMARY_COLOR = "#98bf64";
@@ -85,7 +89,6 @@ export const PRIMARY_COLOR = "#98bf64";
 export const MIN_NOTE_APPROVED = 10.5;
 export const COURSE_LAST_ITEM_INDEX = 4;
 export const COURSE_ITEMS_LENGHT = 5;
-export const COMPLETED = 1;
 export const DEVELOPER = 2;
 export const TEACHER = 1;
 export const STUDENT = 0;
@@ -158,16 +161,24 @@ export const TOAST_ACTIVITY_SAVE_SUCCESS = "Actitividad guardada con éxito";
 
 export const TOAST_BD_ERROR = "Ocurrió un error con la operación";
 
+export const TOAST_COURSE_START_SUCCESS =
+  "Inició el curso Fracciones para principiantes";
+export const TOAST_COURSE_START_FAILED =
+  "Falló en iniciar el curso Fracciones para principiantes";
+
 export const getToastPendingTasksAlert = (len: number) =>
   `Tiene ${len} tareas pendientes`;
 export const TOAST_TASKS_PENDING =
   "Tiene tareas pendientes para las siguientes actividades";
 export const TOAST_USER_COURSE_NOT_STARTED =
-  "El estudiante aun no inicia el curso";
+  "El usuario no ha iniciado el curso";
 export const TOAST_USER_COURSE_SAVE_NOTE_NOT_CHANGE =
   "No hubieron cambios en el promedio";
 export const TOAST_USER_COURSE_SAVE_NOTE_SUCCESS =
   "Se calculó el promedio con éxito";
+
+export const NO_DATE_MAX_MESSAGE_TASK =
+  "No hay límite de tiempo para esta tarea";
 
 export const getToastPendingActivities = (taskDetail: TaskActivityDetail) =>
   `${ACTIVITY_TYPES.find((a) => a.value === taskDetail.activity_type)?.name} "${

@@ -8,6 +8,7 @@ import { getTasksActivityDetail } from "@/lib/utils";
 import {
   APPROVED,
   Activity,
+  COMPLETED,
   MIN_NOTE_APPROVED,
   REPROVED,
   SUBJECTS_COURSE,
@@ -61,6 +62,11 @@ const UserList = ({
 
     try {
       let temp = await getUserCourseByUserId(id);
+      if (!temp) {
+        toast.error(TOAST_USER_COURSE_NOT_STARTED);
+        return;
+      }
+
       const userTasks = tasks.filter((t) => t.id_user === id);
       const tasksDetail = getTasksActivityDetail(activities, userTasks);
 
@@ -88,18 +94,19 @@ const UserList = ({
         temp
           ? toast.success(TOAST_USER_COURSE_SAVE_NOTE_SUCCESS)
           : toast.success(TOAST_BD_ERROR);
-      } else if (!temp) {
-        toast.warning(TOAST_USER_COURSE_NOT_STARTED);
-      } else {
-        toast.info(TOAST_USER_COURSE_SAVE_NOTE_NOT_CHANGE);
       }
+      !change && toast.info(TOAST_USER_COURSE_SAVE_NOTE_NOT_CHANGE);
     } catch (e) {
       toast.success(TOAST_BD_ERROR);
     }
+    reset();
+  };
+  const reset = () => {
     setOnCompute(false);
     setComputedIndex(null);
     router.refresh();
   };
+
   return (
     <Table.Root className="w-full">
       <Table.Header>
@@ -122,7 +129,7 @@ const UserList = ({
             (n) => n.id === user.id
           );
           const avgFinal = up?.avgFinal ?? -1;
-          const state = USER_PROGRESS.find((u) => u.value === up?.state);
+          const state = USER_PROGRESS.find((u) => u.value === up?.state)!;
           return (
             <Table.Row key={user.id}>
               <Table.RowHeaderCell width={100}>{user.id}</Table.RowHeaderCell>
@@ -131,7 +138,7 @@ const UserList = ({
               <Table.Cell width={250}>
                 <PasswordField password={user.password} />
               </Table.Cell>
-              <Table.Cell width={250}>{state?.label}</Table.Cell>
+              <Table.Cell width={250}>{state.label}</Table.Cell>
               <Table.Cell
                 justify={"center"}
                 width={250}
@@ -147,7 +154,10 @@ const UserList = ({
               </Table.Cell>
               <Table.Cell width={100}>
                 <Button
-                  disabled={onCompute && user.id === computedIndex}
+                  disabled={
+                    (onCompute && user.id === computedIndex) ||
+                    state.value < COMPLETED
+                  }
                   onClick={() => handleCompute(user.id)}
                   color="green"
                   size="3"

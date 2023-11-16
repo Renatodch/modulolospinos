@@ -4,6 +4,7 @@ import { getDateString } from "@/lib/date-lib";
 import {
   Activity,
   MIN_NOTE_APPROVED,
+  NO_DATE_MAX_MESSAGE_TASK,
   SUBJECTS_COURSE,
   Task,
   isTeacher,
@@ -48,7 +49,7 @@ const ProjectItem = ({
             </span>
           </div>
         )}
-        {activity?.date_max && (
+        {activity?.date_max ? (
           <div className="flex flex-col">
             <span
               className={`${
@@ -71,6 +72,16 @@ const ProjectItem = ({
                 Fecha de vencimiento: &nbsp;
               </strong>
               {getDateString(activity?.date_max)}
+            </span>
+          </div>
+        ) : (
+          <div className="flex flex-col">
+            <span>
+              <strong className="text-black">Subido el: &nbsp;</strong>
+              {getDateString(project.date_upload)}
+            </span>
+            <span>
+              <strong>{NO_DATE_MAX_MESSAGE_TASK}</strong>
             </span>
           </div>
         )}

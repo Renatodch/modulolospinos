@@ -5,6 +5,7 @@ import {
   IN_PROGRESS,
   PRIMARY_COLOR,
   REPROVED,
+  SUBJECTS_COURSE,
   TaskActivityDetail,
   User_Course,
 } from "@/model/types";
@@ -28,7 +29,6 @@ const CourseProgressDetail = ({
   const state = user_course?.state ?? IN_PROGRESS;
   const inprogress = !!user_course && state === IN_PROGRESS;
   const endcourse = !!user_course && state > IN_PROGRESS;
-
   const progress = user_course?.progress ?? 0;
   const currentTasksDetail = tasksDetail.filter((t) => t.subject <= progress);
   const totalActivities = tasksDetail.length;
@@ -80,7 +80,15 @@ const CourseProgressDetail = ({
               Usted aun no ha iniciado el curso!
             </div>
           )}
-
+          {user_course && user_course.state === IN_PROGRESS && (
+            <div>
+              Tema actual: &nbsp;
+              <strong>
+                {progress + 1}.&nbsp;
+                {SUBJECTS_COURSE.find((s) => s.value === progress)?.title}
+              </strong>
+            </div>
+          )}
           {noActivity && <div className="mt-4">No hay tareas pendientes</div>}
 
           {user_course &&

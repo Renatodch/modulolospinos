@@ -13,6 +13,7 @@ const QuestionPage = async () => {
     return {
       title: a.title,
       question: a.description,
+      date_max: a.date_max,
       answers: tasks.filter((t) => t.id_activity === a.id),
     };
   });

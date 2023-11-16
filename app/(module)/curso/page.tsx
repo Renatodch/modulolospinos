@@ -22,6 +22,7 @@ const CoursePage = async () => {
   const stars = new Array(5).fill(0);
   const user_course: User_Course | null | undefined =
     await getUserCourseByUserId(id);
+
   const tasks: Task[] | null | undefined = await getTasksByUserId(id);
   const activities = await getActivities();
   const tasksDetail = getTasksActivityDetail(activities, tasks);
@@ -47,7 +48,8 @@ const CoursePage = async () => {
         />
         {isStudent(_user?.type) && (
           <CourseDetail
-            user_course={user_course}
+            test={user_course}
+            id_user={id}
             number_users={number_users}
             tasksDetail={tasksDetail}
           />

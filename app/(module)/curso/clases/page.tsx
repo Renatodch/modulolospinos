@@ -1,79 +1,128 @@
-"use server";
+"use client";
 
+import { useUserContext } from "@/app/context";
 import ClassItem from "@/components/classItem";
 import CourseContentItems from "@/components/courseContentItems";
 import NotAllowed from "@/components/notAllowed";
+import NotInitCourse from "@/components/notInitCourse";
 import { getActivitiesBySubject } from "@/controllers/activity.controller";
 import { getTasksByUserId } from "@/controllers/task.controller";
 import {
   getUserCourseByUserId,
   saveUserCourse,
 } from "@/controllers/user-course.controller";
-
-import { getSession, loginIsRequiredServer } from "@/lib/auth-config";
 import { getTasksActivityDetail } from "@/lib/utils";
-import { Activity, TEACHER, Task, TaskActivityDetail } from "@/model/types";
 
-export default async function ClasesPage(props: any) {
-  await loginIsRequiredServer();
-  const { _user } = await getSession();
-  if (_user?.type === TEACHER) return <NotAllowed />;
+import {
+  PRIMARY_COLOR,
+  TEACHER,
+  TaskActivityDetail,
+  User_Course,
+} from "@/model/types";
+import { useEffect, useState } from "react";
+import PuffLoader from "react-spinners/PuffLoader";
 
-  const id_user = _user?.id || 0;
-  let user_course = await getUserCourseByUserId(id_user);
+export default function ClasesPage(props: any) {
+  const { user } = useUserContext();
 
-  if (!user_course)
-    user_course = await saveUserCourse({
-      id: 0,
-      date_start: new Date(),
-      date_update: new Date(),
-      state: 0,
-      progress: 0,
-      average: null,
-      id_user,
-    });
+  const [user_course, setUserCourse] = useState<User_Course | undefined | null>(
+    undefined
+  );
+  const [loaded, setLoaded] = useState<boolean>(false);
+  const [initCourse, setInitCourse] = useState<boolean>(true);
 
-  let activities: Activity[] = [];
-  let tasks: Task[] = [];
-  let tasksDetail: TaskActivityDetail[] = [];
-  let item = 0;
+  if (user?.type === TEACHER) return <NotAllowed />;
+  const id_user = user?.id || 0;
+  const [tasksDetail, setTasksDetail] = useState<TaskActivityDetail[]>([]);
+  const [progress, setProgress] = useState<number>(0);
+  const [selected, setSelected] = useState<number>(0);
 
-  if (user_course) {
-    const paramNull = props.searchParams?.item === undefined;
-    item = +(props.searchParams?.item ?? 0);
+  useEffect(() => {
+    const updateData = async () => {
+      let userCourse = await getUserCourseByUserId(id_user);
+      if (!userCourse) setInitCourse(false);
+      else setInitCourse(true);
 
-    if (item > user_course.progress) {
-      user_course = await saveUserCourse({
-        ...user_course,
-        progress: item,
+      const progress = userCourse?.progress ?? 0;
+
+      const activities = await getActivitiesBySubject(progress);
+      const tasks = await getTasksByUserId(id_user);
+      const _tasksDetail = getTasksActivityDetail(activities, tasks).filter(
+        (t) => t.subject === progress
+      );
+
+      setTasksDetail(_tasksDetail);
+      setProgress(progress);
+      setSelected(progress);
+      setUserCourse(userCourse);
+      setLoaded(true);
+    };
+    updateData();
+  }, []);
+
+  const HandleClickLink = async (index: number) => {
+    setLoaded(false);
+    let userCourse = await getUserCourseByUserId(id_user);
+    if (!userCourse) return;
+
+    setSelected(index);
+    const activities = await getActivitiesBySubject(index);
+    const tasks = await getTasksByUserId(id_user);
+    const _tasksDetail = getTasksActivityDetail(activities, tasks).filter(
+      (t) => t.subject === index
+    );
+
+    if (index > userCourse?.progress) {
+      userCourse = await saveUserCourse({
+        ...userCourse,
+        progress: index,
         date_update: new Date(),
       });
     } else {
-      paramNull && (item = user_course.progress);
+      index = userCourse.progress;
     }
-    activities = await getActivitiesBySubject(item);
-    tasks = await getTasksByUserId(id_user);
-    tasksDetail = getTasksActivityDetail(activities, tasks).filter(
-      (t) => t.subject === item
-    );
 
-    return (
-      <div className="flex items-start justify-center w-full px-16 py-8 gap-6">
-        <div className=" w-1/3 h-max" style={{ height: "500px" }}>
-          <CourseContentItems
-            interactive
-            progress={user_course?.progress ?? 0}
-            selected={item}
-          />
-        </div>
+    setTasksDetail(_tasksDetail);
+    setProgress(index);
+    setUserCourse(userCourse);
+    setLoaded(true);
+  };
+
+  return initCourse ? (
+    <div className="flex items-start justify-center w-full px-16 py-8 gap-6">
+      <div className=" w-1/3 h-max" style={{ height: "300px" }}>
+        <CourseContentItems
+          interactive
+          progress={progress}
+          selected={selected}
+          loading={!loaded}
+          onClickLink={HandleClickLink}
+        />
+      </div>
+      {loaded ? (
         <div className=" w-2/3 ">
           <ClassItem
-            item={item}
+            item={selected}
             tasksDetail={tasksDetail}
             userCourse={user_course}
           />
         </div>
-      </div>
-    );
-  } else return <NotAllowed />;
+      ) : (
+        <div
+          className="w-2/3 flex justify-center items-center"
+          style={{ height: "500px" }}
+        >
+          <PuffLoader
+            color={PRIMARY_COLOR}
+            loading={!loaded}
+            size={150}
+            aria-label="Loading Spinner"
+            data-testid="loader"
+          />
+        </div>
+      )}
+    </div>
+  ) : (
+    <NotInitCourse />
+  );
 }
