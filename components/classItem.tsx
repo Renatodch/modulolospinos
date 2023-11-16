@@ -17,7 +17,8 @@ interface Props {
   userCourse?: User_Course | undefined | null;
 }
 const ClassItem = ({ item, tasksDetail, userCourse }: Props) => {
-  const subject = SUBJECTS_COURSE[item] || SUBJECTS_COURSE[0];
+  const subject =
+    SUBJECTS_COURSE.find((s) => s.value === item) || SUBJECTS_COURSE[0];
   const noActivities = !tasksDetail?.some((t) => t.subject === item);
 
   return (

@@ -1,12 +1,10 @@
 "use client";
 import {
   APPROVED,
-  APPROVED_COLOR_CLASS,
   COURSE_LAST_ITEM_INDEX,
   IN_PROGRESS,
   PRIMARY_COLOR,
   REPROVED,
-  REPROVED_COLOR_CLASS,
   TaskActivityDetail,
   User_Course,
 } from "@/model/types";
@@ -26,14 +24,37 @@ const CourseProgressDetail = ({
   tasksDetail: TaskActivityDetail[];
 }) => {
   const [open, setOpen] = useState<boolean>(false);
-  const pendingTask = tasksDetail.some((t) => !t.done);
-  const pendingEvaluateTask = tasksDetail.some((t) => t.done && !t.evaluated);
-  const done = tasksDetail.every((t) => t.done && t.evaluated);
-  const evaluatedTask = tasksDetail.some((t) => t.done && t.evaluated);
-  const tasksDone = tasksDetail.filter((t) => t.done && !t.evaluated);
-  const tasksEvaluated = tasksDetail.filter((t) => t.done && t.evaluated);
-  const tasksPending = tasksDetail.filter((t) => !t.done);
+
   const state = user_course?.state ?? IN_PROGRESS;
+  const inprogress = !!user_course && state === IN_PROGRESS;
+  const endcourse = !!user_course && state > IN_PROGRESS;
+
+  const subject = user_course?.progress ?? 0;
+  const currentTasksDetail = tasksDetail.filter((t) => t.subject <= subject);
+  const totalActivities = tasksDetail.length;
+
+  const noActivity =
+    (currentTasksDetail.length === 0 && inprogress) ||
+    (currentTasksDetail.every((t) => t.done) && inprogress);
+
+  const pendingTask = currentTasksDetail.some((t) => !t.done) && inprogress;
+
+  const pendingEvaluateTask =
+    currentTasksDetail.some((t) => t.done && !t.evaluated) && inprogress;
+
+  const done =
+    currentTasksDetail.filter((t) => t.evaluated).length === totalActivities &&
+    inprogress &&
+    subject === COURSE_LAST_ITEM_INDEX;
+
+  const evaluatedTask =
+    currentTasksDetail.some((t) => t.evaluated) && inprogress;
+
+  const tasksDone = currentTasksDetail.filter((t) => t.done && !t.evaluated);
+  const tasksEvaluated = currentTasksDetail.filter(
+    (t) => t.done && t.evaluated
+  );
+  const tasksPending = currentTasksDetail.filter((t) => !t.done);
   const handleClick = () => setOpen(!open);
 
   return (
@@ -59,17 +80,7 @@ const CourseProgressDetail = ({
             </div>
           )}
 
-          {user_course &&
-            user_course.state === IN_PROGRESS &&
-            user_course.progress < COURSE_LAST_ITEM_INDEX && (
-              <>
-                <div className="italic flex items-center gap-2">
-                  <GrInProgress className=" text-xl" />
-                  Usted se encuentra llevando el curso
-                </div>
-                <div className="mt-4">No hay tareas pendientes</div>
-              </>
-            )}
+          {noActivity && <div className="mt-4">No hay tareas pendientes</div>}
 
           {user_course &&
             user_course.state === IN_PROGRESS &&
@@ -109,12 +120,12 @@ const CourseProgressDetail = ({
               </>
             )}
 
-          {state > IN_PROGRESS && (
+          {endcourse && (
             <>
               <div
                 className={`italic flex items-center gap-2 ${
-                  state === APPROVED && APPROVED_COLOR_CLASS
-                } ${state === REPROVED && REPROVED_COLOR_CLASS}`}
+                  state === APPROVED && "text-blue-600"
+                } ${state === REPROVED && "text-red-600"}`}
               >
                 {state === REPROVED && (
                   <>
@@ -132,8 +143,8 @@ const CourseProgressDetail = ({
               <div className="mt-4">
                 Su promedio ponderado es de:&nbsp;
                 <span
-                  className={`${state === APPROVED && APPROVED_COLOR_CLASS} ${
-                    state === REPROVED && REPROVED_COLOR_CLASS
+                  className={`${state === APPROVED && "text-blue-600"} ${
+                    state === REPROVED && "text-red-600"
                   } text-xl`}
                 >
                   {user_course?.average}

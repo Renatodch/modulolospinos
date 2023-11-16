@@ -1,6 +1,5 @@
 "use client";
-import { getNoteColorClass } from "@/lib/utils";
-import { PRIMARY_COLOR, Task } from "@/model/types";
+import { MIN_NOTE_APPROVED, PRIMARY_COLOR, Task } from "@/model/types";
 import { Button, Card, Inset, Strong } from "@radix-ui/themes";
 import Image from "next/image";
 import Link from "next/link";
@@ -56,13 +55,21 @@ const ProjectList = ({ projects }: { projects: Task[] }) => {
           </p>
           <div className="w-full flex justify-between items-center">
             {p.score === null && <p className="text-base">Pendiente</p>}
-            {p.score && (
-              <p className={`${getNoteColorClass(p.score)} text-base`}>
+            {p.score !== null && (
+              <p
+                className={`${
+                  p.score >= MIN_NOTE_APPROVED
+                    ? "text-blue-600"
+                    : "text-red-600"
+                } text-base`}
+              >
                 {p.score}/20
               </p>
             )}
             <Button size="3" style={{ backgroundColor: PRIMARY_COLOR }}>
-              <Link href={`portafolio/${p.id}`}>Ver</Link>
+              <Link target="_blank" href={`portafolio/${p.id}`}>
+                Ver
+              </Link>
             </Button>
           </div>
         </Card>

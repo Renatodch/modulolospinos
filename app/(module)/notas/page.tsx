@@ -5,8 +5,13 @@ import { getActivities } from "@/controllers/activity.controller";
 import { getTasksByUserId } from "@/controllers/task.controller";
 import { getUserCourseByUserId } from "@/controllers/user-course.controller";
 import { getSession, loginIsRequiredServer } from "@/lib/auth-config";
-import { getNoteColorClass, getTasksActivityDetail } from "@/lib/utils";
-import { PRIMARY_COLOR, SUBJECTS_COURSE, TEACHER } from "@/model/types";
+import { getTasksActivityDetail } from "@/lib/utils";
+import {
+  MIN_NOTE_APPROVED,
+  PRIMARY_COLOR,
+  SUBJECTS_COURSE,
+  TEACHER,
+} from "@/model/types";
 import { Table } from "@radix-ui/themes";
 
 const CalificationPage = async () => {
@@ -113,9 +118,11 @@ const CalificationPage = async () => {
                       <Table.Row>
                         <Table.Cell
                           justify="center"
-                          className={`${getNoteColorClass(
-                            avgFinal
-                          )} font-semibold text-center`}
+                          className={`${
+                            pc >= MIN_NOTE_APPROVED
+                              ? "text-blue-600"
+                              : "text-red-600"
+                          } font-semibold text-center`}
                         >
                           {pc.toFixed(1)}
                         </Table.Cell>
@@ -135,9 +142,9 @@ const CalificationPage = async () => {
             <Table.Cell
               justify="center"
               style={cellStyle}
-              className={`${getNoteColorClass(
-                avgFinal
-              )} font-semibold text-lg text-center`}
+              className={`${
+                avgFinal >= MIN_NOTE_APPROVED ? "text-blue-600" : "text-red-600"
+              } font-semibold text-lg text-center`}
             >
               {user_course ? avgFinal.toFixed(1) : ""}
             </Table.Cell>

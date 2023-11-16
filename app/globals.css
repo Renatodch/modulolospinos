@@ -18,3 +18,34 @@ a.rubric_link{
 a.rubric_link:hover{
   text-decoration: underline;
 }
+
+details summary.navbar-link{
+  text-decoration: none;
+  background-color: #98bf64;
+}
+details summary.navbar-link:hover{
+  background-color: #98bf64;
+}
+details summary.navbar-link:active{
+  background-color: #98bf64 !important;
+}
+
+details ul.navbar-link{
+  width:auto;
+  z-index:1000;
+  background-color: #98bf64;
+}
+details ul li a:hover{
+  background-color: #98bf64;
+}
+details ul li a:active{
+  background-color: #98bf64 !important;
+}
+
+li a.navbar-link:hover{
+  background-color: #98bf64;
+}
+li a.navbar-link:active{
+  background-color: #98bf64 !important;
+}
+

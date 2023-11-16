@@ -1,7 +1,12 @@
 "use client";
 import { useUserContext } from "@/app/context";
-import { getNoteColorClass } from "@/lib/utils";
-import { PRIMARY_COLOR, QuestionAnswers, Task, isTeacher } from "@/model/types";
+import {
+  MIN_NOTE_APPROVED,
+  PRIMARY_COLOR,
+  QuestionAnswers,
+  Task,
+  isTeacher,
+} from "@/model/types";
 import { Strong } from "@radix-ui/themes";
 import TaskFormEval from "./taskFormEval";
 const AnswerList = ({
@@ -64,7 +69,11 @@ const AnswerList = ({
                       )}
                       {a.score && (
                         <p
-                          className={`${getNoteColorClass(a.score)} text-base`}
+                          className={`${
+                            a.score >= MIN_NOTE_APPROVED
+                              ? "text-blue-600"
+                              : "text-red-600"
+                          } text-base`}
                         >
                           {a.score}/20
                         </p>

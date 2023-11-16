@@ -81,8 +81,6 @@ export const USER_PROGRESS = [
 ];
 
 export const PRIMARY_COLOR = "#98bf64";
-export const APPROVED_COLOR_CLASS = "text-blue-600";
-export const REPROVED_COLOR_CLASS = "text-red-600";
 
 export const MIN_NOTE_APPROVED = 10.5;
 export const COURSE_LAST_ITEM_INDEX = 4;
@@ -160,6 +158,8 @@ export const TOAST_ACTIVITY_SAVE_SUCCESS = "Actitividad guardada con éxito";
 
 export const TOAST_BD_ERROR = "Ocurrió un error con la operación";
 
+export const getToastPendingTasksAlert = (len: number) =>
+  `Tiene ${len} tareas pendientes`;
 export const TOAST_TASKS_PENDING =
   "Tiene tareas pendientes para las siguientes actividades";
 export const TOAST_USER_COURSE_NOT_STARTED =
@@ -168,5 +168,10 @@ export const TOAST_USER_COURSE_SAVE_NOTE_NOT_CHANGE =
   "No hubieron cambios en el promedio";
 export const TOAST_USER_COURSE_SAVE_NOTE_SUCCESS =
   "Se calculó el promedio con éxito";
-export const getToastPendingProject = (date?: Date | null) =>
-  `Tiene pendiente el envio de su proyecto hasta el día ${getDateString(date)}`;
+
+export const getToastPendingActivities = (taskDetail: TaskActivityDetail) =>
+  `${ACTIVITY_TYPES.find((a) => a.value === taskDetail.activity_type)?.name} "${
+    taskDetail.activity_title
+  }" del tema "${
+    SUBJECTS_COURSE.find((s) => s.value === taskDetail.subject)?.title
+  }" vence el dia ${getDateString(taskDetail.date_max)}`;

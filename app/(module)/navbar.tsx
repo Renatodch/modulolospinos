@@ -2,17 +2,14 @@ import { PRIMARY_COLOR } from "@/model/types";
 import Link from "next/link";
 import Links from "../../components/navbarLinks";
 
-async function Navbar() {
+function Navbar() {
   return (
     <div
       className="flex items-center w-full h-16 px-14 border-b-2 "
       style={{ backgroundColor: PRIMARY_COLOR }}
     >
       <div className="justify-start lg:w-2/5">
-        <div
-          className="dropdown"
-          style={{ backgroundColor: `${PRIMARY_COLOR} !important` }}
-        >
+        <div className="dropdown">
           <label tabIndex={0} className="btn btn-ghost lg:hidden">
             <svg
               xmlns="http://www.w3.org/2000/svg"

@@ -4,7 +4,7 @@ import {
   saveUserCourse,
 } from "@/controllers/user-course.controller";
 import { deleteUserById } from "@/controllers/user.controller";
-import { getNoteColorClass, getTasksActivityDetail } from "@/lib/utils";
+import { getTasksActivityDetail } from "@/lib/utils";
 import {
   APPROVED,
   Activity,
@@ -136,7 +136,11 @@ const UserList = ({
                 justify={"center"}
                 width={250}
                 className={`font-semibold ${
-                  avgFinal != -1 ? getNoteColorClass(avgFinal) : ""
+                  avgFinal != -1
+                    ? avgFinal >= MIN_NOTE_APPROVED
+                      ? "text-blue-600"
+                      : "text-red-600"
+                    : ""
                 }`}
               >
                 {avgFinal != -1 ? avgFinal.toString().padStart(2, "0") : ""}

@@ -1,10 +1,9 @@
 "use client";
 import { useUserContext } from "@/app/context";
 import { getDateString } from "@/lib/date-lib";
-import { getNoteColorClass } from "@/lib/utils";
 import {
   Activity,
-  REPROVED_COLOR_CLASS,
+  MIN_NOTE_APPROVED,
   SUBJECTS_COURSE,
   Task,
   isTeacher,
@@ -20,7 +19,7 @@ const ProjectItem = ({
   activity: Activity | null | undefined;
 }) => {
   const { user } = useUserContext();
-  const today = new Date();
+
   return !project ? (
     <div className="w-full flex justify-center mt-16">
       <Strong>El proyecto no existe</Strong>
@@ -42,19 +41,38 @@ const ProjectItem = ({
           <div>
             <span>
               <strong>Tema: &nbsp;</strong>
-              {SUBJECTS_COURSE[activity?.subject].title}
+              {
+                SUBJECTS_COURSE.find((s) => s.value === activity?.subject)
+                  ?.title
+              }
             </span>
           </div>
         )}
         {activity?.date_max && (
-          <span
-            className={`${
-              today > activity.date_max ? REPROVED_COLOR_CLASS : "text-black"
-            }`}
-          >
-            <strong className="text-black">Fecha de vencimiento: &nbsp;</strong>
-            {getDateString(activity?.date_max)}
-          </span>
+          <div className="flex flex-col">
+            <span
+              className={`${
+                project.date_upload > activity.date_max
+                  ? "text-red-600"
+                  : "text-black"
+              }`}
+            >
+              <strong className="text-black">Subido el: &nbsp;</strong>
+              {getDateString(project.date_upload)}
+            </span>
+            <span
+              className={`${
+                project.date_upload > activity.date_max
+                  ? "text-red-600"
+                  : "text-black"
+              }`}
+            >
+              <strong className="text-black">
+                Fecha de vencimiento: &nbsp;
+              </strong>
+              {getDateString(activity?.date_max)}
+            </span>
+          </div>
         )}
       </div>
       <p className="font-bold text-3xl w-full text-center mb-4">
@@ -86,7 +104,13 @@ const ProjectItem = ({
           {project.score && (
             <p className="text-xl">
               <Strong>Nota:&nbsp;</Strong>
-              <span className={`${getNoteColorClass(project.score)}`}>
+              <span
+                className={`${
+                  project.score >= MIN_NOTE_APPROVED
+                    ? "text-blue-600"
+                    : "text-red-600"
+                }`}
+              >
                 {project.score}
               </span>
             </p>
