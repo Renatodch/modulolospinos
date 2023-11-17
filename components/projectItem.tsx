@@ -112,7 +112,7 @@ const ProjectItem = ({
       <div className="flex justify-between w-full lg:flex-row flex-col lg:gap-0 gap-6">
         {isTeacher(user?.type) && <ProjectFormEval target={project} />}
         <div className="flex flex-col w-96">
-          {project.score && (
+          {project.score != null && project.score != undefined && (
             <p className="text-xl">
               <Strong>Nota:&nbsp;</Strong>
               <span
@@ -122,7 +122,7 @@ const ProjectItem = ({
                     : "text-red-600"
                 }`}
               >
-                {project.score}
+                {project.score}/20
               </span>
             </p>
           )}
