@@ -39,7 +39,7 @@ export interface Task {
   id_activity: number | null;
   id_user: number | null;
 }
-
+/*********************************************************************** */
 export interface TaskActivityDetail {
   done: boolean;
   id_task: number;
@@ -65,15 +65,15 @@ export interface QuestionAnswers {
   answers: Task[];
 }
 
-export interface User_Progress {
+/* export interface User_Progress {
   id: number | null;
   state: number;
   avgFinal: number | null;
-}
+} */
 
 export const NOT_INIT = -1;
 export const IN_PROGRESS = 0;
-export const COMPLETED = 1;
+//export const COMPLETED = 1;
 
 export const REPROVED = 2;
 export const APPROVED = 1;
@@ -106,8 +106,8 @@ export function isTeacher(type: number | null | undefined) {
 }
 
 export const ACTIVITY_TYPES = [
-  { name: "Proyecto", value: 1 },
-  { name: "Pregunta", value: 0 },
+  { name: "Proyecto", value: PROJECT },
+  { name: "Pregunta", value: ANSWER },
 ];
 export const SUBJECTS_COURSE = [
   {

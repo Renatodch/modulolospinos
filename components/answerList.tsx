@@ -86,7 +86,7 @@ const AnswerList = ({
                   />
                   <div className="w-full flex justify-between items-center p-4">
                     {a.score === null && <p className="text-base">Pendiente</p>}
-                    {a.score && (
+                    {a.score !== null && a.score !== undefined && (
                       <p
                         className={`${
                           a.score >= MIN_NOTE_APPROVED

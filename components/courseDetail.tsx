@@ -77,10 +77,12 @@ const CourseDetail = ({
         average: null,
         id_user,
       });
+      toast.dismiss();
       userCourse
         ? toast.success(TOAST_COURSE_START_SUCCESS)
         : toast.error(TOAST_COURSE_START_FAILED);
     } catch (e) {
+      toast.dismiss();
       toast.error(TOAST_COURSE_START_FAILED);
     }
     setUc(userCourse);
