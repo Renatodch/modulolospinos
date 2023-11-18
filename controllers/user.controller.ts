@@ -64,21 +64,12 @@ export const deleteUserById = async (id: number) => {
     if (user_course) {
       const user_courses = await deleteUserCoursesByUserId(id);
       const tasks = await deleteTasksByUserId(id);
-
-      user_courses.count > 0 &&
-        tasks.count > 0 &&
-        (user = await prisma.user.delete({
-          where: {
-            id,
-          },
-        }));
-    } else {
-      user = await prisma.user.delete({
-        where: {
-          id,
-        },
-      });
     }
+    user = await prisma.user.delete({
+      where: {
+        id,
+      },
+    });
 
     return user;
   } catch (e) {}
