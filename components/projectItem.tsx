@@ -7,15 +7,19 @@ import {
   NO_DATE_MAX_MESSAGE_TASK,
   SUBJECTS_COURSE,
   Task,
+  User,
   isTeacher,
 } from "@/model/types";
 import { Strong } from "@radix-ui/themes";
 import Image from "next/image";
+import RubricLink from "./rubricLink";
 import ProjectFormEval from "./taskFormEval";
 const ProjectItem = ({
+  student,
   project,
   activity,
 }: {
+  student: User | null | undefined;
   project: Task | null | undefined;
   activity: Activity | null | undefined;
 }) => {
@@ -30,61 +34,63 @@ const ProjectItem = ({
       <div className="italic flex justify-between text-md w-full mb-4">
         {activity?.title && activity.id && (
           <div className="flex flex-col">
+            <strong className="uppercase mb-2">Datos de la actividad</strong>
+
             <span>
-              <strong>Tarea para la actividad: &nbsp;</strong> {activity?.title}
+              <strong>Título: &nbsp;</strong> {activity?.title}
             </span>
             <span>
-              <strong>id de actividad: &nbsp;</strong> {activity?.id}
+              <strong>iD: &nbsp;</strong> {activity?.id}
             </span>
-          </div>
-        )}
-        {activity?.subject && (
-          <div>
             <span>
-              <strong>Tema: &nbsp;</strong>
+              <strong>Tema al que pertenece: &nbsp;</strong>
               {
                 SUBJECTS_COURSE.find((s) => s.value === activity?.subject)
                   ?.title
               }
             </span>
+            {activity.date_max ? (
+              <span
+                className={`${
+                  project.date_upload > activity.date_max
+                    ? "text-red-600"
+                    : "text-black"
+                }`}
+              >
+                <strong className="text-black">
+                  Fecha de vencimiento: &nbsp;
+                </strong>
+                {getDateString(activity?.date_max)}
+              </span>
+            ) : (
+              <span>
+                <strong>{NO_DATE_MAX_MESSAGE_TASK}</strong>
+              </span>
+            )}
+            <RubricLink url={activity.rubric} />
           </div>
         )}
-        {activity?.date_max ? (
-          <div className="flex flex-col">
-            <span
-              className={`${
-                project.date_upload > activity.date_max
-                  ? "text-red-600"
-                  : "text-black"
-              }`}
-            >
-              <strong className="text-black">Subido el: &nbsp;</strong>
-              {getDateString(project.date_upload)}
-            </span>
-            <span
-              className={`${
-                project.date_upload > activity.date_max
-                  ? "text-red-600"
-                  : "text-black"
-              }`}
-            >
-              <strong className="text-black">
-                Fecha de vencimiento: &nbsp;
-              </strong>
-              {getDateString(activity?.date_max)}
-            </span>
-          </div>
-        ) : (
-          <div className="flex flex-col">
-            <span>
-              <strong className="text-black">Subido el: &nbsp;</strong>
-              {getDateString(project.date_upload)}
-            </span>
-            <span>
-              <strong>{NO_DATE_MAX_MESSAGE_TASK}</strong>
-            </span>
-          </div>
-        )}
+        <div className="flex flex-col">
+          <strong className="uppercase mb-2">Datos del estudiante</strong>
+          <span>
+            <strong className="text-black">Nombre: &nbsp;</strong>
+            {student?.name}
+          </span>
+          <span>
+            <strong className="text-black">iD: &nbsp;</strong>
+            {student?.id}
+          </span>
+          <span
+            className={`${
+              activity?.date_max && project.date_upload > activity.date_max
+                ? "text-red-600"
+                : "text-black"
+            }`}
+          >
+            <strong className="text-black">Lo subió el: &nbsp;</strong>
+            {getDateString(project.date_upload)}
+          </span>
+        </div>
       </div>
       <p className="font-bold text-3xl w-full text-center mb-4">
         {project?.title}

@@ -75,7 +75,7 @@ export const deleteUserById = async (id: number) => {
   } catch (e) {}
 };
 
-export const getUserById = async (id: number) => {
+export const getUserById = async (id?: number) => {
   try {
     const res = await prisma.user.findUnique({
       where: {

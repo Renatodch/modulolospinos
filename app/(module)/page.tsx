@@ -21,7 +21,7 @@ export default async function Home() {
               distrito de Trujillo, provincia de Trujillo, ésta I.E. corresponde
               a la UGEL 03 – TRUJILLO NOR OESTE la que vigila la institución
               educativa, y esta última pertenece a la Dirección regional de
-              educación DRE LA LIBERTAD
+              educación DE LA LIBERTAD
             </div>
             <div className="flex justify-start items-center sdivace-x-2 w-full mt-9">
               <div className="bg-blue-700 w-12 h-12 flex justify-center items-center rounded-lg">

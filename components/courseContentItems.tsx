@@ -1,6 +1,7 @@
 "use client";
 import { SUBJECTS_COURSE } from "@/model/types";
 import { Flex } from "@radix-ui/themes";
+import Link from "next/link";
 import { AiFillYoutube } from "react-icons/ai";
 
 interface Props {
@@ -18,17 +19,11 @@ const CourseContentItems = ({
   onClickLink,
   loading,
 }: Props) => {
-  const styleClasses = `text-justify p-4 items-center gap-8 w-full flex ${
-    interactive && "hover:cursor-pointer hover:bg-blue-200"
-  }`;
-  /* const [selected, setSelected] = useState<number | undefined>(undefined);
-  useEffect(() => {
-    setSelected(progress);
-  }, []);
- */
+  const styleClasses =
+    "text-justify p-4 items-center gap-8 w-full flex hover:cursor-pointer hover:bg-blue-200";
+
   const handleClick = (index: number) => {
     if (interactive && onClickLink) {
-      //setSelected(index);
       onClickLink(index);
     }
   };
@@ -57,9 +52,26 @@ const CourseContentItems = ({
                 {i.title}
               </li>
             ) : (
-              <li key={index} className={`${styleClasses}`}>
-                <AiFillYoutube size="24" style={{ minWidth: 50 }} />
-                {i.title}
+              <li
+                key={index}
+                className={`${styleClasses} ${
+                  selected === index && "bg-blue-100"
+                } ${
+                  index > progress! || progress === undefined
+                    ? "text-gray-400"
+                    : ""
+                }`}
+                style={{
+                  pointerEvents:
+                    index > progress! || progress === undefined
+                      ? "none"
+                      : "all",
+                }}
+              >
+                <Link href="/curso/clases" className="flex">
+                  <AiFillYoutube size="24" style={{ minWidth: 50 }} />
+                  {i.title}
+                </Link>
               </li>
             );
           })}

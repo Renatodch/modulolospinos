@@ -22,7 +22,7 @@ import {
 import { useEffect, useState } from "react";
 import PuffLoader from "react-spinners/PuffLoader";
 
-export default function ClasesPage(props: any) {
+export default function ClasesPage() {
   const { user } = useUserContext();
   const [user_course, setUserCourse] = useState<User_Course | undefined | null>(
     undefined

@@ -8,9 +8,9 @@ import {
   User_Course,
 } from "@/model/types";
 import { ScrollArea } from "@radix-ui/themes";
-import Link from "next/link";
 import AnswerForm from "./answerForm";
 import ProjectForm from "./projectForm";
+import RubricLink from "./rubricLink";
 
 interface Props {
   item: number;
@@ -79,15 +79,7 @@ const TaskActivity = ({ task }: { task: TaskActivityDetail }) => {
       </div>
       <div className=" w-full text-md mb-4">{task.activity_description}</div>
       <div className=" w-full flex  justify-between items-center ">
-        <div className="text-md">
-          {task.rubric ? (
-            <Link href={task.rubric} className="rubric_link">
-              DESCARGAR RUBRICA
-            </Link>
-          ) : (
-            <span className="italic">Sin Rúbrica</span>
-          )}
-        </div>
+        <RubricLink url={task.rubric} />
         <div>
           {task.activity_type === PROJECT ? (
             <ProjectForm taskActivityDetail={task} />

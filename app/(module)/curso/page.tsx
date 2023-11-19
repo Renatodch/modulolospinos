@@ -87,7 +87,10 @@ const CoursePage = async () => {
             <Heading size="4" mb="5" trim="start">
               Contenido del curso
             </Heading>
-            <CourseContentItems />
+            <CourseContentItems
+              progress={user_course?.progress}
+              selected={user_course?.progress}
+            />
           </Box>
         </div>
         <div className="lg:w-1/3 w-full flex-col border-4 border-gray-300 rounded-md ">

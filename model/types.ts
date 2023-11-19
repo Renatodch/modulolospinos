@@ -58,11 +58,13 @@ export interface TaskActivityDetail {
   task_description: string | null;
 }
 
+export type Answer = Task & { student?: string };
 export interface QuestionAnswers {
   title: string;
   question: string;
+  subject: number;
   date_max: Date | null;
-  answers: Task[];
+  answers: Answer[];
 }
 
 /* export interface User_Progress {

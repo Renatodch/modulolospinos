@@ -1,22 +1,39 @@
 import AnswerList from "@/components/answerList";
 import { getActivitiesAnswer } from "@/controllers/activity.controller";
 import { getTasks } from "@/controllers/task.controller";
+import { getUsers } from "@/controllers/user.controller";
 
 import { loginIsRequiredServer } from "@/lib/auth-config";
-import { ANSWER, QuestionAnswers } from "@/model/types";
+import { ANSWER, Answer, QuestionAnswers } from "@/model/types";
 
 const QuestionPage = async () => {
   await loginIsRequiredServer();
   const activities = await getActivitiesAnswer();
   const tasks = await getTasks(ANSWER);
-  const questionAnswers: QuestionAnswers[] = activities.map((a) => {
-    return {
+  const users = await getUsers(ANSWER);
+
+  const questionAnswers: QuestionAnswers[] = [];
+  activities.forEach((a) => {
+    const answers: Answer[] = [];
+    tasks.forEach((t) => {
+      if (a.id === t.id_activity) {
+        const user = users.find((u) => u.id === t.id_user);
+        const student = user?.name;
+        answers.push({
+          ...t,
+          student,
+        });
+      }
+    });
+    questionAnswers.push({
       title: a.title,
       question: a.description,
       date_max: a.date_max,
-      answers: tasks.filter((t) => t.id_activity === a.id),
-    };
+      subject: a.subject,
+      answers,
+    });
   });
+
   return (
     <div className="flex flex-col items-center justify-center w-full py-8 px-16">
       <div className="flex flex-col items-center justify-center w-full">
