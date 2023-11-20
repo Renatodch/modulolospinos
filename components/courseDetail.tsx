@@ -29,11 +29,12 @@ const CourseDetail = ({
   number_users,
   tasksDetail,
   id_user,
+  onStart,
 }: {
   number_users: number;
   tasksDetail: TaskActivityDetail[];
   id_user: number;
-  test: User_Course | null | undefined;
+  onStart: () => void;
 }) => {
   const router = useRouter();
   const [clicked, setClicked] = useState(false);
@@ -87,6 +88,7 @@ const CourseDetail = ({
     }
     setUc(userCourse);
     router.refresh();
+    onStart();
     setClicked(false);
   };
   return (

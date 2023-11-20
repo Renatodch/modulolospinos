@@ -24,10 +24,10 @@ import {
   User,
   User_Course,
 } from "@/model/types";
-import { Button, Table, TextField } from "@radix-ui/themes";
+import { Button, Table } from "@radix-ui/themes";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { AiFillDelete, AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
+import { AiFillDelete } from "react-icons/ai";
 import { MdCalculate } from "react-icons/md";
 import { toast } from "sonner";
 import UserForm from "./userForm";
@@ -122,7 +122,6 @@ const UserList = ({
           <Table.ColumnHeaderCell>Id</Table.ColumnHeaderCell>
           <Table.ColumnHeaderCell>Nombres Completos</Table.ColumnHeaderCell>
           <Table.ColumnHeaderCell>Email</Table.ColumnHeaderCell>
-          <Table.ColumnHeaderCell>Contraseña</Table.ColumnHeaderCell>
           <Table.ColumnHeaderCell>Estado Curso</Table.ColumnHeaderCell>
           <Table.ColumnHeaderCell>Promedio Final</Table.ColumnHeaderCell>
           <Table.ColumnHeaderCell>Calcular Promedio</Table.ColumnHeaderCell>
@@ -143,9 +142,6 @@ const UserList = ({
               <Table.RowHeaderCell width={100}>{user.id}</Table.RowHeaderCell>
               <Table.Cell width={300}>{user.name}</Table.Cell>
               <Table.Cell width={250}>{user.email}</Table.Cell>
-              <Table.Cell width={250}>
-                <PasswordField password={user.password} />
-              </Table.Cell>
               <Table.Cell width={250}>{state.label}</Table.Cell>
               <Table.Cell
                 justify={"center"}
@@ -191,35 +187,6 @@ const UserList = ({
         })}
       </Table.Body>
     </Table.Root>
-  );
-};
-
-const PasswordField = (props: { password: string }) => {
-  const [passHidden, setPassHidden] = useState<boolean | null>(true);
-  const togglePassword = () => {
-    setPassHidden(!passHidden);
-  };
-  return (
-    <TextField.Root>
-      <TextField.Input
-        readOnly
-        value={props.password}
-        size="2"
-        type={passHidden ? "password" : "text"}
-        color="gray"
-        variant="surface"
-        placeholder="Contraseña*"
-      />
-      <TextField.Slot>
-        <Button type="button" variant="ghost" onClick={togglePassword}>
-          {passHidden ? (
-            <AiFillEyeInvisible size={20} />
-          ) : (
-            <AiFillEye size={20} />
-          )}
-        </Button>
-      </TextField.Slot>
-    </TextField.Root>
   );
 };
 

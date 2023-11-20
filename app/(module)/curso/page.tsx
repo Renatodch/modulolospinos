@@ -1,3 +1,5 @@
+"use client";
+import { useUserContext } from "@/app/context";
 import CourseContentItems from "@/components/courseContentItems";
 import CourseDetail from "@/components/courseDetail";
 import { getActivities } from "@/controllers/activity.controller";
@@ -6,26 +8,67 @@ import {
   getCurrentNumberUserCourses,
   getUserCourseByUserId,
 } from "@/controllers/user-course.controller";
-import { getSession, loginIsRequiredServer } from "@/lib/auth-config";
 import { getTasksActivityDetail } from "@/lib/utils";
-import { Task, User_Course, isStudent } from "@/model/types";
+import {
+  PRIMARY_COLOR,
+  Task,
+  TaskActivityDetail,
+  User_Course,
+  isStudent,
+} from "@/model/types";
 import { Avatar, Box, Flex, Heading, Text } from "@radix-ui/themes";
 import Image from "next/image";
+import { useEffect, useState } from "react";
 import { AiFillStar } from "react-icons/ai";
+import { PuffLoader } from "react-spinners";
 import mainPicture from "../../../public/curso.jpg";
 
-const CoursePage = async () => {
-  await loginIsRequiredServer();
-  const { _user } = await getSession();
-  const id = _user?.id || 0;
-  const number_users = await getCurrentNumberUserCourses();
+const CoursePage = () => {
+  const [loaded, setLoaded] = useState(false);
+  const [numberUsers, setNumberUsers] = useState(0);
+  const [tasksDetail, setTasksDetail] = useState<TaskActivityDetail[]>([]);
+  const [userCourse, setUserCourse] = useState<User_Course | null | undefined>(
+    undefined
+  );
+  const { user } = useUserContext();
+  const id = user?.id || 0;
+  const type = user?.type || 1;
   const stars = new Array(5).fill(0);
-  const user_course: User_Course | null | undefined =
-    await getUserCourseByUserId(id);
 
-  const tasks: Task[] | null | undefined = await getTasksByUserId(id);
-  const activities = await getActivities();
-  const tasksDetail = getTasksActivityDetail(activities, tasks);
+  useEffect(() => {
+    const getData = async () => {
+      const number_users = await getCurrentNumberUserCourses();
+      const user_course: User_Course | null | undefined =
+        await getUserCourseByUserId(id);
+
+      const tasks: Task[] | null | undefined = await getTasksByUserId(id);
+      const activities = await getActivities();
+      const _tasksDetail = getTasksActivityDetail(activities, tasks);
+
+      setUserCourse(user_course);
+      setTasksDetail(_tasksDetail);
+      setNumberUsers(number_users);
+      setLoaded(true);
+    };
+    getData();
+  }, []);
+
+  const handleStart = async () => {
+    setLoaded(false);
+
+    const number_users = await getCurrentNumberUserCourses();
+    const user_course: User_Course | null | undefined =
+      await getUserCourseByUserId(id);
+
+    const tasks: Task[] | null | undefined = await getTasksByUserId(id);
+    const activities = await getActivities();
+    const _tasksDetail = getTasksActivityDetail(activities, tasks);
+
+    setUserCourse(user_course);
+    setTasksDetail(_tasksDetail);
+    setNumberUsers(number_users);
+    setLoaded(true);
+  };
 
   return (
     <div className="flex flex-col items-center justify-center w-full px-16 py-8 gap-6">
@@ -46,11 +89,11 @@ const CoursePage = async () => {
           height={400}
           alt="imagen del curso"
         />
-        {isStudent(_user?.type) && (
+        {isStudent(type) && (
           <CourseDetail
-            test={user_course}
+            onStart={handleStart}
             id_user={id}
-            number_users={number_users}
+            number_users={numberUsers}
             tasksDetail={tasksDetail}
           />
         )}
@@ -87,10 +130,25 @@ const CoursePage = async () => {
             <Heading size="4" mb="5" trim="start">
               Contenido del curso
             </Heading>
-            <CourseContentItems
-              progress={user_course?.progress}
-              selected={user_course?.progress}
-            />
+            {loaded ? (
+              <CourseContentItems
+                progress={userCourse?.progress}
+                selected={userCourse?.progress}
+              />
+            ) : (
+              <div
+                className="w-full flex justify-center items-center"
+                style={{ height: "300px" }}
+              >
+                <PuffLoader
+                  color={PRIMARY_COLOR}
+                  loading={!loaded}
+                  size={150}
+                  aria-label="Loading Spinner"
+                  data-testid="loader"
+                />
+              </div>
+            )}
           </Box>
         </div>
         <div className="lg:w-1/3 w-full flex-col border-4 border-gray-300 rounded-md ">

@@ -22,7 +22,7 @@ import {
 import { useEffect, useState } from "react";
 import PuffLoader from "react-spinners/PuffLoader";
 
-export default function ClasesPage() {
+export default function ClasesPage(props: any) {
   const { user } = useUserContext();
   const [user_course, setUserCourse] = useState<User_Course | undefined | null>(
     undefined
@@ -36,21 +36,23 @@ export default function ClasesPage() {
 
   useEffect(() => {
     const updateData = async () => {
+      const _index = props.searchParams.index;
+
       let userCourse = await getUserCourseByUserId(id_user);
       if (!userCourse) setInitCourse(false);
       else setInitCourse(true);
 
       const _progress = userCourse?.progress ?? 0;
 
-      const activities = await getActivitiesBySubject(_progress);
-      const tasks = await getTasksByUserId(id_user);
-      const _tasksDetail = getTasksActivityDetail(activities, tasks).filter(
-        (t) => t.subject === _progress
+      const activities = await getActivitiesBySubject(
+        _index ? +_index : _progress
       );
+      const tasks = await getTasksByUserId(id_user);
+      const _tasksDetail = getTasksActivityDetail(activities, tasks);
 
       setTasksDetail(_tasksDetail);
       setProgress(_progress);
-      setSelected(_progress);
+      setSelected(_index ? +_index : _progress);
       setUserCourse(userCourse);
       setLoaded(true);
     };
