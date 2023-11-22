@@ -32,7 +32,7 @@ const CoursePage = () => {
   );
   const { user } = useUserContext();
   const id = user?.id || 0;
-  const type = user?.type || 1;
+  const type = user?.type;
   const stars = new Array(5).fill(0);
 
   useEffect(() => {
