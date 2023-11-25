@@ -11,6 +11,7 @@ import {
   TOAST_COURSE_START_FAILED,
   TOAST_COURSE_START_SUCCESS,
   TaskActivityDetail,
+  User,
   User_Course,
 } from "@/model/types";
 import { Button, Flex, Inset, Slider } from "@radix-ui/themes";
@@ -24,16 +25,17 @@ import { TbAntennaBars5 } from "react-icons/tb";
 import { PuffLoader } from "react-spinners";
 import { toast } from "sonner";
 import CourseProgressDetail from "./courseProgressDetail";
+import NotesReport from "./notesReport";
 
 const CourseDetail = ({
   number_users,
   tasksDetail,
-  id_user,
+  user,
   onStart,
 }: {
   number_users: number;
   tasksDetail: TaskActivityDetail[];
-  id_user: number;
+  user: User;
   onStart: () => void;
 }) => {
   const router = useRouter();
@@ -44,6 +46,8 @@ const CourseDetail = ({
   const [progress, setProgress] = useState<number>(0);
   const [progressPercent, setProgressPercent] = useState<number>(0);
   const [loaded, setLoaded] = useState<boolean>(false);
+
+  const id_user = user.id;
 
   useEffect(() => {
     const update = async () => {
@@ -58,7 +62,7 @@ const CourseDetail = ({
       setLoaded(true);
     };
     update();
-  }, [id_user]);
+  }, [user]);
 
   const handleStartCourseClick = async () => {
     if (uc) {
@@ -138,6 +142,11 @@ const CourseDetail = ({
                 Empezó el día {getDateString(uc?.date_start)}
               </span>
             )}
+
+            <div className="flex w-full gap-4 mt-4 justify-end items-center">
+              <strong>Reporte de Notas</strong>
+              <NotesReport user={user} user_course={uc} />
+            </div>
           </Inset>
         ) : (
           <div className="w-full flex justify-center h-full">

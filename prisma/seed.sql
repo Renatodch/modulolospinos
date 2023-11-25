@@ -1,5 +1,6 @@
 DROP TABLE IF EXISTS user_course;
 DROP TABLE IF EXISTS task;
+DROP TABLE IF EXISTS "subject";
 DROP TABLE IF EXISTS activity;
 DROP TABLE IF EXISTS "user";
 
@@ -23,16 +24,25 @@ CREATE TABLE user_course (
 );
 
 
+CREATE TABLE "subject" (
+  id SERIAL PRIMARY KEY,
+  "order" INT NOT NULL,
+  title VARCHAR(32) NOT NULL,
+  description VARCHAR(255),
+  url VARCHAR(255)
+);
+
 CREATE TABLE activity (
   id SERIAL PRIMARY KEY,
   title VARCHAR(32) NOT NULL,
   description VARCHAR(255) NOT NULL,
   rubric VARCHAR(255),
-  subject INT NOT NULL,
   type INT NOT NULL,
   date_max TIMESTAMP,
+  subject INT NOT NULL,
   id_user INT REFERENCES "user"(id)
 );
+
 
 CREATE TABLE task (
   id SERIAL PRIMARY KEY,
@@ -50,10 +60,10 @@ CREATE TABLE task (
 INSERT INTO "user" (password, type, email, name) VALUES ('1234', '1', '', 'Docente 1');
 INSERT INTO "user" (password, type, email, name) VALUES ('1234', '0', '', 'Alumno 1');
 INSERT INTO "user" (password, type, email, name) VALUES ('1234', '0', '', 'Alumno 2');
-INSERT INTO "user" (password, type, email, name) VALUES ('ariana159', '1', 'lucerito.sagas21@gmail.com', 'Profesora');
-INSERT INTO "user" (password, type, email, name) VALUES ('123', '0', 'alejandraquiroztoribio@gmail.com', 'Ale 14');
+INSERT INTO "user" (password, type, email, name) VALUES ('ariana159', '1', 'lucerito.sagas21@gmail.com', 'Docente 2');
+INSERT INTO "user" (password, type, email, name) VALUES ('123', '0', 'alejandraquiroztoribio@gmail.com', 'Alumno 3');
 INSERT INTO "user" (password, type, email, name) VALUES ('1234', '2', 'lucerito.sagas21@gmail.com', 'Desarrollador');
-INSERT INTO "user" (password, type, email, name) VALUES ('123', '1', '', 'Estudiante');
+INSERT INTO "user" (password, type, email, name) VALUES ('123', '1', '', 'Docente 3');
 
 
 INSERT INTO activity (title, description, subject, type, id_user) VALUES ('Actividad Pregunta 1-1', 'Pregunta 1', 0, 0, 6);

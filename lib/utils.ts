@@ -3,6 +3,9 @@ import {
   COURSE_LAST_ITEM_INDEX,
   Task,
   TaskActivityDetail,
+  User,
+  isStudent,
+  isTeacher,
 } from "@/model/types";
 
 export const getTasksActivityDetail = (
@@ -37,3 +40,8 @@ export const getTasksActivityDetail = (
 
 export const getFormatedNote = (note: number) =>
   Number.isInteger(note) ? note.toString().padStart(2, "0") : note.toFixed(1);
+
+export const getStudents = (users: User[]) =>
+  users.filter((u) => isStudent(u.type));
+export const getTeachers = (users: User[]) =>
+  users.filter((u) => isTeacher(u.type));

@@ -7,7 +7,6 @@ import { getTasksActivityDetail } from "@/lib/utils";
 import {
   IN_PROGRESS,
   STUDENT,
-  TEACHER,
   getToastPendingActivities,
   getToastPendingTasksAlert,
 } from "@/model/types";
@@ -27,12 +26,21 @@ const Links = () => {
     {
       label: "Inicio",
       href: "/",
+      width: "90px",
     },
-
+    {
+      label: "Profesores y Administradores",
+      href: "/administradores",
+      width: "170px",
+    },
     {
       label: "Profesor",
-      href: "/profesor",
+      width: "120px",
       ops: [
+        {
+          label: "Temas",
+          href: "/temas",
+        },
         {
           label: "Actividades",
           href: "/actividades",
@@ -46,10 +54,7 @@ const Links = () => {
     {
       label: "Curso",
       href: "/curso",
-    },
-    {
-      label: "Tareas",
-      href: "/tareas",
+      width: "120px",
       ops: [
         {
           label: "Portafolio",
@@ -61,31 +66,21 @@ const Links = () => {
         },
       ],
     },
-    {
-      label: "Notas",
-      href: "/notas",
-    },
-    {
-      label: "Salir",
-      href: "/signOut",
-    },
   ];
 
-  (user?.type || STUDENT) === STUDENT && links.splice(1, 1);
-  (user?.type || STUDENT) === TEACHER && links.splice(3, 2);
-
-  return links.map((link) =>
-    link.href === "/signOut" ? (
+  user?.type === STUDENT && links.splice(2, 2);
+  return (
+    <>
+      {links.map((link) => (
+        <LinkItem key={link.href} link={link} />
+      ))}
       <button
-        key={link.href}
         className={` hover:text-zinc-700 transition-colors text-base text-white`}
         onClick={() => signOut({ callbackUrl: "/login" })}
       >
-        {link.label}
+        Salir
       </button>
-    ) : (
-      <LinkItem key={link.href} link={link} />
-    )
+    </>
   );
 };
 
@@ -115,9 +110,21 @@ const LinkItem = ({ link }: any) => {
     });
   };
   return link.ops ? (
-    <li key={link.href}>
+    <li
+      key={link.href}
+      style={{ width: link.width, margin: 0 }}
+      className="self-center"
+    >
       <details>
-        <summary className={`${itemStyle} navbar-link`}>{link.label}</summary>
+        <summary className={`${itemStyle} navbar-link`}>
+          {link.href ? (
+            <Link href={link.href} onClick={handleClickLink}>
+              {link.label}
+            </Link>
+          ) : (
+            link.label
+          )}
+        </summary>
         <ul className="p-2 navbar-link container">
           {link.ops.map((l: any) => (
             <li key={l.href}>
@@ -134,7 +141,11 @@ const LinkItem = ({ link }: any) => {
       </details>
     </li>
   ) : (
-    <li key={link.href}>
+    <li
+      key={link.href}
+      style={{ width: link.width, margin: 0 }}
+      className="self-center"
+    >
       <Link
         className={`${itemStyle} navbar-link`}
         href={link.href}

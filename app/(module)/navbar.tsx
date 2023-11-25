@@ -5,7 +5,7 @@ import Links from "../../components/navbarLinks";
 function Navbar() {
   return (
     <div
-      className="flex items-center w-full h-16 px-14 border-b-2 "
+      className="flex items-center w-full h-20 px-14 border-b-2"
       style={{ backgroundColor: PRIMARY_COLOR }}
     >
       <div className="justify-start lg:w-2/5">

@@ -1,16 +1,19 @@
 "use client";
 import { saveUser } from "@/controllers/user.controller";
 import {
+  DEVELOPER,
   PRIMARY_COLOR,
   STUDENT,
+  TEACHER,
   TOAST_BD_ERROR,
   TOAST_USER_SAVE_SUCCESS,
+  USER_TYPES,
   User,
 } from "@/model/types";
-import { Button, Dialog, Flex, TextField } from "@radix-ui/themes";
+import { Button, Dialog, Flex, Select, TextField } from "@radix-ui/themes";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { FieldValues, useForm } from "react-hook-form";
+import { Controller, FieldValues, useForm } from "react-hook-form";
 import {
   AiFillEdit,
   AiFillEye,
@@ -20,9 +23,10 @@ import {
 import { toast } from "sonner";
 interface Props {
   target?: User;
+  user_type?: number;
 }
 
-const UserForm = ({ target }: Props) => {
+const UserForm = ({ target, user_type }: Props) => {
   const router = useRouter();
   const [submitted, setSubmitted] = useState<boolean>(false);
   const [passHidden, setPassHidden] = useState<boolean>(true);
@@ -33,13 +37,14 @@ const UserForm = ({ target }: Props) => {
     handleSubmit,
     formState: { errors },
     reset,
+    control,
   } = useForm();
 
   const onSubmit = async (data: FieldValues) => {
     setSubmitted(true);
     try {
       let temp: User | undefined = {
-        type: STUDENT,
+        type: +data.type,
         password: data.password,
         name: data.name,
         email: data.email,
@@ -163,7 +168,61 @@ const UserForm = ({ target }: Props) => {
                 Es requerida la contraseña del estudiante
               </span>
             )}
-
+            <Controller
+              control={control}
+              name="type"
+              rules={{ required: true }}
+              defaultValue={
+                user_type === STUDENT
+                  ? user_type
+                  : target?.type !== undefined
+                  ? target?.type
+                  : undefined
+              }
+              render={({ field }) => {
+                return (
+                  <div {...field}>
+                    <Select.Root
+                      size={"3"}
+                      onValueChange={field.onChange}
+                      defaultValue={
+                        user_type === STUDENT
+                          ? "" + user_type
+                          : target?.type !== undefined
+                          ? "" + target?.type
+                          : undefined
+                      }
+                    >
+                      <Select.Trigger
+                        className="w-full"
+                        placeholder={"Tipo de usuario"}
+                      />
+                      <Select.Content position="popper">
+                        <Select.Group>
+                          <Select.Label>Tipo de usuario</Select.Label>
+                          {USER_TYPES.filter((u) =>
+                            user_type === STUDENT
+                              ? u.value === user_type
+                              : u.value === TEACHER || u.value === DEVELOPER
+                          ).map((s) => {
+                            return (
+                              <Select.Item key={s.value} value={"" + s.value}>
+                                {s.name}
+                              </Select.Item>
+                            );
+                          })}
+                        </Select.Group>
+                      </Select.Content>
+                    </Select.Root>
+                  </div>
+                );
+              }}
+            />
+            {errors.type?.type === "required" && (
+              <span role="alert" className="font-semibold text-red-500 ">
+                Es requerido el tipo de usuario
+              </span>
+            )}
             <p>(*) campos obligatorios</p>
           </Flex>
           <Flex gap="3" mt="4" justify="end">

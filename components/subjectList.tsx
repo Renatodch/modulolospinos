@@ -1,24 +1,24 @@
 "use client";
-import { deleteUserById } from "@/controllers/user.controller";
-import { TOAST_USER_DELETE_SUCCESS, User } from "@/model/types";
+import { deleteSubjectById } from "@/controllers/subject.controller";
+import { Subject, TOAST_SUBJECT_DELETE_SUCCESS } from "@/model/types";
 import { Button, Table } from "@radix-ui/themes";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { AiFillDelete } from "react-icons/ai";
 import { toast } from "sonner";
-import UserForm from "./userForm";
+import SubjectForm from "./subjectForm";
 
-const UserList = ({ users }: { users: User[] }) => {
+const SubjectList = ({ subjects }: { subjects: Subject[] }) => {
   const router = useRouter();
   const [onDelete, setOnDelete] = useState<boolean>(false);
   const [deletedIndex, setDeletedIndex] = useState<number | null>(null);
   const handleDelete = async (id: number) => {
     setDeletedIndex(id);
     setOnDelete(true);
-    await deleteUserById(id);
+    await deleteSubjectById(id);
     setOnDelete(false);
     setDeletedIndex(null);
-    toast.success(TOAST_USER_DELETE_SUCCESS);
+    toast.success(TOAST_SUBJECT_DELETE_SUCCESS);
     router.refresh();
   };
 
@@ -27,27 +27,29 @@ const UserList = ({ users }: { users: User[] }) => {
       <Table.Header>
         <Table.Row>
           <Table.ColumnHeaderCell>Id</Table.ColumnHeaderCell>
-          <Table.ColumnHeaderCell>Nombres Completos</Table.ColumnHeaderCell>
-          <Table.ColumnHeaderCell>Email</Table.ColumnHeaderCell>
+          <Table.ColumnHeaderCell>Título</Table.ColumnHeaderCell>
+          <Table.ColumnHeaderCell>Orden</Table.ColumnHeaderCell>
           <Table.ColumnHeaderCell>Modificar</Table.ColumnHeaderCell>
           <Table.ColumnHeaderCell>Borrar</Table.ColumnHeaderCell>
         </Table.Row>
       </Table.Header>
 
       <Table.Body>
-        {users.map((user) => {
+        {subjects.map((subject) => {
           return (
-            <Table.Row key={user.id}>
-              <Table.RowHeaderCell width={100}>{user.id}</Table.RowHeaderCell>
-              <Table.Cell width={300}>{user.name}</Table.Cell>
-              <Table.Cell width={250}>{user.email}</Table.Cell>
+            <Table.Row key={subject.id}>
+              <Table.RowHeaderCell width={100}>
+                {subject.id}
+              </Table.RowHeaderCell>
+              <Table.Cell width={300}>{subject.title}</Table.Cell>
+              <Table.Cell width={250}>{subject.order}</Table.Cell>
               <Table.Cell width={100}>
-                <UserForm target={user} />
+                <SubjectForm target={subject} />
               </Table.Cell>
               <Table.Cell width={100}>
                 <Button
-                  disabled={onDelete && user.id === deletedIndex}
-                  onClick={() => handleDelete(user.id)}
+                  disabled={onDelete && subject.id === deletedIndex}
+                  onClick={() => handleDelete(subject.id)}
                   color="red"
                   size="3"
                 >
@@ -62,4 +64,4 @@ const UserList = ({ users }: { users: User[] }) => {
   );
 };
 
-export default UserList;
+export default SubjectList;

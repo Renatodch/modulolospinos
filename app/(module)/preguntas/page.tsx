@@ -4,13 +4,15 @@ import { getTasks } from "@/controllers/task.controller";
 import { getUsers } from "@/controllers/user.controller";
 
 import { loginIsRequiredServer } from "@/lib/auth-config";
+import { getStudents } from "@/lib/utils";
 import { ANSWER, Answer, QuestionAnswers } from "@/model/types";
 
 const QuestionPage = async () => {
   await loginIsRequiredServer();
   const activities = await getActivitiesAnswer();
   const tasks = await getTasks(ANSWER);
-  const users = await getUsers(ANSWER);
+  const res = await getUsers();
+  const users = getStudents(res);
 
   const questionAnswers: QuestionAnswers[] = [];
   activities.forEach((a) => {

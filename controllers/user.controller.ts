@@ -41,13 +41,10 @@ export const saveUser = async (user: User) => {
   } catch (e) {}
 };
 
-export const getUsers = async (type: number = 0) => {
+export const getUsers = async () => {
   let res: User[] = [];
   try {
     const users = await prisma.user.findMany({
-      where: {
-        OR: [{ type: 2 }, { type }],
-      },
       orderBy: {
         id: "asc",
       },

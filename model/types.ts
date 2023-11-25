@@ -27,6 +27,14 @@ export interface Activity {
   date_max: Date | null;
   id_user: number | null;
 }
+
+export interface Subject {
+  id: number;
+  order: number;
+  title: string;
+  description: string | null;
+  url: string | null;
+}
 export interface Task {
   id: number;
   title: string;
@@ -67,15 +75,8 @@ export interface QuestionAnswers {
   answers: Answer[];
 }
 
-/* export interface User_Progress {
-  id: number | null;
-  state: number;
-  avgFinal: number | null;
-} */
-
 export const NOT_INIT = -1;
 export const IN_PROGRESS = 0;
-//export const COMPLETED = 1;
 
 export const REPROVED = 2;
 export const APPROVED = 1;
@@ -99,18 +100,26 @@ export const PROJECT = 1;
 export const ANSWER = 0;
 
 export function isStudent(type: number | null | undefined) {
-  const _type = type || STUDENT;
-  return _type === STUDENT || _type === DEVELOPER;
+  return type === STUDENT || type === DEVELOPER;
 }
 export function isTeacher(type: number | null | undefined) {
-  const _type = type || STUDENT;
-  return _type === TEACHER || _type === DEVELOPER;
+  return type === TEACHER || type === DEVELOPER;
+}
+export function isAdmin(type: number | null | undefined) {
+  return type === DEVELOPER;
 }
 
 export const ACTIVITY_TYPES = [
   { name: "Proyecto", value: PROJECT },
   { name: "Pregunta", value: ANSWER },
 ];
+
+export const USER_TYPES = [
+  { name: "Estudiante", value: STUDENT },
+  { name: "Profesor", value: TEACHER },
+  { name: "Administrador", value: DEVELOPER },
+];
+
 export const SUBJECTS_COURSE = [
   {
     title: "Qué es una fracción",
@@ -152,6 +161,9 @@ export const SUBJECTS_COURSE = [
 
 export const TOAST_USER_DELETE_SUCCESS = "Usuario borrado con éxito";
 export const TOAST_USER_SAVE_SUCCESS = "Usuario guardado con éxito";
+
+export const TOAST_SUBJECT_DELETE_SUCCESS = "Tema borrado con éxito";
+export const TOAST_SUBJECT_SAVE_SUCCESS = "Tema guardado con éxito";
 
 export const TOAST_TASK_EVALUATED = "Se calificó la tarea";
 export const TOAST_PROJECT_SAVE_SUCCESS = "Proyecto subido con éxito";

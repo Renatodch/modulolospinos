@@ -92,7 +92,7 @@ const CoursePage = () => {
         {isStudent(type) && (
           <CourseDetail
             onStart={handleStart}
-            id_user={id}
+            user={user!}
             number_users={numberUsers}
             tasksDetail={tasksDetail}
           />
