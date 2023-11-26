@@ -1,9 +1,10 @@
+import { getUserCourseByUserId } from "@/controllers/user-course.controller";
 import {
   getUserByEmail,
   getUserById,
   loginUser,
 } from "@/controllers/user.controller";
-import { User } from "@/model/types";
+import { User, User_Course } from "@/model/types";
 import { NextAuthOptions, Session, getServerSession } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
@@ -50,10 +51,11 @@ export const authConfig: NextAuthOptions = {
       const _user = isGoogle
         ? await getUserByEmail(session.user?.email!)
         : await getUserById(+id!);
-
+      const _user_course = await getUserCourseByUserId(_user?.id!);
       const _session = {
         ...session,
         _user,
+        _user_course,
       };
 
       return _session;
@@ -76,9 +78,11 @@ export async function loginIsRequiredServer() {
 export async function getSession() {
   const session = (await getServerSession(authConfig)) as Session & {
     _user: User | null | undefined;
+    _user_course: User_Course | null | undefined;
   };
   return {
     ...session,
     _user: session?._user ?? undefined,
+    _user_course: session?._user_course ?? undefined,
   };
 }

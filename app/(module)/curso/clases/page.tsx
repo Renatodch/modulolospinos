@@ -15,6 +15,7 @@ import {
 import { getTasksActivityDetail } from "@/lib/utils";
 
 import {
+  NOT_INIT,
   PRIMARY_COLOR,
   Subject,
   TEACHER,
@@ -30,78 +31,85 @@ export default function ClasesPage(props: any) {
     undefined
   );
   const [loaded, setLoaded] = useState<boolean>(false);
+  const [loadedSubject, setLoadedSubject] = useState<boolean>(false);
   const [initCourse, setInitCourse] = useState<boolean>(true);
   const [tasksDetail, setTasksDetail] = useState<TaskActivityDetail[]>([]);
   const [subjects, setSubjects] = useState<Subject[]>([]);
-  const [progress, setProgress] = useState<number>(0);
-  const [selected, setSelected] = useState<number>(0);
-  const id_user = user?.id || 0;
+  const [progress, setProgress] = useState<number | undefined>(0);
+  const [selected, setSelected] = useState<number | undefined>(0);
+  const id_user = user?.id!;
 
   useEffect(() => {
     const updateData = async () => {
       const _index = props.searchParams.index;
 
       let userCourse = await getUserCourseByUserId(id_user);
-      if (!userCourse) setInitCourse(false);
-      else setInitCourse(true);
+      setInitCourse(!(!userCourse || userCourse.state === NOT_INIT));
 
-      const _progress = userCourse?.progress ?? 0;
-
-      const activities = await getActivitiesBySubject(
-        _index ? +_index : _progress
-      );
-      const tasks = await getTasksByUserId(id_user);
+      const _progress = userCourse?.progress!;
       const _subjects = await getSubjects();
-      const _tasksDetail = getTasksActivityDetail(activities, tasks, _subjects);
+      const _subject = _subjects.find((s) => s.value === _progress);
+      const id_subject = _subject?.id;
+      const value_subject = _subject?.value;
+
+      const _activities = id_subject
+        ? await getActivitiesBySubject(_index ? +_index : id_subject)
+        : [];
+      const tasks = await getTasksByUserId(id_user);
+      const _tasksDetail = getTasksActivityDetail(
+        _activities,
+        tasks,
+        _subjects
+      );
 
       setSubjects(_subjects);
       setTasksDetail(_tasksDetail);
-      setProgress(_progress);
-      setSelected(_index ? +_index : _progress);
+      setProgress(value_subject);
+      setSelected(_index ? +_index : id_subject);
       setUserCourse(userCourse);
       setLoaded(true);
+      setLoadedSubject(true);
     };
     updateData();
   }, [id_user]);
 
   if (user?.type === TEACHER) return <NotAllowed />;
 
-  const HandleClickLink = async (index: number) => {
-    //index= id_subject
-    setLoaded(false);
+  const HandleClickLink = async (id_subject: number, value_subject: number) => {
+    setLoadedSubject(false);
     let userCourse = await getUserCourseByUserId(id_user);
-    if (!userCourse) return;
+    if (!userCourse || user_course?.state === NOT_INIT) return;
 
-    setSelected(index);
-    const _subjects = await getSubjects();
-    const activities = await getActivitiesBySubject(index);
+    setSelected(id_subject);
+    //const _subjects = await getSubjects();
+    const activities = await getActivitiesBySubject(id_subject);
     const tasks = await getTasksByUserId(id_user);
     const _tasksDetail = getTasksActivityDetail(
       activities,
       tasks,
-      _subjects
-    ).filter((t) => t.id_subject === index);
+      subjects
+    ).filter((t) => t.id_subject === id_subject);
 
-    if (index > userCourse?.progress) {
+    if (value_subject > userCourse?.progress) {
       userCourse = await saveUserCourse({
         ...userCourse,
-        progress: index,
+        progress: value_subject,
         date_update: new Date(),
       });
     } else {
-      index = userCourse.progress;
+      value_subject = userCourse.progress;
     }
-    setSubjects(_subjects);
+    //setSubjects(_subjects);
     setTasksDetail(_tasksDetail);
-    setProgress(index);
+    setProgress(value_subject);
     setUserCourse(userCourse);
-    setLoaded(true);
+    setLoadedSubject(true);
   };
 
   const loader = (
     <PuffLoader
       color={PRIMARY_COLOR}
-      loading={!loaded}
+      loading={!(loaded && loadedSubject)}
       size={150}
       aria-label="Loading Spinner"
       data-testid="loader"
@@ -122,17 +130,25 @@ export default function ClasesPage(props: any) {
               onClickLink={HandleClickLink}
             />
           </div>
-
-          <div className=" w-2/3 ">
-            <ClassItem
-              tasksDetail={tasksDetail}
-              userCourse={user_course}
-              subject={subjects.find((s) => s.id === selected)}
-              noActivities={
-                !tasksDetail?.some((t) => t.id_subject === selected)
-              }
-            />
-          </div>
+          {loadedSubject ? (
+            <div className=" w-2/3 ">
+              <ClassItem
+                tasksDetail={tasksDetail}
+                userCourse={user_course}
+                subject={subjects.find((s) => s.id === selected)}
+                noActivities={
+                  !tasksDetail?.some((t) => t.id_subject === selected)
+                }
+              />
+            </div>
+          ) : (
+            <div
+              className="w-2/3 flex justify-center items-center"
+              style={{ height: "500px" }}
+            >
+              {loader}
+            </div>
+          )}
         </>
       ) : (
         <div

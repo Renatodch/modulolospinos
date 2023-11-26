@@ -5,6 +5,7 @@ import { getTasksByUserId } from "@/controllers/task.controller";
 import { getFormatedNote, getTasksActivityDetail } from "@/lib/utils";
 import {
   MIN_NOTE_APPROVED,
+  NOT_INIT,
   PRIMARY_COLOR,
   Subject,
   TaskActivityDetail,
@@ -55,7 +56,7 @@ const NotesReport = ({
             style={{
               backgroundColor: user_course ? PRIMARY_COLOR : "#f0f0f0",
             }}
-            disabled={!user_course}
+            disabled={!user_course || user_course.state === NOT_INIT}
           >
             <CgNotes size="20" />
           </Button>
@@ -171,7 +172,9 @@ const NotesReport = ({
                       : "text-red-600"
                   } font-semibold text-lg text-center`}
                 >
-                  {user_course && getFormatedNote(avgFinal)}
+                  {user_course &&
+                    user_course?.state! > NOT_INIT &&
+                    getFormatedNote(avgFinal)}
                 </Table.Cell>
               </Table.Row>
             </Table.Body>

@@ -10,8 +10,8 @@ export interface User {
 
 export interface User_Course {
   id: number;
-  date_start: Date;
-  date_update: Date;
+  date_start: Date | null;
+  date_update: Date | null;
   state: number;
   progress: number;
   average: number | null;

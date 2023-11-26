@@ -31,7 +31,7 @@ const CoursePage = () => {
     undefined
   );
   const { user } = useUserContext();
-  const id = user?.id || 0;
+  const id = user?.id!;
   const type = user?.type;
   const stars = new Array(5).fill(0);
 
@@ -42,7 +42,6 @@ const CoursePage = () => {
       const user_course: User_Course | null | undefined = _user_courses.find(
         (u) => u.id_user === id
       );
-      //await getUserCourseByUserId(id);
 
       const tasks: Task[] | null | undefined = await getTasksByUserId(id);
       const activities = await getActivities();
@@ -102,6 +101,7 @@ const CoursePage = () => {
           <CourseDetail
             onStart={handleStart}
             user={user!}
+            user_course={userCourse}
             number_users={numberUsers}
             tasksDetail={tasksDetail}
             subjects={subjects}

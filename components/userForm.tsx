@@ -1,4 +1,5 @@
 "use client";
+import { saveUserCourse } from "@/controllers/user-course.controller";
 import { saveUser } from "@/controllers/user.controller";
 import {
   DEVELOPER,
@@ -9,6 +10,7 @@ import {
   TOAST_USER_SAVE_SUCCESS,
   USER_TYPES,
   User,
+  User_Course,
 } from "@/model/types";
 import { Button, Dialog, Flex, Select, TextField } from "@radix-ui/themes";
 import { useRouter } from "next/navigation";
@@ -41,16 +43,32 @@ const UserForm = ({ target, user_type }: Props) => {
   } = useForm();
 
   const onSubmit = async (data: FieldValues) => {
+    const type = +data.type;
     setSubmitted(true);
     try {
       let temp: User | undefined = {
-        type: +data.type,
+        type,
         password: data.password,
         name: data.name,
         email: data.email,
         id: target?.id || 0,
       };
       temp = await saveUser(temp);
+
+      if (type === STUDENT && !target && temp) {
+        let user_course: User_Course | undefined;
+        user_course = {
+          id: 0,
+          date_start: null,
+          date_update: new Date(),
+          state: -1,
+          progress: 0,
+          average: null,
+          id_user: temp?.id!,
+        };
+        user_course = await saveUserCourse(user_course);
+      }
+
       if (!temp) {
         toast.error(TOAST_BD_ERROR);
         setPassHidden(true);

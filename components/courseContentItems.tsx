@@ -9,7 +9,7 @@ interface Props {
   interactive?: boolean;
   progress?: number;
   selected?: number;
-  onClickLink?: (index: number) => void;
+  onClickLink?: (id_subject: number, value_subject: number) => void;
   loading?: boolean;
   subjects: Subject[];
 }
@@ -26,9 +26,9 @@ const CourseContentItems = ({
   const styleClasses =
     "text-justify p-4 items-center gap-8 w-full flex hover:cursor-pointer hover:bg-blue-200";
 
-  const handleClick = (index: number) => {
+  const handleClick = (id_subject: number, value_subject: number) => {
     if (interactive && onClickLink) {
-      onClickLink(index);
+      onClickLink(id_subject, value_subject);
     }
   };
 
@@ -55,7 +55,7 @@ const CourseContentItems = ({
                     pointerEvents:
                       subject.value > progress! + 1 || loading ? "none" : "all",
                   }}
-                  onClick={() => handleClick(subject.id)}
+                  onClick={() => handleClick(subject.id, subject.value)}
                 >
                   <AiFillYoutube size="24" style={{ minWidth: 50 }} />
                   {subject.title}

@@ -1,12 +1,10 @@
 "use client";
-import {
-  getUserCourseByUserId,
-  saveUserCourse,
-} from "@/controllers/user-course.controller";
+import { saveUserCourse } from "@/controllers/user-course.controller";
 import { getDateString } from "@/lib/date-lib";
 import {
   APPROVED,
   IN_PROGRESS,
+  NOT_INIT,
   PRIMARY_COLOR,
   Subject,
   TOAST_COURSE_START_FAILED,
@@ -34,12 +32,14 @@ const CourseDetail = ({
   subjects,
   user,
   onStart,
+  user_course,
 }: {
   number_users: number;
   tasksDetail: TaskActivityDetail[];
   subjects: Subject[];
   user: User;
   onStart: () => void;
+  user_course: User_Course | null | undefined;
 }) => {
   const router = useRouter();
   const [clicked, setClicked] = useState(false);
@@ -54,21 +54,25 @@ const CourseDetail = ({
 
   useEffect(() => {
     const update = async () => {
-      const user_course = await getUserCourseByUserId(id_user);
       setUc(user_course);
-      setSte(user_course?.state ?? 0);
+      setSte(user_course?.state ?? -1);
       setProgress(user_course?.progress ?? 0);
       const value =
         20 *
         ((user_course?.progress ?? 0) + +(user_course?.state === APPROVED));
       setProgressPercent(value);
-      setLoaded(true);
+      setLoaded(!!user_course);
     };
     update();
-  }, [user]);
+  }, [user, user_course]);
 
   const handleStartCourseClick = async () => {
-    if (uc) {
+    //const user_course = await getUserCourseByUserId(id_user);
+    if (!uc) {
+      toast.error(TOAST_COURSE_START_FAILED);
+      return;
+    }
+    if (uc?.state! > NOT_INIT) {
       toast.error("Usted ya inició el curso");
       return;
     }
@@ -77,13 +81,11 @@ const CourseDetail = ({
     let userCourse;
     try {
       userCourse = await saveUserCourse({
-        id: 0,
+        ...uc,
         date_start: new Date(),
         date_update: new Date(),
-        state: 0,
+        state: IN_PROGRESS,
         progress: 0,
-        average: null,
-        id_user,
       });
       toast.dismiss();
       userCourse
@@ -93,6 +95,7 @@ const CourseDetail = ({
       toast.dismiss();
       toast.error(TOAST_COURSE_START_FAILED);
     }
+    setLoaded(false);
     setUc(userCourse);
     router.refresh();
     onStart();
@@ -121,7 +124,7 @@ const CourseDetail = ({
               className="mb-8"
             />
 
-            {uc && ste === IN_PROGRESS && (
+            {ste === IN_PROGRESS && (
               <Button
                 size="3"
                 disabled={Boolean(uc && ste > IN_PROGRESS)}
@@ -130,7 +133,7 @@ const CourseDetail = ({
                 <Link href="/curso/clases">Continuar el aprendizaje</Link>
               </Button>
             )}
-            {(!uc || ste > IN_PROGRESS) && (
+            {(ste === NOT_INIT || ste > IN_PROGRESS) && (
               <Button
                 size="3"
                 disabled={Boolean((uc && ste > IN_PROGRESS) || clicked)}
@@ -146,11 +149,12 @@ const CourseDetail = ({
                 Empezó el día {getDateString(uc?.date_start)}
               </span>
             )}
-
-            <div className="flex w-full gap-4 my-2 justify-end items-center">
-              <strong>Reporte de Notas</strong>
-              <NotesReport user={user} user_course={uc} />
-            </div>
+            {ste > NOT_INIT && (
+              <div className="flex w-full gap-4 my-2 justify-end items-center">
+                <strong>Reporte de Notas</strong>
+                <NotesReport user={user} user_course={uc} />
+              </div>
+            )}
           </div>
         ) : (
           <div className="w-full flex justify-center h-full">

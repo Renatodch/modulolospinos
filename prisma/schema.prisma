@@ -49,14 +49,14 @@ model user {
 }
 
 model user_course {
-  id          Int      @id @default(autoincrement())
-  date_start  DateTime @db.Timestamp(6)
-  date_update DateTime @db.Timestamp(6)
+  id          Int       @id @default(autoincrement())
+  date_start  DateTime? @db.Timestamp(6)
+  date_update DateTime? @db.Timestamp(6)
   state       Int
   average     Int?
   progress    Int
   id_user     Int?
-  user        user?    @relation(fields: [id_user], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user        user?     @relation(fields: [id_user], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model subject {

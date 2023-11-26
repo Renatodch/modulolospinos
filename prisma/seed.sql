@@ -15,8 +15,8 @@ CREATE TABLE "user" (
 
 CREATE TABLE user_course (
   id SERIAL PRIMARY KEY,
-  date_start TIMESTAMP NOT NULL,
-  date_update TIMESTAMP NOT NULL,
+  date_start TIMESTAMP,
+  date_update TIMESTAMP,
   state INT NOT NULL,
   average INT,
   progress INT NOT NULL,
@@ -65,6 +65,11 @@ INSERT INTO "user" (password, type, email, name) VALUES ('123', '0', 'alejandraq
 INSERT INTO "user" (password, type, email, name) VALUES ('1234', '2', 'lucerito.sagas21@gmail.com', 'Desarrollador');
 INSERT INTO "user" (password, type, email, name) VALUES ('123', '1', '', 'Docente 3');
 
+INSERT INTO "user_course" (state, progress, id_user) VALUES (-1,0,2);
+INSERT INTO "user_course" (state, progress, id_user) VALUES (-1,0,3);
+INSERT INTO "user_course" (state, progress, id_user) VALUES (-1,0,5);
+INSERT INTO "user_course" (state, progress, id_user) VALUES (-1,0,6);
+
 INSERT INTO subject (title, description, url, value) VALUES ('Qué es una fracción', 'Descripcion del tema 1', 'https://www.youtube.com/embed/g2rI5mAWPeU?si=gaIOzQXC2YIck04Q', 0);
 INSERT INTO subject (title, description, url, value) VALUES ('Introducción a fracciones', 'Descripción del tema 2', 'https://www.youtube.com/embed/grlbI4ZgzXA?si=cwo501nM1bxquX2R', 1);
 INSERT INTO subject (title, description, url, value) VALUES ('Suma y resta de fracciones con denominadores comunes', 'Descripción del tema 3', 'https://www.youtube.com/embed/qJtoI1ipxs8?si=3lhYpUKrMrkFhmtb', 2);
@@ -81,14 +86,14 @@ INSERT INTO activity (title, description, id_subject, type, date_max, id_user) V
 INSERT INTO activity (title, description, id_subject, type, date_max, id_user) VALUES ('Actividad Proyecto 2-4', 'Proyecto 3', 5, 1, '2023-11-22 12:00:00', 6);
 
 /******* starter *************/
-INSERT INTO user_course (date_start,date_update,state,progress,id_user) VALUES ('2023-11-14 23:59:59', '2023-11-14 23:59:59',0, 0, 6);
+UPDATE user_course SET date_start = '2023-11-14 23:59:59',date_update = '2023-11-14 23:59:59',state = 0,progress = 0 WHERE id_user = 6;
 
 INSERT INTO task (title, description, date_upload, type, id_activity, id_user) VALUES ('Tarea Pregunta', 'Tarea de Pregunta 1','2023-11-19 23:59:00', 0, 1, 6);
 INSERT INTO task (title, description, date_upload, type, id_activity, id_user) VALUES ('Tarea Pregunta', 'Tarea de Pregunta 2','2023-11-19 23:59:00', 0, 2, 6);
 
 
 /******* all done *******/
-INSERT INTO user_course (date_start,date_update,state,progress,id_user) VALUES ('2023-11-14 23:59:59', '2023-11-14 23:59:59',0, 4, 6);
+UPDATE user_course SET date_start = '2023-11-14 23:59:59',date_update = '2023-11-14 23:59:59',state = 0,progress = 4 WHERE id_user = 6;
 
 INSERT INTO task (title, description, date_upload, type, id_activity, id_user) VALUES ('Tarea Pregunta', 'Tarea de Pregunta 1','2023-11-19 23:59:00', 0, 1, 6);
 INSERT INTO task (title, description, date_upload, type, id_activity, id_user) VALUES ('Tarea Pregunta', 'Tarea de Pregunta 2','2023-11-19 23:59:00', 0, 2, 6);
@@ -99,7 +104,7 @@ INSERT INTO task (title, description, date_upload, type, id_activity, id_user) V
 INSERT INTO task (title, description, date_upload, type, id_activity, id_user) VALUES ('Tarea Proyecto', 'Tarea de Proyecto 3','2023-11-22 23:59:00', 1, 7, 6);
 
 /******* all done some evaluated *******/
-INSERT INTO user_course (date_start,date_update,state,progress,id_user) VALUES ('2023-11-14 23:59:59', '2023-11-14 23:59:59',0, 4, 6);
+UPDATE user_course SET date_start = '2023-11-14 23:59:59',date_update = '2023-11-14 23:59:59',state = 0,progress = 4 WHERE id_user = 6;
 
 INSERT INTO task (title, description, date_upload, type, id_activity, id_user) VALUES ('Tarea Pregunta', 'Tarea de Pregunta 1','2023-11-19 23:59:00', 0, 1, 6);
 INSERT INTO task (title, description, date_upload, type, id_activity, id_user) VALUES ('Tarea Pregunta', 'Tarea de Pregunta 2','2023-11-19 23:59:00', 0, 2, 6);
@@ -110,7 +115,7 @@ INSERT INTO task (title, description, date_upload, type, id_activity, id_user) V
 INSERT INTO task (title, description, date_upload, type, id_activity, id_user, score) VALUES ('Tarea Proyecto', 'Tarea de Proyecto 3','2023-11-22 23:59:00', 1, 7, 6, 20);
 
 /******* some done some evaluated *******/
-INSERT INTO user_course (date_start,date_update,state,progress,id_user) VALUES ('2023-11-14 23:59:59', '2023-11-14 23:59:59',0, 4, 6);
+UPDATE user_course SET date_start = '2023-11-14 23:59:59',date_update = '2023-11-14 23:59:59',state = 0,progress = 4 WHERE id_user = 6;
 
 INSERT INTO task (title, description, date_upload, type, id_activity, id_user) VALUES ('Tarea Pregunta', 'Tarea de Pregunta 3','2023-11-20 23:59:00', 0, 3, 6);
 INSERT INTO task (title, description, date_upload, type, id_activity, id_user) VALUES ('Tarea Proyecto', 'Tarea de Proyecto 1','2023-11-20 23:59:00', 1, 4, 6);
@@ -119,7 +124,7 @@ INSERT INTO task (title, description, date_upload, type, id_activity, id_user) V
 INSERT INTO task (title, description, date_upload, type, id_activity, id_user, score) VALUES ('Tarea Proyecto', 'Tarea de Proyecto 3','2023-11-22 23:59:00', 1, 7, 6, 20);
 
 /******* all evaluated *******/
-INSERT INTO user_course (date_start,date_update,state,progress,id_user) VALUES ('2023-11-14 23:59:59', '2023-11-14 23:59:59',0, 4, 6);
+UPDATE user_course SET date_start = '2023-11-14 23:59:59',date_update = '2023-11-14 23:59:59',state = 0,progress = 4 WHERE id_user = 6;
 
 INSERT INTO task (title, description, date_upload, type, id_activity, id_user, score) VALUES ('Tarea Pregunta', 'Tarea de Pregunta 1','2023-11-19 23:59:00', 0, 1, 6, 20);
 INSERT INTO task (title, description, date_upload, type, id_activity, id_user, score) VALUES ('Tarea Pregunta', 'Tarea de Pregunta 2','2023-11-19 23:59:00', 0, 2, 6, 20);
@@ -131,7 +136,7 @@ INSERT INTO task (title, description, date_upload, type, id_activity, id_user, s
 
 
 /******* all evaluated : reproved *******/
-INSERT INTO user_course (date_start,date_update,state,progress,id_user) VALUES ('2023-11-14 23:59:59', '2023-11-14 23:59:59',0, 4, 6);
+UPDATE user_course SET date_start = '2023-11-14 23:59:59',date_update = '2023-11-14 23:59:59',state = 0,progress = 4 WHERE id_user = 6;
 
 INSERT INTO task (title, description, date_upload, type, id_activity, id_user, score) VALUES ('Tarea Pregunta', 'Tarea de Pregunta 1','2023-11-19 23:59:00', 0, 1, 6, 10);
 INSERT INTO task (title, description, date_upload, type, id_activity, id_user, score) VALUES ('Tarea Pregunta', 'Tarea de Pregunta 2','2023-11-19 23:59:00', 0, 2, 6, 10);

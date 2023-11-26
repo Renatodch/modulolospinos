@@ -2,6 +2,7 @@
 import {
   APPROVED,
   IN_PROGRESS,
+  NOT_INIT,
   PRIMARY_COLOR,
   REPROVED,
   Subject,
@@ -26,7 +27,8 @@ const CourseProgressDetail = ({
   subjects: Subject[];
 }) => {
   const [open, setOpen] = useState<boolean>(false);
-  const state = user_course?.state ?? IN_PROGRESS;
+  const state = user_course?.state!;
+  const notinit = !user_course || state === NOT_INIT;
   const inprogress = !!user_course && state === IN_PROGRESS;
   const endcourse = !!user_course && state > IN_PROGRESS;
   const progress = user_course?.progress ?? 0;
@@ -79,13 +81,13 @@ const CourseProgressDetail = ({
       <Dialog.Content style={{ maxWidth: 450 }}>
         <Dialog.Title>Detalles de su progreso</Dialog.Title>
         <div>
-          {!user_course && (
+          {notinit && (
             <div className="italic flex items-center gap-2">
               <FiClock className=" text-xl" />
               Usted aun no ha iniciado el curso!
             </div>
           )}
-          {user_course && user_course.state === IN_PROGRESS && (
+          {inprogress && (
             <div>
               Tema actual: &nbsp;
               <strong>
@@ -96,8 +98,7 @@ const CourseProgressDetail = ({
           )}
           {noActivity && <div className="mt-4">No hay tareas pendientes</div>}
 
-          {user_course &&
-            user_course.state === IN_PROGRESS &&
+          {inprogress &&
             (pendingTask || pendingEvaluateTask || evaluatedTask || done) && (
               <>
                 {pendingTask && (
