@@ -35,7 +35,7 @@ export default function ClasesPage(props: any) {
   const [initCourse, setInitCourse] = useState<boolean>(true);
   const [tasksDetail, setTasksDetail] = useState<TaskActivityDetail[]>([]);
   const [subjects, setSubjects] = useState<Subject[]>([]);
-  const [progress, setProgress] = useState<number | undefined>(0);
+  const [progress, setProgress] = useState<number>(0);
   const [selected, setSelected] = useState<number | undefined>(0);
   const id_user = user?.id!;
 
@@ -48,9 +48,11 @@ export default function ClasesPage(props: any) {
 
       const _progress = userCourse?.progress!;
       const _subjects = await getSubjects();
-      const _subject = _subjects.find((s) => s.value === _progress);
+      const value_subject = _subjects.findIndex(
+        (s, index) => index === _progress
+      );
+      const _subject = _subjects[value_subject];
       const id_subject = _subject?.id;
-      const value_subject = _subject?.value;
 
       const _activities = id_subject
         ? await getActivitiesBySubject(_index ? +_index : id_subject)
@@ -71,7 +73,7 @@ export default function ClasesPage(props: any) {
       setLoadedSubject(true);
     };
     updateData();
-  }, [id_user]);
+  }, []);
 
   if (user?.type === TEACHER) return <NotAllowed />;
 
@@ -125,7 +127,7 @@ export default function ClasesPage(props: any) {
               interactive
               progress={progress}
               selected={selected}
-              loading={!loaded}
+              inprogress={true}
               subjects={subjects}
               onClickLink={HandleClickLink}
             />

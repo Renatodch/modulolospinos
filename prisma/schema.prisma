@@ -64,6 +64,5 @@ model subject {
   title       String     @db.VarChar(64)
   description String?    @db.VarChar(255)
   url         String?    @db.VarChar(255)
-  value       Int
   activity    activity[]
 }

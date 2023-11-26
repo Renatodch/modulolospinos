@@ -29,6 +29,7 @@ const NotesReport = ({
   const [tasksDetail, setTasksDetail] = useState<TaskActivityDetail[]>([]);
   const cellStyle = "border-black border-2";
   let avgFinal = 0;
+  let avgFinalComponents = "";
   const handleOpenChange = async (open: boolean) => {
     if (open) {
       const _subjects = await getSubjects();
@@ -102,7 +103,7 @@ const NotesReport = ({
             </Table.Header>
 
             <Table.Body>
-              {subjects.map((s, i) => {
+              {subjects.map((s, index) => {
                 const tasksDetailBySubject = tasksDetail.filter(
                   (t) => t.id_subject === s.id
                 );
@@ -113,13 +114,16 @@ const NotesReport = ({
                 const pc: number =
                   len > 0
                     ? notes.reduce((acc, current) => acc + current, 0) / len
-                    : user_course && user_course?.progress >= s.value
+                    : user_course && user_course?.progress >= index
                     ? 20
                     : 0;
 
+                avgFinalComponents += `PC${index} ${
+                  index < subjects.length - 1 ? "+" : ""
+                }`;
                 avgFinal += pc / subjects.length;
                 return (
-                  <React.Fragment key={i}>
+                  <React.Fragment key={index}>
                     <Table.Row align={"center"}>
                       <Table.Cell
                         rowSpan={len + 2}
@@ -142,7 +146,7 @@ const NotesReport = ({
                     ))}
                     <Table.Row>
                       <Table.Cell justify="center" className={cellStyle}>
-                        PC {i + 1}
+                        PC {index + 1}
                       </Table.Cell>
                       <Table.Cell
                         justify="center"
@@ -161,7 +165,7 @@ const NotesReport = ({
               <Table.Row>
                 <Table.Cell justify="center" colSpan={2} className={cellStyle}>
                   <strong>
-                    PROMEDIO FINAL &nbsp; (PC1 + PC2 + PC3 + PC4 + PC5)/#Temas
+                    PROMEDIO FINAL &nbsp; ({avgFinalComponents})/#Temas
                   </strong>
                 </Table.Cell>
                 <Table.Cell

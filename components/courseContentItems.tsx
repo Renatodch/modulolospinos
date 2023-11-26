@@ -1,16 +1,17 @@
 "use client";
 import { Subject } from "@/model/types";
 import { Button, Flex } from "@radix-ui/themes";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { AiFillYoutube } from "react-icons/ai";
 import { FaPlay } from "react-icons/fa";
 
 interface Props {
   interactive?: boolean;
-  progress?: number;
+  progress: number;
   selected?: number;
   onClickLink?: (id_subject: number, value_subject: number) => void;
-  loading?: boolean;
+  inprogress?: boolean;
   subjects: Subject[];
 }
 
@@ -19,7 +20,7 @@ const CourseContentItems = ({
   progress,
   selected,
   onClickLink,
-  loading,
+  inprogress,
   subjects,
 }: Props) => {
   const router = useRouter();
@@ -39,64 +40,58 @@ const CourseContentItems = ({
           <p className="font-bold text-lg">Introducción a fracciones</p>
         </div>
         <ul className="w-full flex flex-col items-start justify-center overflow-hidden">
-          {subjects
-            .sort((a, b) => a.value - b.value)
-            .map((subject) => {
-              return interactive ? (
-                <li
-                  key={subject.id}
-                  className={`${styleClasses} ${
-                    selected === subject.id && "bg-blue-100"
-                  } ${
-                    (subject.value > progress! + 1 || loading) &&
-                    "text-gray-400"
-                  }`}
-                  style={{
-                    pointerEvents:
-                      subject.value > progress! + 1 || loading ? "none" : "all",
-                  }}
-                  onClick={() => handleClick(subject.id, subject.value)}
-                >
+          {subjects.map((subject, index) => {
+            return interactive ? (
+              <li
+                key={subject.id}
+                className={`${styleClasses} ${
+                  selected === subject.id && inprogress && "bg-blue-100"
+                } ${(index > progress! + 1 || !inprogress) && "text-gray-400"}`}
+                style={{
+                  pointerEvents:
+                    index > progress! + 1 || !inprogress ? "none" : "all",
+                }}
+                onClick={() => handleClick(subject.id, index)}
+              >
+                <AiFillYoutube size="24" style={{ minWidth: 50 }} />
+                {subject.title}
+              </li>
+            ) : (
+              <li
+                key={subject.id}
+                className={`${styleClasses} ${
+                  selected === subject.id && inprogress && "bg-blue-100"
+                } ${
+                  index > progress! || !inprogress ? "text-gray-400" : ""
+                } flex justify-between`}
+                style={{
+                  pointerEvents:
+                    index > progress! || !inprogress ? "none" : "all",
+                }}
+              >
+                <div className="flex">
                   <AiFillYoutube size="24" style={{ minWidth: 50 }} />
                   {subject.title}
-                </li>
-              ) : (
-                <li
-                  key={subject.id}
-                  className={`${styleClasses} ${
-                    selected === subject.id && "bg-blue-100"
-                  } ${
-                    subject.value > progress! || progress === undefined
-                      ? "text-gray-400"
-                      : ""
-                  } flex justify-between`}
-                  style={{
-                    pointerEvents:
-                      subject.value > progress! || progress === undefined
-                        ? "none"
-                        : "all",
-                  }}
-                >
-                  <div className="flex">
-                    <AiFillYoutube size="24" style={{ minWidth: 50 }} />
-                    {subject.title}
-                  </div>
-                  {progress != undefined && subject.value <= progress ? (
-                    <Button
-                      size={"3"}
-                      onClick={() => {
-                        router.push(`/curso/clases?index=${subject.id}`);
-                      }}
-                    >
-                      {subject.value < progress ? "Ver" : "Continuar"}&nbsp;
+                </div>
+                {index <= progress && inprogress ? (
+                  <Link
+                    href={{
+                      pathname: `/curso/clases`,
+                      query: { index: subject.id },
+                    }}
+                    target="_blank"
+                  >
+                    <Button size={"3"}>
+                      {index < progress ? "Ver" : "Continuar"}&nbsp;
                       <FaPlay />
                     </Button>
-                  ) : (
-                    <div></div>
-                  )}
-                </li>
-              );
-            })}
+                  </Link>
+                ) : (
+                  <div></div>
+                )}
+              </li>
+            );
+          })}
         </ul>
       </div>
     </Flex>

@@ -13,6 +13,7 @@ import {
   MIN_NOTE_APPROVED,
   NOT_INIT,
   REPROVED,
+  STUDENT,
   TOAST_BD_ERROR,
   TOAST_USER_COURSE_NOT_COMPLETED,
   TOAST_USER_COURSE_NOT_STARTED,
@@ -179,7 +180,7 @@ const SubjectList = ({
                 <NotesReport user={user} user_course={user_course} />
               </Table.Cell>
               <Table.Cell width={100}>
-                <UserForm target={user} />
+                <UserForm target={user} user_type={STUDENT} />
               </Table.Cell>
               <Table.Cell width={100}>
                 <Button

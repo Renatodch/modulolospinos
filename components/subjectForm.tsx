@@ -35,7 +35,6 @@ const SubjectForm = ({ target }: Props) => {
         title: data.title,
         description: data.desc,
         url: data.url,
-        value: +data.order,
         id: target?.id || 0,
       };
       temp = await saveSubject(temp);
@@ -128,23 +127,7 @@ const SubjectForm = ({ target }: Props) => {
                 maxLength: 64,
               })}
             />
-            <TextField.Input
-              defaultValue={target?.value || 0}
-              min={0}
-              type="number"
-              size="3"
-              color="gray"
-              variant="surface"
-              placeholder="Orden en el curso*"
-              {...register("order", {
-                required: true,
-              })}
-            />
-            {errors.name?.type === "required" && (
-              <span role="alert" className="font-semibold text-red-500 ">
-                Es requerido el orden del tema en el curso
-              </span>
-            )}
+
             <p>(*) campos obligatorios</p>
           </Flex>
           <Flex gap="3" mt="4" justify="end">

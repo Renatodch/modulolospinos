@@ -31,7 +31,6 @@ export interface Activity {
 
 export interface Subject {
   id: number;
-  value: number;
   title: string;
   description: string | null;
   url: string | null;
@@ -177,8 +176,11 @@ export const TOAST_COURSE_START_SUCCESS =
 export const TOAST_COURSE_START_FAILED =
   "Falló en iniciar el curso Fracciones para principiantes";
 
-export const getToastPendingTasksAlert = (len: number) =>
-  `Tiene ${len} tareas pendientes`;
+export const getToastPendingTasksAlert = (len: number) => {
+  const many = len > 1 ? "s" : "";
+  return `Tiene ${len} tarea${many} pendiente${many}`;
+};
+
 export const TOAST_TASKS_PENDING =
   "Tiene tareas pendientes para las siguientes actividades";
 export const TOAST_USER_COURSE_NOT_STARTED =

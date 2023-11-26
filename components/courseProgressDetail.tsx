@@ -28,15 +28,15 @@ const CourseProgressDetail = ({
 }) => {
   const [open, setOpen] = useState<boolean>(false);
   const state = user_course?.state!;
+  const progress = user_course?.progress!;
   const notinit = !user_course || state === NOT_INIT;
   const inprogress = !!user_course && state === IN_PROGRESS;
   const endcourse = !!user_course && state > IN_PROGRESS;
-  const progress = user_course?.progress ?? 0;
   const courseLastItemIndex = subjects.length - 1;
 
   const currentTasksDetail = tasksDetail.filter(
     (t) => t.value_subject <= progress
-  ); // CORREGIR
+  );
 
   const totalActivities = tasksDetail.length;
 
@@ -92,7 +92,7 @@ const CourseProgressDetail = ({
               Tema actual: &nbsp;
               <strong>
                 {progress + 1}.&nbsp;
-                {subjects.find((s) => s.value === progress)?.title}
+                {subjects.find((_, index) => index === progress)?.title}
               </strong>
             </div>
           )}

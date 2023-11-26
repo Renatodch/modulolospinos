@@ -20,9 +20,10 @@ export const getTasksActivityDetail = (
 ) => {
   const activitySubjects: (Activity & { value_subject: number })[] =
     activities.map((a) => {
-      const value_subject = subjects.find((s) => s.id === a.id_subject)?.value!;
+      const value_subject = subjects.findIndex((s) => s.id === a.id_subject);
       return { ...a, value_subject };
     });
+
   const _progress = progress ?? subjects.length - 1; // COURSE_MAX_ITEM_INDEX
   const tasksDetail: TaskActivityDetail[] = activitySubjects
     .filter((a) => a.value_subject <= _progress)

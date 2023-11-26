@@ -17,7 +17,7 @@ export const getSubjects = async () => {
   try {
     const subjects = await prisma.subject.findMany({
       orderBy: {
-        value: "asc",
+        id: "asc",
       },
     });
     res = subjects;

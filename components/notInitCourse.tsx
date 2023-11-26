@@ -9,7 +9,7 @@ const NotInitCourse = () => {
         style={{ color: "blue", textDecoration: "underline" }}
         href="/curso"
       >
-        ir a la pagína principal del curso para iniciar
+        ir a la sección del curso para iniciar
       </Link>
     </div>
   );

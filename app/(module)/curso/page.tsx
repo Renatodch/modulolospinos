@@ -8,9 +8,9 @@ import { getTasksByUserId } from "@/controllers/task.controller";
 import { getUserCourses } from "@/controllers/user-course.controller";
 import { getTasksActivityDetail } from "@/lib/utils";
 import {
+  IN_PROGRESS,
   PRIMARY_COLOR,
   Subject,
-  Task,
   TaskActivityDetail,
   User_Course,
   isStudent,
@@ -18,7 +18,10 @@ import {
 import { Avatar, Box, Flex, Heading, Text } from "@radix-ui/themes";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { AiFillStar } from "react-icons/ai";
+import { AiFillStar, AiOutlineClockCircle } from "react-icons/ai";
+import { BiRefresh } from "react-icons/bi";
+import { PiStudentBold } from "react-icons/pi";
+import { TbAntennaBars5 } from "react-icons/tb";
 import { PuffLoader } from "react-spinners";
 import mainPicture from "../../../public/curso.jpg";
 
@@ -31,19 +34,22 @@ const CoursePage = () => {
     undefined
   );
   const { user } = useUserContext();
-  const id = user?.id!;
+  const id_user = user?.id!;
   const type = user?.type;
   const stars = new Array(5).fill(0);
 
   useEffect(() => {
     const getData = async () => {
       const _user_courses = await getUserCourses();
-      const number_users = _user_courses.length;
-      const user_course: User_Course | null | undefined = _user_courses.find(
-        (u) => u.id_user === id
+      setNumberUsers(
+        _user_courses.filter((uc) => uc.state === IN_PROGRESS).length
       );
 
-      const tasks: Task[] | null | undefined = await getTasksByUserId(id);
+      const user_course: User_Course | null | undefined = _user_courses.find(
+        (u) => u.id_user === id_user
+      );
+
+      const tasks = await getTasksByUserId(id_user);
       const activities = await getActivities();
       const _subjects = await getSubjects();
       const _tasksDetail = getTasksActivityDetail(activities, tasks, _subjects);
@@ -51,7 +57,6 @@ const CoursePage = () => {
       setUserCourse(user_course);
       setSubjects(_subjects);
       setTasksDetail(_tasksDetail);
-      setNumberUsers(number_users);
       setLoaded(true);
     };
     getData();
@@ -61,12 +66,15 @@ const CoursePage = () => {
     setLoaded(false);
 
     const _user_courses = await getUserCourses();
-    const number_users = _user_courses.length;
-    const user_course: User_Course | null | undefined = _user_courses.find(
-      (u) => u.id_user === id
+    setNumberUsers(
+      _user_courses.filter((uc) => uc.state === IN_PROGRESS).length
     );
 
-    const tasks: Task[] | null | undefined = await getTasksByUserId(id);
+    const user_course: User_Course | null | undefined = _user_courses.find(
+      (u) => u.id_user === id_user
+    );
+
+    const tasks = await getTasksByUserId(id_user);
     const activities = await getActivities();
     const _subjects = await getSubjects();
     const _tasksDetail = getTasksActivityDetail(activities, tasks, _subjects);
@@ -74,7 +82,6 @@ const CoursePage = () => {
     setUserCourse(user_course);
     setSubjects(_subjects);
     setTasksDetail(_tasksDetail);
-    setNumberUsers(number_users);
     setLoaded(true);
   };
 
@@ -98,14 +105,59 @@ const CoursePage = () => {
           alt="imagen del curso"
         />
         {isStudent(type) && (
-          <CourseDetail
-            onStart={handleStart}
-            user={user!}
-            user_course={userCourse}
-            number_users={numberUsers}
-            tasksDetail={tasksDetail}
-            subjects={subjects}
-          />
+          <div className="lg:w-1/3 w-full flex-col self-stretch border-4 border-gray-300 rounded-md ">
+            <div className="bg-gray-200 box-border px-8 py-12 w-full h-3/5">
+              {loaded ? (
+                <CourseDetail
+                  onStart={handleStart}
+                  user={user!}
+                  user_course={userCourse}
+                  tasksDetail={tasksDetail}
+                  subjects={subjects}
+                />
+              ) : (
+                <div className="w-full flex justify-center h-full">
+                  <PuffLoader
+                    color={PRIMARY_COLOR}
+                    loading={!loaded}
+                    size={150}
+                    aria-label="Loading Spinner"
+                    data-testid="loader"
+                  />
+                </div>
+              )}
+            </div>
+            <div className="p-8  w-full flex flex-col items-start justify-center overflow-hidden h-2/5">
+              <Flex justify="between" height={"6"}>
+                <div style={{ width: "40px", height: "20px" }}>
+                  <TbAntennaBars5 size="20" className="inline-block" />
+                </div>
+
+                <p className="mr-auto">Principiante</p>
+              </Flex>
+              <Flex justify="between" height={"6"}>
+                <div style={{ width: "40px", height: "20px" }}>
+                  <PiStudentBold size="20" className="inline-block" />
+                </div>
+
+                <p className="mr-auto">{numberUsers} Total de inscritos</p>
+              </Flex>
+              <Flex justify="between" height={"6"}>
+                <div style={{ width: "40px", height: "20px" }}>
+                  <AiOutlineClockCircle size="20" className="inline-block" />
+                </div>
+                <p className="mr-auto">1 hora Duracion</p>
+              </Flex>
+              <Flex justify="between" height={"6"}>
+                <div style={{ width: "40px", height: "20px" }}>
+                  <BiRefresh size="20" className="inline-block" />
+                </div>
+                <p className="mr-auto">
+                  28 de octubre de 2023 Última actualización
+                </p>
+              </Flex>
+            </div>
+          </div>
         )}
       </div>
       <div className="flex flex-col lg:flex-row items-start justify-center w-full gap-16">
@@ -142,8 +194,12 @@ const CoursePage = () => {
             </Heading>
             {loaded ? (
               <CourseContentItems
-                progress={userCourse?.progress}
-                selected={userCourse?.progress}
+                inprogress={userCourse?.state! >= IN_PROGRESS}
+                progress={userCourse?.progress!}
+                selected={
+                  subjects.find((s, index) => index === userCourse?.progress!)
+                    ?.id
+                }
                 subjects={subjects}
               />
             ) : (

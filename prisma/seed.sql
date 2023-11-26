@@ -28,8 +28,7 @@ CREATE TABLE "subject" (
   id SERIAL PRIMARY KEY,
   title VARCHAR(64) NOT NULL,
   description VARCHAR(255),
-  url VARCHAR(255),
-  "value" INT NOT NULL
+  url VARCHAR(255)
 );
 
 CREATE TABLE activity (
@@ -70,11 +69,11 @@ INSERT INTO "user_course" (state, progress, id_user) VALUES (-1,0,3);
 INSERT INTO "user_course" (state, progress, id_user) VALUES (-1,0,5);
 INSERT INTO "user_course" (state, progress, id_user) VALUES (-1,0,6);
 
-INSERT INTO subject (title, description, url, value) VALUES ('Qué es una fracción', 'Descripcion del tema 1', 'https://www.youtube.com/embed/g2rI5mAWPeU?si=gaIOzQXC2YIck04Q', 0);
-INSERT INTO subject (title, description, url, value) VALUES ('Introducción a fracciones', 'Descripción del tema 2', 'https://www.youtube.com/embed/grlbI4ZgzXA?si=cwo501nM1bxquX2R', 1);
-INSERT INTO subject (title, description, url, value) VALUES ('Suma y resta de fracciones con denominadores comunes', 'Descripción del tema 3', 'https://www.youtube.com/embed/qJtoI1ipxs8?si=3lhYpUKrMrkFhmtb', 2);
-INSERT INTO subject (title, description, url, value) VALUES ('Suma y resta de fracciones con denominadores diferentes', 'Descripción del tema 4', 'https://www.youtube.com/embed/Ew9yAW7bf7U?si=xU_jO-6wOf2_5jTF', 3);
-INSERT INTO subject (title, description, value) VALUES ('Seccion final', 'Descripción del tema 5', 4);
+INSERT INTO subject (title, description, url) VALUES ('Qué es una fracción', 'Descripcion del tema 1', 'https://www.youtube.com/embed/g2rI5mAWPeU?si=gaIOzQXC2YIck04Q');
+INSERT INTO subject (title, description, url) VALUES ('Introducción a fracciones', 'Descripción del tema 2', 'https://www.youtube.com/embed/grlbI4ZgzXA?si=cwo501nM1bxquX2R');
+INSERT INTO subject (title, description, url) VALUES ('Suma y resta de fracciones con denominadores comunes', 'Descripción del tema 3', 'https://www.youtube.com/embed/qJtoI1ipxs8?si=3lhYpUKrMrkFhmtb');
+INSERT INTO subject (title, description, url) VALUES ('Suma y resta de fracciones con denominadores diferentes', 'Descripción del tema 4', 'https://www.youtube.com/embed/Ew9yAW7bf7U?si=xU_jO-6wOf2_5jTF');
+INSERT INTO subject (title, description) VALUES ('Seccion final', 'Descripción del tema 5');
 
 
 INSERT INTO activity (title, description, id_subject, type, id_user) VALUES ('Actividad Pregunta 1-1', 'Pregunta 1', 1, 0, 6);

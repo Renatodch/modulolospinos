@@ -169,27 +169,31 @@ const alertState = async (id: number) => {
     subjects,
     user_course?.progress ?? 0
   );
+
+  const tasksActivityDetail = tasksDetail.filter((t) => !t.done);
+  const tasksActivityDetailLen = tasksActivityDetail.length;
+  const pendingActivities =
+    tasksActivityDetailLen > 0 &&
+    user_course &&
+    user_course?.state === IN_PROGRESS;
   const pendingTask =
     tasksDetail.some((t) => !t.done) &&
     user_course &&
     user_course.state === IN_PROGRESS;
-  const pendingActivities = tasksDetail.filter((t) => !t.done);
-  const pendingActivitiesLen = pendingActivities.length;
 
   pendingTask &&
-    toast.warning(getToastPendingTasksAlert(pendingActivitiesLen), {
+    toast.warning(getToastPendingTasksAlert(tasksActivityDetailLen), {
       duration: 5000,
       cancel: { onClick: () => undefined, label: "cerrar" },
     });
 
-  if (pendingActivitiesLen > 0 && user_course) {
-    pendingActivities.forEach((a) => {
+  pendingActivities &&
+    tasksActivityDetail.forEach((a) => {
       a.date_max &&
         toast.info(getToastPendingActivities(a, subjects), {
           duration: 5000,
           cancel: { onClick: () => undefined, label: "cerrar" },
         });
     });
-  }
 };
 export default Links;
