@@ -35,7 +35,7 @@ const SubjectForm = ({ target }: Props) => {
         title: data.title,
         description: data.desc,
         url: data.url,
-        order: +data.order,
+        value: +data.order,
         id: target?.id || 0,
       };
       temp = await saveSubject(temp);
@@ -129,8 +129,8 @@ const SubjectForm = ({ target }: Props) => {
               })}
             />
             <TextField.Input
-              defaultValue={target?.order || 0}
-              maxLength={255}
+              defaultValue={target?.value || 0}
+              min={0}
               type="number"
               size="3"
               color="gray"

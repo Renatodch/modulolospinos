@@ -6,7 +6,6 @@ import {
   NO_DATE_MAX_MESSAGE_TASK,
   PRIMARY_COLOR,
   QuestionAnswers,
-  SUBJECTS_COURSE,
   Task,
   isTeacher,
 } from "@/model/types";
@@ -41,7 +40,7 @@ const AnswerList = ({
                 {
                   <>
                     <strong>Tema al que pertenece:&nbsp;</strong>
-                    {SUBJECTS_COURSE.find((s) => s.value === p.subject)?.title}
+                    {p?.subject_title}
                   </>
                 }
               </p>

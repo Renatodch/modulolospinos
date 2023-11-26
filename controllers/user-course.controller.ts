@@ -34,20 +34,6 @@ export const getUserCourses = async () => {
   return user_courses;
 };
 
-export const getCurrentNumberUserCourses = async () => {
-  let num = 0;
-  try {
-    const res = await prisma.user_course.findMany({
-      where: {
-        state: 0,
-      },
-      distinct: ["id_user"],
-    });
-    num = res.length;
-  } catch (e) {}
-  return num;
-};
-
 export const saveUserCourse = async (user_course: User_Course) => {
   const { id, ...data } = { ...user_course };
   try {

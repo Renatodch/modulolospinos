@@ -5,7 +5,7 @@ import {
   ACTIVITY_TYPES,
   Activity,
   PRIMARY_COLOR,
-  SUBJECTS_COURSE,
+  Subject,
   TOAST_ACTIVITY_SAVE_SUCCESS,
   TOAST_BD_ERROR,
 } from "@/model/types";
@@ -26,7 +26,13 @@ import { AiFillEdit, AiOutlinePlusCircle } from "react-icons/ai";
 import { FaFileAlt } from "react-icons/fa";
 import { toast } from "sonner";
 
-const ActivityForm = ({ target }: { target?: Activity }) => {
+const ActivityForm = ({
+  target,
+  subjects,
+}: {
+  target?: Activity;
+  subjects: Subject[];
+}) => {
   const { user } = useUserContext();
 
   const router = useRouter();
@@ -67,7 +73,7 @@ const ActivityForm = ({ target }: { target?: Activity }) => {
       title: data.title,
       description: data.desc,
       rubric: null,
-      subject: +data.subject,
+      id_subject: +data.subject,
       type: +data.type,
       date_max: new Date(data.dateMax),
       id_user: user?.id || 0,
@@ -153,7 +159,9 @@ const ActivityForm = ({ target }: { target?: Activity }) => {
               name="subject"
               rules={{ required: true }}
               defaultValue={
-                target?.subject !== undefined ? "" + target?.subject : undefined
+                target?.id_subject !== undefined
+                  ? "" + target?.id_subject
+                  : undefined
               }
               render={({ field }) => {
                 return (
@@ -162,8 +170,8 @@ const ActivityForm = ({ target }: { target?: Activity }) => {
                       size={"3"}
                       onValueChange={field.onChange}
                       defaultValue={
-                        target?.subject !== undefined
-                          ? "" + target?.subject
+                        target?.id_subject !== undefined
+                          ? "" + target?.id_subject
                           : undefined
                       }
                     >
@@ -174,8 +182,8 @@ const ActivityForm = ({ target }: { target?: Activity }) => {
                       <Select.Content position="popper">
                         <Select.Group>
                           <Select.Label>Temas del Curso</Select.Label>
-                          {SUBJECTS_COURSE.map((s) => (
-                            <Select.Item key={s.value} value={"" + s.value}>
+                          {subjects.map((s) => (
+                            <Select.Item key={s.id} value={"" + s.id}>
                               {s.title}
                             </Select.Item>
                           ))}
@@ -229,7 +237,7 @@ const ActivityForm = ({ target }: { target?: Activity }) => {
                 );
               }}
             />
-            {errors.subject?.type === "required" && (
+            {errors.type?.type === "required" && (
               <span role="alert" className="font-semibold text-red-500 ">
                 Es requerido el tipo de actividad
               </span>

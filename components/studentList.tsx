@@ -1,5 +1,6 @@
 "use client";
 import { getActivities } from "@/controllers/activity.controller";
+import { getSubjects } from "@/controllers/subject.controller";
 import { getTasksByUserId } from "@/controllers/task.controller";
 import {
   getUserCourseByUserId,
@@ -9,11 +10,9 @@ import { deleteUserById } from "@/controllers/user.controller";
 import { getTasksActivityDetail } from "@/lib/utils";
 import {
   APPROVED,
-  COURSE_LAST_ITEM_INDEX,
   MIN_NOTE_APPROVED,
   NOT_INIT,
   REPROVED,
-  SUBJECTS_COURSE,
   TOAST_BD_ERROR,
   TOAST_USER_COURSE_NOT_COMPLETED,
   TOAST_USER_COURSE_NOT_STARTED,
@@ -66,12 +65,17 @@ const SubjectList = ({
         reset();
         return;
       }
+      const subjects = await getSubjects();
       const activities = await getActivities();
       const userTasks = await getTasksByUserId(id);
-      const tasksDetail = getTasksActivityDetail(activities, userTasks);
-
+      const tasksDetail = getTasksActivityDetail(
+        activities,
+        userTasks,
+        subjects
+      );
+      const courseLastItemIndex = subjects.length - 1;
       if (
-        temp.progress < COURSE_LAST_ITEM_INDEX ||
+        temp.progress < courseLastItemIndex ||
         tasksDetail.some((t) => !t.done || !t.evaluated)
       ) {
         toast.error(TOAST_USER_COURSE_NOT_COMPLETED, { duration: 5000 });
@@ -80,16 +84,16 @@ const SubjectList = ({
       }
 
       let avgFinal = 0;
-      for (let s of SUBJECTS_COURSE) {
+      for (let s of subjects) {
         const notes = tasksDetail
-          .filter((t) => t.subject === s.value)
+          .filter((t) => t.id_subject === s.id)
           .map((n) =>
             n.score === null || n.score === undefined ? 0 : n.score
           );
         const len = notes.length;
-        const avg = notes.reduce((acc, current) => acc + current, 0) / len;
-        const pc = (s.weight / 100) * (len > 0 ? avg : 20);
-        avgFinal += pc;
+        const pc =
+          len > 0 ? notes.reduce((acc, current) => acc + current, 0) / len : 20;
+        avgFinal += pc / subjects.length;
       }
       toast.dismiss();
       const change = Math.round(avgFinal) !== temp?.average;

@@ -1,11 +1,10 @@
 "use client";
 import {
   APPROVED,
-  COURSE_LAST_ITEM_INDEX,
   IN_PROGRESS,
   PRIMARY_COLOR,
   REPROVED,
-  SUBJECTS_COURSE,
+  Subject,
   TaskActivityDetail,
   User_Course,
 } from "@/model/types";
@@ -20,17 +19,23 @@ import { GrInProgress } from "react-icons/gr";
 const CourseProgressDetail = ({
   user_course,
   tasksDetail,
+  subjects,
 }: {
   user_course: User_Course | null | undefined;
   tasksDetail: TaskActivityDetail[];
+  subjects: Subject[];
 }) => {
   const [open, setOpen] = useState<boolean>(false);
-
   const state = user_course?.state ?? IN_PROGRESS;
   const inprogress = !!user_course && state === IN_PROGRESS;
   const endcourse = !!user_course && state > IN_PROGRESS;
   const progress = user_course?.progress ?? 0;
-  const currentTasksDetail = tasksDetail.filter((t) => t.subject <= progress);
+  const courseLastItemIndex = subjects.length - 1;
+
+  const currentTasksDetail = tasksDetail.filter(
+    (t) => t.value_subject <= progress
+  ); // CORREGIR
+
   const totalActivities = tasksDetail.length;
 
   const noActivity =
@@ -46,7 +51,7 @@ const CourseProgressDetail = ({
   const done =
     currentTasksDetail.filter((t) => t.evaluated).length === totalActivities &&
     inprogress &&
-    progress === COURSE_LAST_ITEM_INDEX;
+    progress === courseLastItemIndex;
 
   const evaluatedTask =
     currentTasksDetail.some((t) => t.evaluated) && inprogress;
@@ -85,7 +90,7 @@ const CourseProgressDetail = ({
               Tema actual: &nbsp;
               <strong>
                 {progress + 1}.&nbsp;
-                {SUBJECTS_COURSE.find((s) => s.value === progress)?.title}
+                {subjects.find((s) => s.value === progress)?.title}
               </strong>
             </div>
           )}

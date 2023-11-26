@@ -1,6 +1,6 @@
 import {
   Activity,
-  COURSE_LAST_ITEM_INDEX,
+  Subject,
   Task,
   TaskActivityDetail,
   User,
@@ -8,20 +8,32 @@ import {
   isTeacher,
 } from "@/model/types";
 
+export const getActivitySubjectDetail = () => {
+  return;
+};
+
 export const getTasksActivityDetail = (
   activities: Activity[],
   tasks: Task[],
-  progress = COURSE_LAST_ITEM_INDEX
+  subjects: Subject[],
+  progress?: number
 ) => {
-  const tasksDetail: TaskActivityDetail[] = activities
-    .filter((a) => a.subject <= progress)
+  const activitySubjects: (Activity & { value_subject: number })[] =
+    activities.map((a) => {
+      const value_subject = subjects.find((s) => s.id === a.id_subject)?.value!;
+      return { ...a, value_subject };
+    });
+  const _progress = progress ?? subjects.length - 1; // COURSE_MAX_ITEM_INDEX
+  const tasksDetail: TaskActivityDetail[] = activitySubjects
+    .filter((a) => a.value_subject <= _progress)
     .map((a) => {
       const task = tasks.find((t) => t.id_activity === a.id);
       return {
         done: !!task,
         id_task: task?.id ?? 0,
         id_activity: a.id,
-        subject: a.subject,
+        id_subject: a.id_subject,
+        value_subject: a.value_subject,
         activity_title: a.title,
         activity_description: a.description,
         activity_type: a.type,

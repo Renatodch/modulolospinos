@@ -4,7 +4,7 @@ import { getTasks } from "@/controllers/task.controller";
 import {
   ACTIVITY_TYPES,
   Activity,
-  SUBJECTS_COURSE,
+  Subject,
   TOAST_ACTIVITY_DELETE_ERROR,
   TOAST_ACTIVITY_DELETE_SUCCESS,
 } from "@/model/types";
@@ -16,7 +16,13 @@ import { AiFillDelete } from "react-icons/ai";
 import { toast } from "sonner";
 import ActivityForm from "./activityForm";
 
-const ActivityList = ({ activities }: { activities: Activity[] }) => {
+const ActivityList = ({
+  activities,
+  subjects,
+}: {
+  activities: Activity[];
+  subjects: Subject[];
+}) => {
   const router = useRouter();
   const [onDelete, setOnDelete] = useState<boolean>(false);
   const [deletedIndex, setDeletedIndex] = useState<number | null>(null);
@@ -61,10 +67,7 @@ const ActivityList = ({ activities }: { activities: Activity[] }) => {
                 {ACTIVITY_TYPES.find((a) => a.value === activity.type)?.name}
               </Table.Cell>
               <Table.Cell width={250}>
-                {
-                  SUBJECTS_COURSE.find((s) => s.value === activity.subject)
-                    ?.title
-                }
+                {subjects.find((s) => s.id === activity.id_subject)?.title}
               </Table.Cell>
               <Table.Cell width={250}>
                 {activity.rubric ? (
@@ -76,7 +79,7 @@ const ActivityList = ({ activities }: { activities: Activity[] }) => {
                 )}
               </Table.Cell>
               <Table.Cell width={100}>
-                <ActivityForm target={activity} />
+                <ActivityForm target={activity} subjects={subjects} />
               </Table.Cell>
               <Table.Cell width={100}>
                 <Button

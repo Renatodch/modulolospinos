@@ -22,15 +22,16 @@ export interface Activity {
   title: string;
   description: string;
   rubric: string | null;
-  subject: number;
+  //subject: number;
   type: number;
   date_max: Date | null;
   id_user: number | null;
+  id_subject: number | null;
 }
 
 export interface Subject {
   id: number;
-  order: number;
+  value: number;
   title: string;
   description: string | null;
   url: string | null;
@@ -52,7 +53,8 @@ export interface TaskActivityDetail {
   done: boolean;
   id_task: number;
   id_activity: number;
-  subject: number;
+  id_subject: number | null;
+  value_subject: number;
   activity_title: string;
   activity_description: string | null;
   activity_type: number;
@@ -70,7 +72,7 @@ export type Answer = Task & { student?: string };
 export interface QuestionAnswers {
   title: string;
   question: string;
-  subject: number;
+  subject_title: string;
   date_max: Date | null;
   answers: Answer[];
 }
@@ -91,7 +93,6 @@ export const USER_PROGRESS = [
 export const PRIMARY_COLOR = "#98bf64";
 
 export const MIN_NOTE_APPROVED = 10.5;
-export const COURSE_LAST_ITEM_INDEX = 4;
 export const COURSE_ITEMS_LENGHT = 5;
 export const DEVELOPER = 2;
 export const TEACHER = 1;
@@ -120,34 +121,30 @@ export const USER_TYPES = [
   { name: "Administrador", value: DEVELOPER },
 ];
 
-export const SUBJECTS_COURSE = [
+/* export const SUBJECTS_COURSE = [
   {
     title: "Qué es una fracción",
     value: 0,
     url: "https://www.youtube.com/embed/g2rI5mAWPeU?si=gaIOzQXC2YIck04Q",
     description: "Descripcion del video 1",
-    weight: 10,
   },
   {
     title: "Introducción a fracciones",
     value: 1,
     url: "https://www.youtube.com/embed/grlbI4ZgzXA?si=cwo501nM1bxquX2R",
     description: "Descripcion del video 2",
-    weight: 10,
   },
   {
     title: "Suma y resta de fracciones con denominadores comunes",
     value: 2,
     url: "https://www.youtube.com/embed/qJtoI1ipxs8?si=3lhYpUKrMrkFhmtb",
     description: "Descripcion del video 3",
-    weight: 25,
   },
   {
     title: "Suma y resta de fracciones con denominadores diferentes",
     value: 3,
     url: "https://www.youtube.com/embed/Ew9yAW7bf7U?si=xU_jO-6wOf2_5jTF",
     description: "Descripcion del video 4",
-    weight: 20,
   },
   {
     title: "Seccion final",
@@ -155,9 +152,8 @@ export const SUBJECTS_COURSE = [
     url: "",
     description:
       "En hora buena!, has llegado al final del curso. A continuación tendrás que resolver las actividades final aplicando todo lo aprendido",
-    weight: 35,
   },
-];
+]; */
 
 export const TOAST_USER_DELETE_SUCCESS = "Usuario borrado con éxito";
 export const TOAST_USER_SAVE_SUCCESS = "Usuario guardado con éxito";
@@ -197,9 +193,12 @@ export const TOAST_USER_COURSE_SAVE_NOTE_SUCCESS =
 export const NO_DATE_MAX_MESSAGE_TASK =
   "No hay límite de tiempo para esta tarea";
 
-export const getToastPendingActivities = (taskDetail: TaskActivityDetail) =>
+export const getToastPendingActivities = (
+  taskDetail: TaskActivityDetail,
+  subjects: Subject[]
+) =>
   `${ACTIVITY_TYPES.find((a) => a.value === taskDetail.activity_type)?.name} "${
     taskDetail.activity_title
   }" del tema "${
-    SUBJECTS_COURSE.find((s) => s.value === taskDetail.subject)?.title
+    subjects.find((s) => s.id === taskDetail.id_subject)?.title
   }" vence el dia ${getDateString(taskDetail.date_max)}`;

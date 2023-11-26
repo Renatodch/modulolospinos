@@ -1,7 +1,7 @@
 DROP TABLE IF EXISTS user_course;
 DROP TABLE IF EXISTS task;
-DROP TABLE IF EXISTS "subject";
 DROP TABLE IF EXISTS activity;
+DROP TABLE IF EXISTS "subject";
 DROP TABLE IF EXISTS "user";
 
 CREATE TABLE "user" (
@@ -26,20 +26,20 @@ CREATE TABLE user_course (
 
 CREATE TABLE "subject" (
   id SERIAL PRIMARY KEY,
-  "order" INT NOT NULL,
-  title VARCHAR(32) NOT NULL,
+  title VARCHAR(64) NOT NULL,
   description VARCHAR(255),
-  url VARCHAR(255)
+  url VARCHAR(255),
+  "value" INT NOT NULL
 );
 
 CREATE TABLE activity (
   id SERIAL PRIMARY KEY,
-  title VARCHAR(32) NOT NULL,
+  title VARCHAR(64) NOT NULL,
   description VARCHAR(255) NOT NULL,
   rubric VARCHAR(255),
   type INT NOT NULL,
   date_max TIMESTAMP,
-  subject INT NOT NULL,
+  id_subject INT REFERENCES "subject"(id),
   id_user INT REFERENCES "user"(id)
 );
 
@@ -65,14 +65,20 @@ INSERT INTO "user" (password, type, email, name) VALUES ('123', '0', 'alejandraq
 INSERT INTO "user" (password, type, email, name) VALUES ('1234', '2', 'lucerito.sagas21@gmail.com', 'Desarrollador');
 INSERT INTO "user" (password, type, email, name) VALUES ('123', '1', '', 'Docente 3');
 
+INSERT INTO subject (title, description, url, value) VALUES ('Qué es una fracción', 'Descripcion del tema 1', 'https://www.youtube.com/embed/g2rI5mAWPeU?si=gaIOzQXC2YIck04Q', 0);
+INSERT INTO subject (title, description, url, value) VALUES ('Introducción a fracciones', 'Descripción del tema 2', 'https://www.youtube.com/embed/grlbI4ZgzXA?si=cwo501nM1bxquX2R', 1);
+INSERT INTO subject (title, description, url, value) VALUES ('Suma y resta de fracciones con denominadores comunes', 'Descripción del tema 3', 'https://www.youtube.com/embed/qJtoI1ipxs8?si=3lhYpUKrMrkFhmtb', 2);
+INSERT INTO subject (title, description, url, value) VALUES ('Suma y resta de fracciones con denominadores diferentes', 'Descripción del tema 4', 'https://www.youtube.com/embed/Ew9yAW7bf7U?si=xU_jO-6wOf2_5jTF', 3);
+INSERT INTO subject (title, description, value) VALUES ('Seccion final', 'Descripción del tema 5', 4);
 
-INSERT INTO activity (title, description, subject, type, id_user) VALUES ('Actividad Pregunta 1-1', 'Pregunta 1', 0, 0, 6);
-INSERT INTO activity (title, description, subject, type, date_max, id_user) VALUES ('Actividad Pregunta 2-1', 'Pregunta 2', 0, 0, '2023-11-19 12:00:00', 6);
-INSERT INTO activity (title, description, subject, type, date_max, id_user) VALUES ('Actividad Pregunta 1-2', 'Pregunta 3', 1, 0, '2023-11-20 12:00:00', 6);
-INSERT INTO activity (title, description, subject, type,  id_user) VALUES ('Actividad Proyecto 2-2', 'Proyecto 1', 1, 1, 6);
-INSERT INTO activity (title, description, subject, type, date_max, id_user) VALUES ('Actividad Pregunta 1-3', 'Pregunta 4', 3, 0, '2023-11-21 12:00:00', 6);
-INSERT INTO activity (title, description, subject, type, date_max, id_user) VALUES ('Actividad Proyecto 1-4', 'Proyecto 2', 4, 1, '2023-11-22 12:00:00', 6);
-INSERT INTO activity (title, description, subject, type, date_max, id_user) VALUES ('Actividad Proyecto 2-4', 'Proyecto 3', 4, 1, '2023-11-22 12:00:00', 6);
+
+INSERT INTO activity (title, description, id_subject, type, id_user) VALUES ('Actividad Pregunta 1-1', 'Pregunta 1', 1, 0, 6);
+INSERT INTO activity (title, description, id_subject, type, date_max, id_user) VALUES ('Actividad Pregunta 2-1', 'Pregunta 2', 1, 0, '2023-11-19 12:00:00', 6);
+INSERT INTO activity (title, description, id_subject, type, date_max, id_user) VALUES ('Actividad Pregunta 1-2', 'Pregunta 3', 2, 0, '2023-11-20 12:00:00', 6);
+INSERT INTO activity (title, description, id_subject, type,  id_user) VALUES ('Actividad Proyecto 2-2', 'Proyecto 1', 2, 1, 6);
+INSERT INTO activity (title, description, id_subject, type, date_max, id_user) VALUES ('Actividad Pregunta 1-3', 'Pregunta 4', 4, 0, '2023-11-21 12:00:00', 6);
+INSERT INTO activity (title, description, id_subject, type, date_max, id_user) VALUES ('Actividad Proyecto 1-4', 'Proyecto 2', 5, 1, '2023-11-22 12:00:00', 6);
+INSERT INTO activity (title, description, id_subject, type, date_max, id_user) VALUES ('Actividad Proyecto 2-4', 'Proyecto 3', 5, 1, '2023-11-22 12:00:00', 6);
 
 /******* starter *************/
 INSERT INTO user_course (date_start,date_update,state,progress,id_user) VALUES ('2023-11-14 23:59:59', '2023-11-14 23:59:59',0, 0, 6);

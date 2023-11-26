@@ -3,7 +3,7 @@ import { getDateString } from "@/lib/date-lib";
 import {
   NO_DATE_MAX_MESSAGE_TASK,
   PROJECT,
-  SUBJECTS_COURSE,
+  Subject,
   TaskActivityDetail,
   User_Course,
 } from "@/model/types";
@@ -13,15 +13,17 @@ import ProjectForm from "./projectForm";
 import RubricLink from "./rubricLink";
 
 interface Props {
-  item: number;
   tasksDetail?: TaskActivityDetail[];
   userCourse?: User_Course | undefined | null;
+  subject: Subject | null | undefined;
+  noActivities: boolean;
 }
-const ClassItem = ({ item, tasksDetail, userCourse }: Props) => {
-  const subject =
-    SUBJECTS_COURSE.find((s) => s.value === item) || SUBJECTS_COURSE[0];
-  const noActivities = !tasksDetail?.some((t) => t.subject === item);
-
+const ClassItem = ({
+  tasksDetail,
+  userCourse,
+  subject,
+  noActivities,
+}: Props) => {
   return (
     <ScrollArea
       className="px-3 py-3 shadow-sm shadow-gray-400"
@@ -35,18 +37,18 @@ const ClassItem = ({ item, tasksDetail, userCourse }: Props) => {
             Empezó el curso el día {getDateString(userCourse?.date_start)}
           </span>
         </div>
-        <div className="font-semibold text-xl mb-2">{subject.title}</div>
-        {subject.url && (
+        <div className="font-semibold text-xl mb-2">{subject?.title}</div>
+        {subject?.url && (
           <iframe
             style={{ width: "100%", height: "350px" }}
             width="560"
             height="315"
-            src={subject.url}
+            src={subject?.url}
             title="YouTube video player"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
           ></iframe>
         )}
-        {subject.description && (
+        {subject?.description && (
           <div className="m-4 w-full text-justify pr-2">
             {subject.description}
           </div>

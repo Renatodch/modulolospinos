@@ -1,5 +1,5 @@
 "use client";
-import { SUBJECTS_COURSE } from "@/model/types";
+import { Subject } from "@/model/types";
 import { Button, Flex } from "@radix-ui/themes";
 import { useRouter } from "next/navigation";
 import { AiFillYoutube } from "react-icons/ai";
@@ -11,6 +11,7 @@ interface Props {
   selected?: number;
   onClickLink?: (index: number) => void;
   loading?: boolean;
+  subjects: Subject[];
 }
 
 const CourseContentItems = ({
@@ -19,6 +20,7 @@ const CourseContentItems = ({
   selected,
   onClickLink,
   loading,
+  subjects,
 }: Props) => {
   const router = useRouter();
   const styleClasses =
@@ -37,59 +39,64 @@ const CourseContentItems = ({
           <p className="font-bold text-lg">Introducción a fracciones</p>
         </div>
         <ul className="w-full flex flex-col items-start justify-center overflow-hidden">
-          {SUBJECTS_COURSE.map((i, index) => {
-            return interactive ? (
-              <li
-                key={index}
-                className={`${styleClasses} ${
-                  selected === index && "bg-blue-100"
-                } ${(index > progress! + 1 || loading) && "text-gray-400"}`}
-                style={{
-                  pointerEvents:
-                    index > progress! + 1 || loading ? "none" : "all",
-                }}
-                onClick={() => handleClick(index)}
-              >
-                <AiFillYoutube size="24" style={{ minWidth: 50 }} />
-                {i.title}
-              </li>
-            ) : (
-              <li
-                key={index}
-                className={`${styleClasses} ${
-                  selected === index && "bg-blue-100"
-                } ${
-                  index > progress! || progress === undefined
-                    ? "text-gray-400"
-                    : ""
-                } flex justify-between`}
-                style={{
-                  pointerEvents:
-                    index > progress! || progress === undefined
-                      ? "none"
-                      : "all",
-                }}
-              >
-                <div className="flex">
+          {subjects
+            .sort((a, b) => a.value - b.value)
+            .map((subject) => {
+              return interactive ? (
+                <li
+                  key={subject.id}
+                  className={`${styleClasses} ${
+                    selected === subject.id && "bg-blue-100"
+                  } ${
+                    (subject.value > progress! + 1 || loading) &&
+                    "text-gray-400"
+                  }`}
+                  style={{
+                    pointerEvents:
+                      subject.value > progress! + 1 || loading ? "none" : "all",
+                  }}
+                  onClick={() => handleClick(subject.id)}
+                >
                   <AiFillYoutube size="24" style={{ minWidth: 50 }} />
-                  {i.title}
-                </div>
-                {progress != undefined && index <= progress ? (
-                  <Button
-                    size={"3"}
-                    onClick={() => {
-                      router.push(`/curso/clases?index=${index}`);
-                    }}
-                  >
-                    {index < progress ? "Ver" : "Continuar"}&nbsp;
-                    <FaPlay />
-                  </Button>
-                ) : (
-                  <div></div>
-                )}
-              </li>
-            );
-          })}
+                  {subject.title}
+                </li>
+              ) : (
+                <li
+                  key={subject.id}
+                  className={`${styleClasses} ${
+                    selected === subject.id && "bg-blue-100"
+                  } ${
+                    subject.value > progress! || progress === undefined
+                      ? "text-gray-400"
+                      : ""
+                  } flex justify-between`}
+                  style={{
+                    pointerEvents:
+                      subject.value > progress! || progress === undefined
+                        ? "none"
+                        : "all",
+                  }}
+                >
+                  <div className="flex">
+                    <AiFillYoutube size="24" style={{ minWidth: 50 }} />
+                    {subject.title}
+                  </div>
+                  {progress != undefined && subject.value <= progress ? (
+                    <Button
+                      size={"3"}
+                      onClick={() => {
+                        router.push(`/curso/clases?index=${subject.id}`);
+                      }}
+                    >
+                      {subject.value < progress ? "Ver" : "Continuar"}&nbsp;
+                      <FaPlay />
+                    </Button>
+                  ) : (
+                    <div></div>
+                  )}
+                </li>
+              );
+            })}
         </ul>
       </div>
     </Flex>

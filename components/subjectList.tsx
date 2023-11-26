@@ -42,7 +42,7 @@ const SubjectList = ({ subjects }: { subjects: Subject[] }) => {
                 {subject.id}
               </Table.RowHeaderCell>
               <Table.Cell width={300}>{subject.title}</Table.Cell>
-              <Table.Cell width={250}>{subject.order}</Table.Cell>
+              <Table.Cell width={250}>{subject.value}</Table.Cell>
               <Table.Cell width={100}>
                 <SubjectForm target={subject} />
               </Table.Cell>

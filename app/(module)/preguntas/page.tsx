@@ -1,5 +1,6 @@
 import AnswerList from "@/components/answerList";
 import { getActivitiesAnswer } from "@/controllers/activity.controller";
+import { getSubjects } from "@/controllers/subject.controller";
 import { getTasks } from "@/controllers/task.controller";
 import { getUsers } from "@/controllers/user.controller";
 
@@ -9,6 +10,7 @@ import { ANSWER, Answer, QuestionAnswers } from "@/model/types";
 
 const QuestionPage = async () => {
   await loginIsRequiredServer();
+  const subjects = await getSubjects();
   const activities = await getActivitiesAnswer();
   const tasks = await getTasks(ANSWER);
   const res = await getUsers();
@@ -31,7 +33,7 @@ const QuestionPage = async () => {
       title: a.title,
       question: a.description,
       date_max: a.date_max,
-      subject: a.subject,
+      subject_title: subjects.find((s) => s.id === a.id_subject)?.title || "",
       answers,
     });
   });

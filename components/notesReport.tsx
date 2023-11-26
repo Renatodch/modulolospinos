@@ -1,11 +1,12 @@
 "use client";
 import { getActivities } from "@/controllers/activity.controller";
+import { getSubjects } from "@/controllers/subject.controller";
 import { getTasksByUserId } from "@/controllers/task.controller";
 import { getFormatedNote, getTasksActivityDetail } from "@/lib/utils";
 import {
   MIN_NOTE_APPROVED,
   PRIMARY_COLOR,
-  SUBJECTS_COURSE,
+  Subject,
   TaskActivityDetail,
   User,
   User_Course,
@@ -23,15 +24,22 @@ const NotesReport = ({
   user_course: User_Course | undefined | null;
 }) => {
   const [loaded, setLoaded] = useState(false);
+  const [subjects, setSubjects] = useState<Subject[]>([]);
   const [tasksDetail, setTasksDetail] = useState<TaskActivityDetail[]>([]);
   const cellStyle = "border-black border-2";
   let avgFinal = 0;
   const handleOpenChange = async (open: boolean) => {
     if (open) {
+      const _subjects = await getSubjects();
       const activities = await getActivities();
       const userTasks = await getTasksByUserId(user.id);
-      const _tasksDetail = getTasksActivityDetail(activities, userTasks);
+      const _tasksDetail = getTasksActivityDetail(
+        activities,
+        userTasks,
+        _subjects
+      );
       setTasksDetail(_tasksDetail);
+      setSubjects(_subjects);
       setLoaded(true);
     } else {
       avgFinal = 0;
@@ -56,18 +64,16 @@ const NotesReport = ({
 
       <Dialog.Content style={{ maxWidth: 650 }}>
         <Dialog.Title align={"center"}>Reporte de notas</Dialog.Title>
-        <Dialog.Description size="2" mb="4">
-          <div className="mb-4 flex flex-col ">
-            <strong className="uppercase mb-2">Datos del estudiante</strong>
-            <span>
-              <strong className="text-black">Nombre: &nbsp;</strong>
-              {user?.name}
-            </span>
-            <span>
-              <strong className="text-black">iD: &nbsp;</strong>
-              {user?.id}
-            </span>
-          </div>
+        <Dialog.Description size="2" mb="4" className="flex flex-col ">
+          <strong className="uppercase mb-2">Datos del estudiante</strong>
+          <span>
+            <strong className="text-black">Nombre: &nbsp;</strong>
+            {user?.name}
+          </span>
+          <span>
+            <strong className="text-black">iD: &nbsp;</strong>
+            {user?.id}
+          </span>
         </Dialog.Description>
         {loaded ? (
           <Table.Root variant="surface">
@@ -95,23 +101,22 @@ const NotesReport = ({
             </Table.Header>
 
             <Table.Body>
-              {SUBJECTS_COURSE.map((s, i) => {
+              {subjects.map((s, i) => {
                 const tasksDetailBySubject = tasksDetail.filter(
-                  (t) => t.subject === s.value
+                  (t) => t.id_subject === s.id
                 );
                 const len = tasksDetailBySubject.length;
                 const notes = tasksDetailBySubject.map((n) =>
                   n.score === null || n.score === undefined ? 0 : n.score
                 );
-                const avg: number =
+                const pc: number =
                   len > 0
                     ? notes.reduce((acc, current) => acc + current, 0) / len
                     : user_course && user_course?.progress >= s.value
                     ? 20
                     : 0;
 
-                const pc = avg;
-                avgFinal += pc / SUBJECTS_COURSE.length;
+                avgFinal += pc / subjects.length;
                 return (
                   <React.Fragment key={i}>
                     <Table.Row align={"center"}>
@@ -172,7 +177,7 @@ const NotesReport = ({
             </Table.Body>
           </Table.Root>
         ) : (
-          <div
+          <p
             className="w-full flex justify-center items-center"
             style={{ height: "500px" }}
           >
@@ -183,7 +188,7 @@ const NotesReport = ({
               aria-label="Loading Spinner"
               data-testid="loader"
             />
-          </div>
+          </p>
         )}
       </Dialog.Content>
     </Dialog.Root>

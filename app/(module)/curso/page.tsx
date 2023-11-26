@@ -3,14 +3,13 @@ import { useUserContext } from "@/app/context";
 import CourseContentItems from "@/components/courseContentItems";
 import CourseDetail from "@/components/courseDetail";
 import { getActivities } from "@/controllers/activity.controller";
+import { getSubjects } from "@/controllers/subject.controller";
 import { getTasksByUserId } from "@/controllers/task.controller";
-import {
-  getCurrentNumberUserCourses,
-  getUserCourseByUserId,
-} from "@/controllers/user-course.controller";
+import { getUserCourses } from "@/controllers/user-course.controller";
 import { getTasksActivityDetail } from "@/lib/utils";
 import {
   PRIMARY_COLOR,
+  Subject,
   Task,
   TaskActivityDetail,
   User_Course,
@@ -27,6 +26,7 @@ const CoursePage = () => {
   const [loaded, setLoaded] = useState(false);
   const [numberUsers, setNumberUsers] = useState(0);
   const [tasksDetail, setTasksDetail] = useState<TaskActivityDetail[]>([]);
+  const [subjects, setSubjects] = useState<Subject[]>([]);
   const [userCourse, setUserCourse] = useState<User_Course | null | undefined>(
     undefined
   );
@@ -37,15 +37,20 @@ const CoursePage = () => {
 
   useEffect(() => {
     const getData = async () => {
-      const number_users = await getCurrentNumberUserCourses();
-      const user_course: User_Course | null | undefined =
-        await getUserCourseByUserId(id);
+      const _user_courses = await getUserCourses();
+      const number_users = _user_courses.length;
+      const user_course: User_Course | null | undefined = _user_courses.find(
+        (u) => u.id_user === id
+      );
+      //await getUserCourseByUserId(id);
 
       const tasks: Task[] | null | undefined = await getTasksByUserId(id);
       const activities = await getActivities();
-      const _tasksDetail = getTasksActivityDetail(activities, tasks);
+      const _subjects = await getSubjects();
+      const _tasksDetail = getTasksActivityDetail(activities, tasks, _subjects);
 
       setUserCourse(user_course);
+      setSubjects(_subjects);
       setTasksDetail(_tasksDetail);
       setNumberUsers(number_users);
       setLoaded(true);
@@ -56,15 +61,19 @@ const CoursePage = () => {
   const handleStart = async () => {
     setLoaded(false);
 
-    const number_users = await getCurrentNumberUserCourses();
-    const user_course: User_Course | null | undefined =
-      await getUserCourseByUserId(id);
+    const _user_courses = await getUserCourses();
+    const number_users = _user_courses.length;
+    const user_course: User_Course | null | undefined = _user_courses.find(
+      (u) => u.id_user === id
+    );
 
     const tasks: Task[] | null | undefined = await getTasksByUserId(id);
     const activities = await getActivities();
-    const _tasksDetail = getTasksActivityDetail(activities, tasks);
+    const _subjects = await getSubjects();
+    const _tasksDetail = getTasksActivityDetail(activities, tasks, _subjects);
 
     setUserCourse(user_course);
+    setSubjects(_subjects);
     setTasksDetail(_tasksDetail);
     setNumberUsers(number_users);
     setLoaded(true);
@@ -95,6 +104,7 @@ const CoursePage = () => {
             user={user!}
             number_users={numberUsers}
             tasksDetail={tasksDetail}
+            subjects={subjects}
           />
         )}
       </div>
@@ -134,6 +144,7 @@ const CoursePage = () => {
               <CourseContentItems
                 progress={userCourse?.progress}
                 selected={userCourse?.progress}
+                subjects={subjects}
               />
             ) : (
               <div

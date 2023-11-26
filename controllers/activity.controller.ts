@@ -44,7 +44,7 @@ export const deleteActivityById = async (id: number) => {
 
   return activities;
 };
-export const deleteActivitiesByUserId = async (id_user: number) => {
+/* export const deleteActivitiesByUserId = async (id_user: number) => {
   await deleteRubricsByUserId(id_user);
   const activities = await prisma.activity.deleteMany({
     where: {
@@ -53,13 +53,13 @@ export const deleteActivitiesByUserId = async (id_user: number) => {
   });
 
   return activities;
-};
+}; */
 export const getActivities = async () => {
   let res: Activity[] = [];
   try {
     const activities = await prisma.activity.findMany({
       orderBy: {
-        subject: "asc",
+        id_subject: "asc",
       },
     });
     res = activities;
@@ -96,7 +96,7 @@ export const getActivitiesProject = async () => {
   } catch (e) {}
   return res;
 };
-export const getActivitiesBySubject = async (subject: number) => {
+export const getActivitiesBySubject = async (id_subject: number) => {
   let res: Activity[] = [];
   try {
     const activities = await prisma.activity.findMany({
@@ -104,14 +104,14 @@ export const getActivitiesBySubject = async (subject: number) => {
         id: "asc",
       },
       where: {
-        subject,
+        id_subject,
       },
     });
     res = activities;
   } catch (e) {}
   return res;
 };
-export const getActivityById = async (id: number) => {
+/* export const getActivityById = async (id: number) => {
   const activity = await prisma.activity.findUnique({
     where: {
       id,
@@ -126,7 +126,7 @@ export const getActivityByUserId = async (id_user: number) => {
     },
   });
   return activity;
-};
+}; */
 
 export const saveActivity = async (activity: Activity) => {
   const { id, ...data } = activity;
@@ -144,7 +144,5 @@ export const saveActivity = async (activity: Activity) => {
           });
 
     return res;
-  } catch (e) {
-    console.log(e);
-  }
+  } catch (e) {}
 };

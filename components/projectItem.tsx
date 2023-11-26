@@ -5,7 +5,7 @@ import {
   Activity,
   MIN_NOTE_APPROVED,
   NO_DATE_MAX_MESSAGE_TASK,
-  SUBJECTS_COURSE,
+  Subject,
   Task,
   User,
   isTeacher,
@@ -18,10 +18,12 @@ const ProjectItem = ({
   student,
   project,
   activity,
+  subject,
 }: {
   student: User | null | undefined;
   project: Task | null | undefined;
   activity: Activity | null | undefined;
+  subject: Subject | null | undefined;
 }) => {
   const { user } = useUserContext();
 
@@ -44,10 +46,7 @@ const ProjectItem = ({
             </span>
             <span>
               <strong>Tema al que pertenece: &nbsp;</strong>
-              {
-                SUBJECTS_COURSE.find((s) => s.value === activity?.subject)
-                  ?.title
-              }
+              {subject?.title}
             </span>
             {activity.date_max ? (
               <span

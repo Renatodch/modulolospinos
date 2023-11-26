@@ -1,6 +1,7 @@
 "use client";
 import { useUserContext } from "@/app/context";
 import { getActivities } from "@/controllers/activity.controller";
+import { getSubjects } from "@/controllers/subject.controller";
 import { getTasksByUserId } from "@/controllers/task.controller";
 import { getUserCourseByUserId } from "@/controllers/user-course.controller";
 import { getTasksActivityDetail } from "@/lib/utils";
@@ -35,6 +36,7 @@ const Links = () => {
     },
     {
       label: "Profesor",
+      href: null,
       width: "120px",
       ops: [
         {
@@ -117,7 +119,7 @@ const LinkItem = ({ link }: any) => {
     >
       <details>
         <summary className={`${itemStyle} navbar-link`}>
-          {link.href ? (
+          {link.href !== null ? (
             <Link href={link.href} onClick={handleClickLink}>
               {link.label}
             </Link>
@@ -157,12 +159,14 @@ const LinkItem = ({ link }: any) => {
   );
 };
 const alertState = async (id: number) => {
+  const subjects = await getSubjects();
   const user_course = await getUserCourseByUserId(id);
   const tasks = await getTasksByUserId(id);
   const activities = await getActivities();
   const tasksDetail = getTasksActivityDetail(
     activities,
     tasks,
+    subjects,
     user_course?.progress ?? 0
   );
   const pendingTask =
@@ -181,7 +185,7 @@ const alertState = async (id: number) => {
   if (pendingActivitiesLen > 0 && user_course) {
     pendingActivities.forEach((a) => {
       a.date_max &&
-        toast.info(getToastPendingActivities(a), {
+        toast.info(getToastPendingActivities(a, subjects), {
           duration: 5000,
           cancel: { onClick: () => undefined, label: "cerrar" },
         });
