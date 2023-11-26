@@ -3,13 +3,13 @@ import { Subject } from "@/model/types";
 import { prisma } from "../prisma/prisma";
 
 export const deleteSubjectById = async (id: number) => {
-  const activities = await prisma.subject.delete({
+  const subjects = await prisma.subject.delete({
     where: {
       id,
     },
   });
 
-  return activities;
+  return subjects;
 };
 
 export const getSubjects = async () => {
@@ -23,6 +23,17 @@ export const getSubjects = async () => {
     res = subjects;
   } catch (e) {}
   return res;
+};
+
+export const getSubjectById = async (id?: number) => {
+  try {
+    const subject = await prisma.subject.findUnique({
+      where: {
+        id,
+      },
+    });
+    return subject;
+  } catch (e) {}
 };
 
 export const saveSubject = async (subject: Subject) => {

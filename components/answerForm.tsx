@@ -1,9 +1,13 @@
 "use client";
 import { useUserContext } from "@/app/context";
-import { saveTask } from "@/controllers/task.controller";
 import {
-  ANSWER,
+  getTaskByUserIdAndActivityId,
+  saveTask,
+} from "@/controllers/task.controller";
+import {
   PRIMARY_COLOR,
+  QUESTION,
+  TOAST_ANSWER_SAVE_ERROR_1,
   TOAST_ANSWER_SAVE_SUCCESS,
   TOAST_BD_ERROR,
   Task,
@@ -37,26 +41,35 @@ const AnswerForm = ({
 
   const onSubmit = async (data: FieldValues) => {
     setSubmitted(true);
-    let temp: Task | undefined = {
-      id: 0,
-      title: "",
-      description: data.answer,
-      image1: null,
-      date_upload: new Date(),
-      score: null,
-      comment: null,
-      type: ANSWER,
-      id_activity: taskActivityDetail.id_activity,
-      id_user: user?.id || 0,
-    };
+    const answerExist = await getTaskByUserIdAndActivityId(
+      user?.id,
+      taskActivityDetail.id_activity
+    );
+    let temp: Task | undefined = undefined;
+    if (answerExist) {
+      toast.error(TOAST_ANSWER_SAVE_ERROR_1);
+    } else {
+      temp = {
+        id: 0,
+        title: "",
+        description: data.answer,
+        image1: null,
+        date_upload: new Date(),
+        score: null,
+        comment: null,
+        type: QUESTION,
+        id_activity: taskActivityDetail.id_activity,
+        id_user: user?.id || 0,
+      };
 
-    try {
-      temp = await saveTask(temp);
-      !temp
-        ? toast.error(TOAST_BD_ERROR)
-        : toast.success(TOAST_ANSWER_SAVE_SUCCESS);
-    } catch (e) {
-      toast.error(TOAST_BD_ERROR);
+      try {
+        temp = await saveTask(temp);
+        !temp
+          ? toast.error(TOAST_BD_ERROR)
+          : toast.success(TOAST_ANSWER_SAVE_SUCCESS);
+      } catch (e) {
+        toast.error(TOAST_BD_ERROR);
+      }
     }
 
     setTask(temp);

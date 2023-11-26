@@ -3,17 +3,16 @@ import { useUserContext } from "@/app/context";
 import { getDateString } from "@/lib/date-lib";
 import {
   Activity,
-  MIN_NOTE_APPROVED,
   NO_DATE_MAX_MESSAGE_TASK,
   Subject,
   Task,
   User,
-  isTeacher,
 } from "@/model/types";
 import { Strong } from "@radix-ui/themes";
 import Image from "next/image";
+import Rubric from "./rubric";
 import RubricLink from "./rubricLink";
-import ProjectFormEval from "./taskFormEval";
+import TaskEvalDetail from "./taskEvalDetail";
 const ProjectItem = ({
   student,
   project,
@@ -26,51 +25,51 @@ const ProjectItem = ({
   subject: Subject | null | undefined;
 }) => {
   const { user } = useUserContext();
+  const titleClases = "font-bold uppercase text-lg text-left mt-4 mb-2 italic";
 
   return !project ? (
     <div className="w-full flex justify-center mt-16">
       <Strong>El proyecto no existe</Strong>
     </div>
   ) : (
-    <div className="w-full px-16 py-8 flex flex-col items-start justify-start">
-      <div className="italic flex justify-between text-md w-full mb-4">
-        {activity?.title && activity.id && (
-          <div className="flex flex-col">
-            <strong className="uppercase mb-2">Datos de la actividad</strong>
-
-            <span>
-              <strong>Título: &nbsp;</strong> {activity?.title}
-            </span>
-            <span>
-              <strong>iD: &nbsp;</strong> {activity?.id}
-            </span>
-            <span>
-              <strong>Tema al que pertenece: &nbsp;</strong>
-              {subject?.title}
-            </span>
-            {activity.date_max ? (
-              <span
-                className={`${
-                  project.date_upload > activity.date_max
-                    ? "text-red-600"
-                    : "text-black"
-                }`}
-              >
-                <strong className="text-black">
-                  Fecha de vencimiento: &nbsp;
-                </strong>
-                {getDateString(activity?.date_max)}
-              </span>
-            ) : (
-              <span>
-                <strong>{NO_DATE_MAX_MESSAGE_TASK}</strong>
-              </span>
-            )}
-            <RubricLink url={activity.rubric} />
-          </div>
-        )}
+    <div className="w-full px-12">
+      <div className="w-full italic pt-8 pb-2 flex justify-between text-md mb-4">
         <div className="flex flex-col">
-          <strong className="uppercase mb-2">Datos del estudiante</strong>
+          <strong className={titleClases}>Datos de la actividad</strong>
+
+          <span>
+            <strong>Título: &nbsp;</strong> {activity?.title}
+          </span>
+          <span>
+            <strong>iD: &nbsp;</strong> {activity?.id}
+          </span>
+          <span>
+            <strong>Tema al que pertenece: &nbsp;</strong>
+            {subject?.title}
+          </span>
+          {activity?.date_max ? (
+            <span
+              className={`${
+                project.date_upload > activity?.date_max
+                  ? "text-red-600"
+                  : "text-black"
+              }`}
+            >
+              <strong className="text-black">
+                Fecha de vencimiento: &nbsp;
+              </strong>
+              {getDateString(activity?.date_max)}
+            </span>
+          ) : (
+            <span>
+              <strong>{NO_DATE_MAX_MESSAGE_TASK}</strong>
+            </span>
+          )}
+          <RubricLink url={activity?.rubric} />
+        </div>
+
+        <div className="flex flex-col">
+          <strong className={titleClases}>Datos del estudiante</strong>
           <span>
             <strong className="text-black">Nombre: &nbsp;</strong>
             {student?.name}
@@ -91,54 +90,42 @@ const ProjectItem = ({
           </span>
         </div>
       </div>
-      <p className="font-bold text-3xl w-full text-center mb-4">
-        {project?.title}
-      </p>
-      {project?.image1 && (
-        <div
-          style={{
-            height: "500px",
-            backgroundColor: "gray",
-            position: "relative",
-            width: "100%",
-          }}
-        >
-          <Image
-            src={project?.image1}
-            fill
-            alt={project.title}
-            className="mb-4"
-          />
-        </div>
-      )}
 
-      <p className="text-base w-full mb-4">{project?.description}</p>
+      <hr className="border-gray-400" />
+      <p className={titleClases}>Proyecto</p>
 
-      <div className="flex justify-between w-full lg:flex-row flex-col lg:gap-0 gap-6">
-        {isTeacher(user?.type) && <ProjectFormEval target={project} />}
-        <div className="flex flex-col w-96">
-          {project.score != null && project.score != undefined && (
-            <p className="text-xl">
-              <Strong>Nota:&nbsp;</Strong>
-              <span
-                className={`${
-                  project.score >= MIN_NOTE_APPROVED
-                    ? "text-blue-600"
-                    : "text-red-600"
-                }`}
-              >
-                {project.score}/20
-              </span>
-            </p>
-          )}
-          {project.comment && (
-            <p className="text-xl">
-              <Strong>Comentario:&nbsp;</Strong>
-              {project.comment}
-            </p>
-          )}
-        </div>
+      <div className="w-full pt-0 pb-2 flex flex-col items-start justify-start mb-4 mt-8">
+        <p className="font-bold text-3xl w-full text-center mb-4">
+          {project?.title}
+        </p>
+        {project?.image1 && (
+          <div
+            style={{
+              height: "500px",
+              backgroundColor: "gray",
+              position: "relative",
+              width: "100%",
+            }}
+          >
+            <Image
+              src={project?.image1}
+              fill
+              alt={project.title}
+              className="mb-4"
+            />
+          </div>
+        )}
+
+        <p className="text-base w-full mb-4">{project?.description}</p>
       </div>
+
+      <div className="mb-16">
+        <TaskEvalDetail type={user?.type!} task={project as Task} />
+      </div>
+
+      {activity?.rubric && (
+        <Rubric titleClases={titleClases} rubric={activity.rubric} />
+      )}
     </div>
   );
 };

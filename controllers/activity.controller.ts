@@ -1,5 +1,5 @@
 "use server";
-import { Activity } from "@/model/types";
+import { Activity, PROJECT, QUESTION } from "@/model/types";
 import { del } from "@vercel/blob";
 import { prisma } from "../prisma/prisma";
 
@@ -54,19 +54,22 @@ export const deleteActivityById = async (id: number) => {
 
   return activities;
 }; */
-export const getActivities = async () => {
+export const getActivities = async (id_subject?: number) => {
   let res: Activity[] = [];
   try {
     const activities = await prisma.activity.findMany({
       orderBy: {
         id_subject: "asc",
       },
+      where: {
+        id_subject,
+      },
     });
     res = activities;
   } catch (e) {}
   return res;
 };
-export const getActivitiesAnswer = async () => {
+export const getActivitiesQuestion = async () => {
   let res: Activity[] = [];
   try {
     const activities = await prisma.activity.findMany({
@@ -74,13 +77,26 @@ export const getActivitiesAnswer = async () => {
         id: "asc",
       },
       where: {
-        type: 0,
+        type: QUESTION,
       },
     });
     res = activities;
   } catch (e) {}
   return res;
 };
+
+export const getActivityQuestionById = async (id_activity: number) => {
+  try {
+    const activity = await prisma.activity.findUnique({
+      where: {
+        id: id_activity,
+        type: QUESTION,
+      },
+    });
+    return activity;
+  } catch (e) {}
+};
+
 export const getActivitiesProject = async () => {
   let res: Activity[] = [];
   try {
@@ -89,7 +105,7 @@ export const getActivitiesProject = async () => {
         id: "asc",
       },
       where: {
-        type: 1,
+        type: PROJECT,
       },
     });
     res = activities;

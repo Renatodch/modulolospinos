@@ -1,10 +1,14 @@
 "use client";
 import { useUserContext } from "@/app/context";
-import { saveTask } from "@/controllers/task.controller";
+import {
+  getTaskByUserIdAndActivityId,
+  saveTask,
+} from "@/controllers/task.controller";
 import {
   PRIMARY_COLOR,
   PROJECT,
   TOAST_BD_ERROR,
+  TOAST_PROJECT_SAVE_ERROR_1,
   TOAST_PROJECT_SAVE_SUCCESS,
   Task,
   TaskActivityDetail,
@@ -62,46 +66,54 @@ const ProjectForm = ({
 
   const onSubmit = async (data: FieldValues) => {
     setSubmitted(true);
-    let temp: Task | undefined = {
-      id: 0,
-      title: data.title,
-      description: data.desc,
-      image1: null,
-      date_upload: new Date(),
-      score: null,
-      comment: null,
-      type: PROJECT,
-      id_activity: taskActivityDetail.id_activity,
-      id_user: user?.id || 0,
-    };
+    const projectExist = await getTaskByUserIdAndActivityId(
+      user?.id,
+      taskActivityDetail.id_activity
+    );
+    let temp: Task | undefined = undefined;
+    if (projectExist) {
+      toast.error(TOAST_PROJECT_SAVE_ERROR_1);
+    } else {
+      temp = {
+        id: 0,
+        title: data.title,
+        description: data.desc,
+        image1: null,
+        date_upload: new Date(),
+        score: null,
+        comment: null,
+        type: PROJECT,
+        id_activity: taskActivityDetail.id_activity,
+        id_user: user?.id || 0,
+      };
 
-    try {
-      if (image != null) {
-        const response = await fetch(
-          `/api/file/upload?filename=${image?.name}`,
-          {
-            method: "POST",
-            body: image,
-          }
-        );
-        const blob = (await response.json()) as PutBlobResult;
-        if (!blob) throw new Error("Image was not loaded correctly");
-        temp.image1 = blob.url;
+      try {
+        if (image != null) {
+          const response = await fetch(
+            `/api/file/upload?filename=${image?.name}`,
+            {
+              method: "POST",
+              body: image,
+            }
+          );
+          const blob = (await response.json()) as PutBlobResult;
+          if (!blob) throw new Error("Image was not loaded correctly");
+          temp.image1 = blob.url;
+        }
+
+        temp = await saveTask(temp);
+        !temp
+          ? toast.error(TOAST_BD_ERROR)
+          : toast.success(TOAST_PROJECT_SAVE_SUCCESS);
+      } catch (e) {
+        toast.error(TOAST_BD_ERROR);
       }
-
-      temp = await saveTask(temp);
-      !temp
-        ? toast.error(TOAST_BD_ERROR)
-        : toast.success(TOAST_PROJECT_SAVE_SUCCESS);
-    } catch (e) {
-      toast.error(TOAST_BD_ERROR);
     }
 
     setTask(temp);
     setSubmitted(false);
     setValidFile(false);
     setImage(null);
-    reset();
     setOpenDialog(false);
     router.refresh();
   };

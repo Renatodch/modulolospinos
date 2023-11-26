@@ -27,6 +27,8 @@ const TaskFormEval = ({ target }: { target: Task }) => {
   } = useForm();
 
   const onSubmit = async (data: FieldValues) => {
+    if (!target) return;
+
     setSubmitted(true);
     try {
       let project: Task | undefined = {
@@ -49,15 +51,18 @@ const TaskFormEval = ({ target }: { target: Task }) => {
     } catch (e) {
       toast.error(TOAST_BD_ERROR);
     }
-    setSubmitted(false);
     router.refresh();
-    reset();
+    setSubmitted(false);
     setOpenDialog(false);
   };
 
   const toggleDialog = (e: boolean) => {
     setOpenDialog(e);
-    !e && reset();
+    !e &&
+      reset({
+        score: "",
+        comment: "",
+      });
   };
   return (
     <Dialog.Root open={openDialog} onOpenChange={toggleDialog}>
@@ -80,7 +85,7 @@ const TaskFormEval = ({ target }: { target: Task }) => {
         <form className="w-full" onSubmit={handleSubmit(onSubmit)}>
           <Flex direction="column" gap="4">
             <TextField.Input
-              defaultValue={target.score ?? 0}
+              defaultValue={target?.score ?? 0}
               size="3"
               color="gray"
               variant="surface"
@@ -111,7 +116,7 @@ const TaskFormEval = ({ target }: { target: Task }) => {
             )}
 
             <TextArea
-              defaultValue={target.comment ?? ""}
+              defaultValue={target?.comment ?? ""}
               id="desc"
               maxLength={255}
               size="3"

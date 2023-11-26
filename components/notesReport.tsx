@@ -1,9 +1,8 @@
 "use client";
-import { getActivities } from "@/controllers/activity.controller";
-import { getSubjects } from "@/controllers/subject.controller";
 import { getTasksByUserId } from "@/controllers/task.controller";
 import { getFormatedNote, getTasksActivityDetail } from "@/lib/utils";
 import {
+  Activity,
   MIN_NOTE_APPROVED,
   NOT_INIT,
   PRIMARY_COLOR,
@@ -20,28 +19,29 @@ import { PuffLoader } from "react-spinners";
 const NotesReport = ({
   user,
   user_course,
+  subjects,
+  activities,
 }: {
   user: User;
   user_course: User_Course | undefined | null;
+  subjects: Subject[];
+  activities: Activity[];
 }) => {
   const [loaded, setLoaded] = useState(false);
-  const [subjects, setSubjects] = useState<Subject[]>([]);
   const [tasksDetail, setTasksDetail] = useState<TaskActivityDetail[]>([]);
   const cellStyle = "border-black border-2";
   let avgFinal = 0;
   let avgFinalComponents = "";
   const handleOpenChange = async (open: boolean) => {
     if (open) {
-      const _subjects = await getSubjects();
-      const activities = await getActivities();
+      console.log(activities);
       const userTasks = await getTasksByUserId(user.id);
       const _tasksDetail = getTasksActivityDetail(
         activities,
         userTasks,
-        _subjects
+        subjects
       );
       setTasksDetail(_tasksDetail);
-      setSubjects(_subjects);
       setLoaded(true);
     } else {
       avgFinal = 0;
@@ -118,7 +118,7 @@ const NotesReport = ({
                     ? 20
                     : 0;
 
-                avgFinalComponents += `PC${index} ${
+                avgFinalComponents += `PC${index + 1} ${
                   index < subjects.length - 1 ? "+" : ""
                 }`;
                 avgFinal += pc / subjects.length;

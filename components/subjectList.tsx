@@ -1,6 +1,11 @@
 "use client";
+import { getActivities } from "@/controllers/activity.controller";
 import { deleteSubjectById } from "@/controllers/subject.controller";
-import { Subject, TOAST_SUBJECT_DELETE_SUCCESS } from "@/model/types";
+import {
+  Subject,
+  TOAST_SUBJECT_DELETE_ERROR,
+  TOAST_SUBJECT_DELETE_SUCCESS,
+} from "@/model/types";
 import { Button, Table } from "@radix-ui/themes";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -12,13 +17,20 @@ const SubjectList = ({ subjects }: { subjects: Subject[] }) => {
   const router = useRouter();
   const [onDelete, setOnDelete] = useState<boolean>(false);
   const [deletedIndex, setDeletedIndex] = useState<number | null>(null);
-  const handleDelete = async (id: number) => {
-    setDeletedIndex(id);
+  const handleDelete = async (id_subject: number) => {
+    setDeletedIndex(id_subject);
     setOnDelete(true);
-    await deleteSubjectById(id);
+
+    const activities = await getActivities(id_subject);
+    if (activities.length > 0) {
+      toast.error(TOAST_SUBJECT_DELETE_ERROR);
+    } else {
+      await deleteSubjectById(id_subject);
+      toast.success(TOAST_SUBJECT_DELETE_SUCCESS);
+    }
+
     setOnDelete(false);
     setDeletedIndex(null);
-    toast.success(TOAST_SUBJECT_DELETE_SUCCESS);
     router.refresh();
   };
 

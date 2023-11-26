@@ -73,7 +73,7 @@ INSERT INTO subject (title, description, url) VALUES ('Qué es una fracción', '
 INSERT INTO subject (title, description, url) VALUES ('Introducción a fracciones', 'Descripción del tema 2', 'https://www.youtube.com/embed/grlbI4ZgzXA?si=cwo501nM1bxquX2R');
 INSERT INTO subject (title, description, url) VALUES ('Suma y resta de fracciones con denominadores comunes', 'Descripción del tema 3', 'https://www.youtube.com/embed/qJtoI1ipxs8?si=3lhYpUKrMrkFhmtb');
 INSERT INTO subject (title, description, url) VALUES ('Suma y resta de fracciones con denominadores diferentes', 'Descripción del tema 4', 'https://www.youtube.com/embed/Ew9yAW7bf7U?si=xU_jO-6wOf2_5jTF');
-INSERT INTO subject (title, description) VALUES ('Seccion final', 'Descripción del tema 5');
+INSERT INTO subject (title, description) VALUES ('Seccion final', 'En hora buena!, has llegado al final del curso. A continuación tendrás que resolver las actividades final aplicando todo lo aprendido');
 
 
 INSERT INTO activity (title, description, id_subject, type, id_user) VALUES ('Actividad Pregunta 1-1', 'Pregunta 1', 1, 0, 6);

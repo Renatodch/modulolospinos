@@ -3,6 +3,7 @@ import { saveUserCourse } from "@/controllers/user-course.controller";
 import { saveUser } from "@/controllers/user.controller";
 import {
   DEVELOPER,
+  NOT_INIT,
   PRIMARY_COLOR,
   STUDENT,
   TEACHER,
@@ -61,7 +62,7 @@ const UserForm = ({ target, user_type }: Props) => {
           id: 0,
           date_start: null,
           date_update: new Date(),
-          state: -1,
+          state: NOT_INIT,
           progress: 0,
           average: null,
           id_user: temp?.id!,

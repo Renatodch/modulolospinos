@@ -8,6 +8,7 @@ import { getTasksByUserId } from "@/controllers/task.controller";
 import { getUserCourses } from "@/controllers/user-course.controller";
 import { getTasksActivityDetail } from "@/lib/utils";
 import {
+  Activity,
   IN_PROGRESS,
   PRIMARY_COLOR,
   Subject,
@@ -28,6 +29,7 @@ import mainPicture from "../../../public/curso.jpg";
 const CoursePage = () => {
   const [loaded, setLoaded] = useState(false);
   const [numberUsers, setNumberUsers] = useState(0);
+  const [activities, setActivities] = useState<Activity[]>([]);
   const [tasksDetail, setTasksDetail] = useState<TaskActivityDetail[]>([]);
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [userCourse, setUserCourse] = useState<User_Course | null | undefined>(
@@ -50,10 +52,15 @@ const CoursePage = () => {
       );
 
       const tasks = await getTasksByUserId(id_user);
-      const activities = await getActivities();
+      const _activities = await getActivities();
       const _subjects = await getSubjects();
-      const _tasksDetail = getTasksActivityDetail(activities, tasks, _subjects);
+      const _tasksDetail = getTasksActivityDetail(
+        _activities,
+        tasks,
+        _subjects
+      );
 
+      setActivities(_activities);
       setUserCourse(user_course);
       setSubjects(_subjects);
       setTasksDetail(_tasksDetail);
@@ -75,10 +82,10 @@ const CoursePage = () => {
     );
 
     const tasks = await getTasksByUserId(id_user);
-    const activities = await getActivities();
+    const _activities = await getActivities();
     const _subjects = await getSubjects();
-    const _tasksDetail = getTasksActivityDetail(activities, tasks, _subjects);
-
+    const _tasksDetail = getTasksActivityDetail(_activities, tasks, _subjects);
+    setActivities(_activities);
     setUserCourse(user_course);
     setSubjects(_subjects);
     setTasksDetail(_tasksDetail);
@@ -114,6 +121,7 @@ const CoursePage = () => {
                   user_course={userCourse}
                   tasksDetail={tasksDetail}
                   subjects={subjects}
+                  _activities={activities}
                 />
               ) : (
                 <div className="w-full flex justify-center h-full">

@@ -82,13 +82,12 @@ export const getTasksByUserId = async (id_user: number, type?: number) => {
   }
   return res;
 };
-export const getTasksByUserIdAndActivityId = async (
+export const getTaskByUserIdAndActivityId = async (
   id_user?: number,
   id_activity?: number
 ) => {
-  let res: Task[] = [];
   try {
-    const tasks = await prisma.task.findMany({
+    const task = await prisma.task.findFirst({
       where: {
         id_activity,
         id_user,
@@ -97,9 +96,8 @@ export const getTasksByUserIdAndActivityId = async (
         id: "asc",
       },
     });
-    res = tasks;
+    return task;
   } catch (e) {}
-  return res;
 };
 
 export const getTaskByUserId = async (id_user: number, type?: number) => {

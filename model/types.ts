@@ -67,12 +67,14 @@ export interface TaskActivityDetail {
   task_description: string | null;
 }
 
-export type Answer = Task & { student?: string };
+export type Answer = Task & { user_name?: string };
 export interface QuestionAnswers {
-  title: string;
-  question: string;
-  subject_title: string;
-  date_max: Date | null;
+  activity_title?: string;
+  activity_description?: string;
+  activity_id?: number;
+  subject_title?: string;
+  date_max?: Date | null;
+  rubric?: string | null;
   answers: Answer[];
 }
 
@@ -97,7 +99,7 @@ export const DEVELOPER = 2;
 export const TEACHER = 1;
 export const STUDENT = 0;
 export const PROJECT = 1;
-export const ANSWER = 0;
+export const QUESTION = 0;
 
 export function isStudent(type: number | null | undefined) {
   return type === STUDENT || type === DEVELOPER;
@@ -111,7 +113,7 @@ export function isAdmin(type: number | null | undefined) {
 
 export const ACTIVITY_TYPES = [
   { name: "Proyecto", value: PROJECT },
-  { name: "Pregunta", value: ANSWER },
+  { name: "Pregunta", value: QUESTION },
 ];
 
 export const USER_TYPES = [
@@ -120,49 +122,21 @@ export const USER_TYPES = [
   { name: "Administrador", value: DEVELOPER },
 ];
 
-/* export const SUBJECTS_COURSE = [
-  {
-    title: "Qué es una fracción",
-    value: 0,
-    url: "https://www.youtube.com/embed/g2rI5mAWPeU?si=gaIOzQXC2YIck04Q",
-    description: "Descripcion del video 1",
-  },
-  {
-    title: "Introducción a fracciones",
-    value: 1,
-    url: "https://www.youtube.com/embed/grlbI4ZgzXA?si=cwo501nM1bxquX2R",
-    description: "Descripcion del video 2",
-  },
-  {
-    title: "Suma y resta de fracciones con denominadores comunes",
-    value: 2,
-    url: "https://www.youtube.com/embed/qJtoI1ipxs8?si=3lhYpUKrMrkFhmtb",
-    description: "Descripcion del video 3",
-  },
-  {
-    title: "Suma y resta de fracciones con denominadores diferentes",
-    value: 3,
-    url: "https://www.youtube.com/embed/Ew9yAW7bf7U?si=xU_jO-6wOf2_5jTF",
-    description: "Descripcion del video 4",
-  },
-  {
-    title: "Seccion final",
-    value: 4,
-    url: "",
-    description:
-      "En hora buena!, has llegado al final del curso. A continuación tendrás que resolver las actividades final aplicando todo lo aprendido",
-  },
-]; */
-
 export const TOAST_USER_DELETE_SUCCESS = "Usuario borrado con éxito";
 export const TOAST_USER_SAVE_SUCCESS = "Usuario guardado con éxito";
 
 export const TOAST_SUBJECT_DELETE_SUCCESS = "Tema borrado con éxito";
+export const TOAST_SUBJECT_DELETE_ERROR =
+  "Tema no se puede borrar porque hay actividades que lo utilizan";
 export const TOAST_SUBJECT_SAVE_SUCCESS = "Tema guardado con éxito";
 
 export const TOAST_TASK_EVALUATED = "Se calificó la tarea";
 export const TOAST_PROJECT_SAVE_SUCCESS = "Proyecto subido con éxito";
+export const TOAST_PROJECT_SAVE_ERROR_1 =
+  "Ya tiene un proyecto subido para esta actividad";
 export const TOAST_ANSWER_SAVE_SUCCESS = "Se envió su respuesta";
+export const TOAST_ANSWER_SAVE_ERROR_1 =
+  "Ya tiene una respuesta subida para esta actividad";
 
 export const TOAST_ACTIVITY_DELETE_ERROR =
   "Actividad no se puede borrar porque ya hay tareas para ella";
@@ -180,7 +154,7 @@ export const getToastPendingTasksAlert = (len: number) => {
   const many = len > 1 ? "s" : "";
   return `Tiene ${len} tarea${many} pendiente${many}`;
 };
-
+//ALERTAS
 export const TOAST_TASKS_PENDING =
   "Tiene tareas pendientes para las siguientes actividades";
 export const TOAST_USER_COURSE_NOT_STARTED =

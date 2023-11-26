@@ -1,6 +1,4 @@
 "use client";
-import { getActivities } from "@/controllers/activity.controller";
-import { getSubjects } from "@/controllers/subject.controller";
 import { getTasksByUserId } from "@/controllers/task.controller";
 import {
   getUserCourseByUserId,
@@ -10,10 +8,12 @@ import { deleteUserById } from "@/controllers/user.controller";
 import { getTasksActivityDetail } from "@/lib/utils";
 import {
   APPROVED,
+  Activity,
   MIN_NOTE_APPROVED,
   NOT_INIT,
   REPROVED,
   STUDENT,
+  Subject,
   TOAST_BD_ERROR,
   TOAST_USER_COURSE_NOT_COMPLETED,
   TOAST_USER_COURSE_NOT_STARTED,
@@ -33,18 +33,23 @@ import { toast } from "sonner";
 import NotesReport from "./notesReport";
 import UserForm from "./userForm";
 
-const SubjectList = ({
+const StudentList = ({
   users,
   user_courses,
+  subjects,
+  activities,
 }: {
   users: User[];
   user_courses: User_Course[];
+  subjects: Subject[];
+  activities: Activity[];
 }) => {
   const router = useRouter();
   const [onDelete, setOnDelete] = useState<boolean>(false);
   const [onCompute, setOnCompute] = useState<boolean>(false);
   const [deletedIndex, setDeletedIndex] = useState<number | null>(null);
   const [computedIndex, setComputedIndex] = useState<number | null>(null);
+
   const handleDelete = async (id: number) => {
     setDeletedIndex(id);
     setOnDelete(true);
@@ -54,6 +59,7 @@ const SubjectList = ({
     toast.success(TOAST_USER_DELETE_SUCCESS);
     router.refresh();
   };
+
   const handleCompute = async (id: number) => {
     setComputedIndex(id);
     setOnCompute(true);
@@ -66,8 +72,7 @@ const SubjectList = ({
         reset();
         return;
       }
-      const subjects = await getSubjects();
-      const activities = await getActivities();
+
       const userTasks = await getTasksByUserId(id);
       const tasksDetail = getTasksActivityDetail(
         activities,
@@ -177,7 +182,12 @@ const SubjectList = ({
                 </Button>
               </Table.Cell>
               <Table.Cell width={100}>
-                <NotesReport user={user} user_course={user_course} />
+                <NotesReport
+                  user={user}
+                  user_course={user_course}
+                  subjects={subjects}
+                  activities={activities}
+                />
               </Table.Cell>
               <Table.Cell width={100}>
                 <UserForm target={user} user_type={STUDENT} />
@@ -200,4 +210,4 @@ const SubjectList = ({
   );
 };
 
-export default SubjectList;
+export default StudentList;

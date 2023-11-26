@@ -8,6 +8,7 @@ import { getTasksActivityDetail } from "@/lib/utils";
 import {
   IN_PROGRESS,
   STUDENT,
+  TEACHER,
   getToastPendingActivities,
   getToastPendingTasksAlert,
 } from "@/model/types";
@@ -59,18 +60,23 @@ const Links = () => {
       width: "120px",
       ops: [
         {
+          label: "Clases",
+          href: "/curso/clases",
+        },
+        {
           label: "Portafolio",
-          href: "/portafolio",
+          href: "/curso/portafolio",
         },
         {
           label: "Preguntas",
-          href: "/preguntas",
+          href: "/curso/preguntas",
         },
       ],
     },
   ];
 
-  user?.type === STUDENT && links.splice(2, 2);
+  user?.type === STUDENT && links.splice(1, 2);
+  user?.type === TEACHER && links.splice(1, 1);
   return (
     <>
       {links.map((link) => (

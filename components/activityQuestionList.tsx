@@ -1,32 +1,17 @@
 "use client";
-import { MIN_NOTE_APPROVED, PRIMARY_COLOR, Task } from "@/model/types";
-import { Button, Card, Inset, Strong } from "@radix-ui/themes";
-import Image from "next/image";
+import { Activity, PRIMARY_COLOR } from "@/model/types";
+import { Button, Card, Strong } from "@radix-ui/themes";
 import Link from "next/link";
-const ProjectList = ({ projects }: { projects: Task[] }) => {
+const ActivityQuestionList = ({ activities }: { activities: Activity[] }) => {
   return (
     <div className="flex flex-wrap gap-5 w-full">
-      {projects.map((p) => (
+      {activities.map((p) => (
         <Card
           key={p.id}
           size="2"
-          style={{ minWidth: "440px", maxWidth: "440px", height: "450px" }}
+          style={{ minWidth: "440px", maxWidth: "440px", height: "250px" }}
           className="flex-1"
         >
-          <Inset
-            side="top"
-            style={{
-              height: "240px",
-              backgroundColor: "gray",
-              position: "relative",
-            }}
-          >
-            {p.image1 ? (
-              <Image src={p.image1} fill alt={p.title} />
-            ) : (
-              <div style={{ height: "100%" }}></div>
-            )}
-          </Inset>
           <p
             className="text-justify mt-4 mb-4"
             style={{
@@ -54,20 +39,8 @@ const ProjectList = ({ projects }: { projects: Task[] }) => {
             {p.description}
           </p>
           <div className="w-full flex justify-between items-center">
-            {p.score === null && <p className="text-base">Pendiente</p>}
-            {p.score !== null && (
-              <p
-                className={`${
-                  p.score >= MIN_NOTE_APPROVED
-                    ? "text-blue-600"
-                    : "text-red-600"
-                } text-base`}
-              >
-                {p.score}/20
-              </p>
-            )}
             <Button size="3" style={{ backgroundColor: PRIMARY_COLOR }}>
-              <Link target="_blank" href={`/curso/portafolio/${p.id}`}>
+              <Link target="_blank" href={`/curso/preguntas/${p.id}`}>
                 Ver
               </Link>
             </Button>
@@ -78,4 +51,4 @@ const ProjectList = ({ projects }: { projects: Task[] }) => {
   );
 };
 
-export default ProjectList;
+export default ActivityQuestionList;
