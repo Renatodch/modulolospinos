@@ -40,24 +40,19 @@ const CourseProgressDetail = ({
   const currentTasksDetail = tasksDetail.filter(
     (t) => t.value_subject <= progress
   );
-
   const totalActivities = tasksDetail.length;
 
   const noActivity =
     (currentTasksDetail.length === 0 ||
       currentTasksDetail.every((t) => t.done)) &&
     inprogress;
-
   const pendingTask = currentTasksDetail.some((t) => !t.done) && inprogress;
-
   const pendingEvaluateTask =
     currentTasksDetail.some((t) => t.done && !t.evaluated) && inprogress;
-
   const done =
     currentTasksDetail.filter((t) => t.evaluated).length === totalActivities &&
     inprogress &&
     progress === courseLastItemIndex;
-
   const evaluatedTask =
     currentTasksDetail.some((t) => t.evaluated) && inprogress;
 
