@@ -1,8 +1,11 @@
 "use client";
 import {
+  isUserCourseCompleted,
+  isUserCourseInProgress,
+  isUserCourseNotInit,
+} from "@/lib/utils";
+import {
   APPROVED,
-  IN_PROGRESS,
-  NOT_INIT,
   PRIMARY_COLOR,
   REPROVED,
   Subject,
@@ -29,9 +32,9 @@ const CourseProgressDetail = ({
   const [open, setOpen] = useState<boolean>(false);
   const state = user_course?.state!;
   const progress = user_course?.progress!;
-  const notinit = !user_course || state === NOT_INIT;
-  const inprogress = !!user_course && state === IN_PROGRESS;
-  const endcourse = !!user_course && state > IN_PROGRESS;
+  const notinit = isUserCourseNotInit(user_course);
+  const inprogress = isUserCourseInProgress(user_course);
+  const endcourse = isUserCourseCompleted(user_course);
   const courseLastItemIndex = subjects.length - 1;
 
   const currentTasksDetail = tasksDetail.filter(

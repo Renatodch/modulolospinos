@@ -2,6 +2,7 @@
 import { useUserContext } from "@/app/context";
 import CourseContentItems from "@/components/courseContentItems";
 import CourseDetail from "@/components/courseDetail";
+import LoadingGeneric from "@/components/loadingGeneric";
 import { getActivities } from "@/controllers/activity.controller";
 import { getSubjects } from "@/controllers/subject.controller";
 import { getTasksByUserId } from "@/controllers/task.controller";
@@ -10,7 +11,6 @@ import { getTasksActivityDetail } from "@/lib/utils";
 import {
   Activity,
   IN_PROGRESS,
-  PRIMARY_COLOR,
   Subject,
   TaskActivityDetail,
   User_Course,
@@ -23,7 +23,6 @@ import { AiFillStar, AiOutlineClockCircle } from "react-icons/ai";
 import { BiRefresh } from "react-icons/bi";
 import { PiStudentBold } from "react-icons/pi";
 import { TbAntennaBars5 } from "react-icons/tb";
-import { PuffLoader } from "react-spinners";
 import mainPicture from "../../../public/curso.jpg";
 
 const CoursePage = () => {
@@ -121,18 +120,10 @@ const CoursePage = () => {
                   user_course={userCourse}
                   tasksDetail={tasksDetail}
                   subjects={subjects}
-                  _activities={activities}
+                  activities={activities}
                 />
               ) : (
-                <div className="w-full flex justify-center h-full">
-                  <PuffLoader
-                    color={PRIMARY_COLOR}
-                    loading={!loaded}
-                    size={150}
-                    aria-label="Loading Spinner"
-                    data-testid="loader"
-                  />
-                </div>
+                <LoadingGeneric />
               )}
             </div>
             <div className="p-8  w-full flex flex-col items-start justify-center overflow-hidden h-2/5">
@@ -211,18 +202,7 @@ const CoursePage = () => {
                 subjects={subjects}
               />
             ) : (
-              <div
-                className="w-full flex justify-center items-center"
-                style={{ height: "300px" }}
-              >
-                <PuffLoader
-                  color={PRIMARY_COLOR}
-                  loading={!loaded}
-                  size={150}
-                  aria-label="Loading Spinner"
-                  data-testid="loader"
-                />
-              </div>
+              <LoadingGeneric />
             )}
           </Box>
         </div>

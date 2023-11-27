@@ -3,6 +3,7 @@
 import { useUserContext } from "@/app/context";
 import ClassItem from "@/components/classItem";
 import CourseContentItems from "@/components/courseContentItems";
+import LoadingGeneric from "@/components/loadingGeneric";
 import NotAllowed from "@/components/notAllowed";
 import NotInitCourse from "@/components/notInitCourse";
 import { getActivitiesBySubject } from "@/controllers/activity.controller";
@@ -12,18 +13,16 @@ import {
   getUserCourseByUserId,
   saveUserCourse,
 } from "@/controllers/user-course.controller";
-import { getTasksActivityDetail } from "@/lib/utils";
+import { getTasksActivityDetail, isUserCourseInit } from "@/lib/utils";
 
 import {
   NOT_INIT,
-  PRIMARY_COLOR,
   Subject,
   TEACHER,
   TaskActivityDetail,
   User_Course,
 } from "@/model/types";
 import { useEffect, useState } from "react";
-import PuffLoader from "react-spinners/PuffLoader";
 
 export default function ClasesPage(props: any) {
   const { user } = useUserContext();
@@ -44,7 +43,7 @@ export default function ClasesPage(props: any) {
       const _index = props.searchParams.index;
 
       let userCourse = await getUserCourseByUserId(id_user);
-      setInitCourse(!(!userCourse || userCourse.state === NOT_INIT));
+      setInitCourse(isUserCourseInit(userCourse));
 
       const _progress = userCourse?.progress!;
       const _subjects = await getSubjects();
@@ -108,16 +107,6 @@ export default function ClasesPage(props: any) {
     setLoadedSubject(true);
   };
 
-  const loader = (
-    <PuffLoader
-      color={PRIMARY_COLOR}
-      loading={!(loaded && loadedSubject)}
-      size={150}
-      aria-label="Loading Spinner"
-      data-testid="loader"
-    />
-  );
-
   return initCourse ? (
     <div className="flex items-start justify-center w-full px-16 py-8 gap-6">
       {loaded ? (
@@ -127,13 +116,13 @@ export default function ClasesPage(props: any) {
               interactive
               progress={progress}
               selected={selected}
-              inprogress={true}
+              inprogress={initCourse}
               subjects={subjects}
               onClickLink={HandleClickLink}
             />
           </div>
-          {loadedSubject ? (
-            <div className=" w-2/3 ">
+          <div className=" w-2/3 ">
+            {loadedSubject ? (
               <ClassItem
                 tasksDetail={tasksDetail}
                 userCourse={user_course}
@@ -142,22 +131,16 @@ export default function ClasesPage(props: any) {
                   !tasksDetail?.some((t) => t.id_subject === selected)
                 }
               />
-            </div>
-          ) : (
-            <div
-              className="w-2/3 flex justify-center items-center"
-              style={{ height: "500px" }}
-            >
-              {loader}
-            </div>
-          )}
+            ) : (
+              <div style={{ height: 460 }}>
+                <LoadingGeneric />
+              </div>
+            )}
+          </div>
         </>
       ) : (
-        <div
-          className="w-2/3 flex justify-center items-center"
-          style={{ height: "500px" }}
-        >
-          {loader}
+        <div style={{ height: 460 }}>
+          <LoadingGeneric />
         </div>
       )}
     </div>

@@ -1,9 +1,14 @@
 import {
+  APPROVED,
   Activity,
+  IN_PROGRESS,
+  NOT_INIT,
+  REPROVED,
   Subject,
   Task,
   TaskActivityDetail,
   User,
+  User_Course,
   isStudent,
   isTeacher,
 } from "@/model/types";
@@ -58,3 +63,18 @@ export const getStudents = (users: User[]) =>
   users.filter((u) => isStudent(u.type));
 export const getTeachers = (users: User[]) =>
   users.filter((u) => isTeacher(u.type));
+
+export const isUserCourseNotInit = (
+  user_course: User_Course | undefined | null
+) => !!user_course && user_course.state === NOT_INIT;
+export const isUserCourseInProgress = (
+  user_course: User_Course | undefined | null
+) => !!user_course && user_course.state === IN_PROGRESS;
+export const isUserCourseCompleted = (
+  user_course: User_Course | undefined | null
+) =>
+  !!user_course &&
+  (user_course.state === APPROVED || user_course.state === REPROVED);
+
+export const isUserCourseInit = (user_course: User_Course | undefined | null) =>
+  !!user_course && user_course.state > NOT_INIT;

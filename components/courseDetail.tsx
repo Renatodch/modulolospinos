@@ -17,7 +17,7 @@ import {
 import { Button, Slider } from "@radix-ui/themes";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 import CourseProgressDetail from "./courseProgressDetail";
 import NotesReport from "./notesReport";
@@ -25,42 +25,28 @@ import NotesReport from "./notesReport";
 const CourseDetail = ({
   tasksDetail,
   subjects,
-  _activities,
+  activities,
   user,
   onStart,
   user_course,
 }: {
   tasksDetail: TaskActivityDetail[];
   subjects: Subject[];
-  _activities: Activity[];
+  activities: Activity[];
   user: User;
   onStart: () => void;
   user_course: User_Course | null | undefined;
 }) => {
   const router = useRouter();
   const [clicked, setClicked] = useState(false);
-  //const [uc, setUc] = useState<User_Course | undefined | null>(undefined);
 
-  const [ste, setSte] = useState<number>(0);
-  const [progress, setProgress] = useState<number>(0);
-  const [progressPercent, setProgressPercent] = useState<number>(0);
-  const [activities, setActivities] = useState<Activity[]>([]);
-
-  useEffect(() => {
-    const update = async () => {
-      //setUc(user_course);
-      setActivities(_activities);
-
-      setSte(user_course?.state!);
-      setProgress(user_course?.progress!);
-      const totalSubjects = subjects.length;
-      const part = 100 / totalSubjects;
-      const value =
-        part * (user_course?.progress! + +(user_course?.state === APPROVED));
-      setProgressPercent(value);
-    };
-    update();
-  }, [user_course, subjects, _activities]);
+  const ste = user_course?.state!;
+  const progress = user_course?.progress!;
+  const totalSubjects = subjects.length;
+  const part = 100 / totalSubjects;
+  const value =
+    part * (user_course?.progress! + +(user_course?.state === APPROVED));
+  const progressPercent = Math.round(value);
 
   const handleStartCourseClick = async () => {
     if (!user_course) {
@@ -90,7 +76,6 @@ const CourseDetail = ({
       toast.dismiss();
       toast.error(TOAST_COURSE_START_FAILED);
     }
-    //setUc(userCourse);
     router.refresh();
     onStart();
     setClicked(false);
@@ -107,7 +92,9 @@ const CourseDetail = ({
           />
         </p>
         <p className="flex justify-between mb-4 flex-col">
-          <span>{progress + +(ste === APPROVED)}/5</span>
+          <span>
+            {progress + +(ste === APPROVED)}/{totalSubjects}
+          </span>
           <span>{progressPercent}% Completado</span>
         </p>
         <Slider
@@ -146,12 +133,7 @@ const CourseDetail = ({
         {ste > NOT_INIT && (
           <div className="flex w-full gap-4 my-2 justify-end items-center">
             <strong>Reporte de Notas</strong>
-            <NotesReport
-              user={user}
-              user_course={user_course}
-              subjects={subjects}
-              activities={activities}
-            />
+            <NotesReport user={user} />
           </div>
         )}
       </div>

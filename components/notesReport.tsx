@@ -1,50 +1,52 @@
 "use client";
+import { getActivities } from "@/controllers/activity.controller";
+import { getSubjects } from "@/controllers/subject.controller";
 import { getTasksByUserId } from "@/controllers/task.controller";
-import { getFormatedNote, getTasksActivityDetail } from "@/lib/utils";
+import { getUserCourseByUserId } from "@/controllers/user-course.controller";
 import {
-  Activity,
+  getFormatedNote,
+  getTasksActivityDetail,
+  isUserCourseNotInit,
+} from "@/lib/utils";
+import {
   MIN_NOTE_APPROVED,
-  NOT_INIT,
   PRIMARY_COLOR,
   Subject,
   TaskActivityDetail,
   User,
-  User_Course,
 } from "@/model/types";
 import { Button, Dialog, Flex, Table } from "@radix-ui/themes";
 import React, { useState } from "react";
 import { CgNotes } from "react-icons/cg";
-import { PuffLoader } from "react-spinners";
+import LoadingGeneric from "./loadingGeneric";
 
-const NotesReport = ({
-  user,
-  user_course,
-  subjects,
-  activities,
-}: {
-  user: User;
-  user_course: User_Course | undefined | null;
-  subjects: Subject[];
-  activities: Activity[];
-}) => {
+const NotesReport = ({ user }: { user: User }) => {
+  const [progress, setProgress] = useState(0);
+  const [notInit, setNotInit] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [tasksDetail, setTasksDetail] = useState<TaskActivityDetail[]>([]);
+  const [subjects, setSubjects] = useState<Subject[]>([]);
   const cellStyle = "border-black border-2";
-  let avgFinal = 0;
-  let avgFinalComponents = "";
+  let avgFinal = 0,
+    avgFinalComponents = "";
+
   const handleOpenChange = async (open: boolean) => {
     if (open) {
-      console.log(activities);
+      const user_course = await getUserCourseByUserId(user.id);
+      const _subjects = await getSubjects();
+      const activities = await getActivities();
       const userTasks = await getTasksByUserId(user.id);
       const _tasksDetail = getTasksActivityDetail(
         activities,
         userTasks,
-        subjects
+        _subjects
       );
+      setProgress(user_course?.progress || 0);
+      setNotInit(isUserCourseNotInit(user_course));
       setTasksDetail(_tasksDetail);
+      setSubjects(_subjects);
       setLoaded(true);
     } else {
-      avgFinal = 0;
       setLoaded(false);
     }
   };
@@ -55,9 +57,9 @@ const NotesReport = ({
           <Button
             size="3"
             style={{
-              backgroundColor: user_course ? PRIMARY_COLOR : "#f0f0f0",
+              backgroundColor: notInit ? "#f0f0f0" : PRIMARY_COLOR,
             }}
-            disabled={!user_course || user_course.state === NOT_INIT}
+            disabled={notInit}
           >
             <CgNotes size="20" />
           </Button>
@@ -65,7 +67,9 @@ const NotesReport = ({
       </Dialog.Trigger>
 
       <Dialog.Content style={{ maxWidth: 650 }}>
-        <Dialog.Title align={"center"}>Reporte de notas</Dialog.Title>
+        <Dialog.Title align={"center"}>
+          Reporte Actualizado de notas
+        </Dialog.Title>
         <Dialog.Description size="2" mb="4" className="flex flex-col ">
           <strong className="uppercase mb-2">Datos del estudiante</strong>
           <span>
@@ -114,7 +118,7 @@ const NotesReport = ({
                 const pc: number =
                   len > 0
                     ? notes.reduce((acc, current) => acc + current, 0) / len
-                    : user_course && user_course?.progress >= index
+                    : progress >= index
                     ? 20
                     : 0;
 
@@ -144,7 +148,7 @@ const NotesReport = ({
                         </Table.Cell>
                       </Table.Row>
                     ))}
-                    <Table.Row>
+                    <Table.Row align={"center"}>
                       <Table.Cell justify="center" className={cellStyle}>
                         PC {index + 1}
                       </Table.Cell>
@@ -162,7 +166,7 @@ const NotesReport = ({
                   </React.Fragment>
                 );
               })}
-              <Table.Row>
+              <Table.Row align={"center"}>
                 <Table.Cell justify="center" colSpan={2} className={cellStyle}>
                   <strong>
                     PROMEDIO FINAL &nbsp; ({avgFinalComponents})/#Temas
@@ -176,26 +180,15 @@ const NotesReport = ({
                       : "text-red-600"
                   } font-semibold text-lg text-center`}
                 >
-                  {user_course &&
-                    user_course?.state! > NOT_INIT &&
-                    getFormatedNote(avgFinal)}
+                  {!notInit && getFormatedNote(avgFinal)}
                 </Table.Cell>
               </Table.Row>
             </Table.Body>
           </Table.Root>
         ) : (
-          <p
-            className="w-full flex justify-center items-center"
-            style={{ height: "500px" }}
-          >
-            <PuffLoader
-              color={PRIMARY_COLOR}
-              loading={!loaded}
-              size={150}
-              aria-label="Loading Spinner"
-              data-testid="loader"
-            />
-          </p>
+          <div style={{ height: 500 }}>
+            <LoadingGeneric />
+          </div>
         )}
       </Dialog.Content>
     </Dialog.Root>

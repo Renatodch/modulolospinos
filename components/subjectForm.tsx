@@ -94,7 +94,7 @@ const SubjectForm = ({ target }: Props) => {
               size="3"
               color="gray"
               variant="surface"
-              placeholder="Nombres Completos*"
+              placeholder="Titulo del tema*"
               {...register("title", {
                 required: true,
                 maxLength: 64,
@@ -122,7 +122,7 @@ const SubjectForm = ({ target }: Props) => {
               size="3"
               color="gray"
               variant="surface"
-              placeholder="Url de contenido"
+              placeholder="Url del contenido"
               {...register("url", {
                 maxLength: 64,
               })}

@@ -182,12 +182,7 @@ const StudentList = ({
                 </Button>
               </Table.Cell>
               <Table.Cell width={100}>
-                <NotesReport
-                  user={user}
-                  user_course={user_course}
-                  subjects={subjects}
-                  activities={activities}
-                />
+                <NotesReport user={user} />
               </Table.Cell>
               <Table.Cell width={100}>
                 <UserForm target={user} user_type={STUDENT} />

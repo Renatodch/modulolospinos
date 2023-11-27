@@ -2,7 +2,6 @@
 import { Subject } from "@/model/types";
 import { Button, Flex } from "@radix-ui/themes";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { AiFillYoutube } from "react-icons/ai";
 import { FaPlay } from "react-icons/fa";
 
@@ -23,7 +22,6 @@ const CourseContentItems = ({
   inprogress,
   subjects,
 }: Props) => {
-  const router = useRouter();
   const styleClasses =
     "text-justify p-4 items-center gap-8 w-full flex hover:cursor-pointer hover:bg-blue-200";
 
