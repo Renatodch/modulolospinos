@@ -8,7 +8,7 @@ function Navbar() {
       className="flex items-center w-full h-20 px-12 border-b-2"
       style={{ backgroundColor: PRIMARY_COLOR }}
     >
-      <div className="justify-start lg:w-1/5">
+      <div className="justify-start lg:w-2/5">
         <div className="dropdown">
           <label tabIndex={0} className="btn btn-ghost lg:hidden">
             <svg
@@ -37,10 +37,10 @@ function Navbar() {
           href="/"
           className="font-semibold normal-case text-2xl text-black"
         >
-          modulolospinos
+          Modulo I.E. 80892 Los Pinos
         </Link>
       </div>
-      <div className="justify-end w-4/5 hidden lg:flex">
+      <div className="justify-end w-3/5 hidden lg:flex">
         <ul className="menu menu-horizontal space-x-6">
           <Links />
         </ul>

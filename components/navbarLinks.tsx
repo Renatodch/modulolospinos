@@ -31,14 +31,14 @@ const Links = () => {
       width: "90px",
     },
     {
-      label: "Profesores y Administradores",
+      label: "Adm-Director",
       href: "/administradores",
-      width: "170px",
+      width: "150px",
     },
     {
       label: "Profesor",
       href: null,
-      width: "120px",
+      width: "110px",
       ops: [
         {
           label: "Temas",
@@ -57,7 +57,7 @@ const Links = () => {
     {
       label: "Curso",
       href: "/curso",
-      width: "120px",
+      width: "100px",
       ops: [
         {
           label: "Clases",

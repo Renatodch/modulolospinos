@@ -38,8 +38,7 @@ CREATE TABLE activity (
   rubric VARCHAR(255),
   type INT NOT NULL,
   date_max TIMESTAMP,
-  id_subject INT REFERENCES "subject"(id),
-  id_user INT REFERENCES "user"(id)
+  id_subject INT REFERENCES "subject"(id)
 );
 
 
@@ -76,20 +75,20 @@ INSERT INTO subject (title, description, url) VALUES ('Suma y resta de fraccione
 INSERT INTO subject (title, description) VALUES ('Seccion final', 'En hora buena!, has llegado al final del curso. A continuación tendrás que resolver las actividades final aplicando todo lo aprendido');
 
 
-INSERT INTO activity (title, description, id_subject, type, id_user) VALUES ('Actividad Pregunta 1-1', 'Pregunta 1', 1, 0, 6);
-INSERT INTO activity (title, description, id_subject, type, date_max, id_user) VALUES ('Actividad Pregunta 2-1', 'Pregunta 2', 1, 0, '2023-11-19 12:00:00', 6);
-INSERT INTO activity (title, description, id_subject, type, date_max, id_user) VALUES ('Actividad Pregunta 1-2', 'Pregunta 3', 2, 0, '2023-11-20 12:00:00', 6);
-INSERT INTO activity (title, description, id_subject, type,  id_user) VALUES ('Actividad Proyecto 2-2', 'Proyecto 1', 2, 1, 6);
-INSERT INTO activity (title, description, id_subject, type, date_max, id_user) VALUES ('Actividad Pregunta 1-3', 'Pregunta 4', 4, 0, '2023-11-21 12:00:00', 6);
-INSERT INTO activity (title, description, id_subject, type, date_max, id_user) VALUES ('Actividad Proyecto 1-4', 'Proyecto 2', 5, 1, '2023-11-22 12:00:00', 6);
-INSERT INTO activity (title, description, id_subject, type, date_max, id_user) VALUES ('Actividad Proyecto 2-4', 'Proyecto 3', 5, 1, '2023-11-22 12:00:00', 6);
+INSERT INTO activity (title, description, id_subject, type) VALUES ('Actividad Pregunta 1-1', 'Pregunta 1', 1, 0);
+INSERT INTO activity (title, description, id_subject, type, date_max) VALUES ('Actividad Pregunta 2-1', 'Pregunta 2', 1, 0, '2023-11-19 12:00:00');
+INSERT INTO activity (title, description, id_subject, type, date_max) VALUES ('Actividad Pregunta 1-2', 'Pregunta 3', 2, 0, '2023-11-20 12:00:00');
+INSERT INTO activity (title, description, id_subject, type) VALUES ('Actividad Proyecto 2-2', 'Proyecto 1', 2, 1);
+INSERT INTO activity (title, description, id_subject, type, date_max) VALUES ('Actividad Pregunta 1-3', 'Pregunta 4', 4, 0, '2023-11-21 12:00:00');
+INSERT INTO activity (title, description, id_subject, type, date_max) VALUES ('Actividad Proyecto 1-4', 'Proyecto 2', 5, 1, '2023-11-22 12:00:00');
+INSERT INTO activity (title, description, id_subject, type, date_max) VALUES ('Actividad Proyecto 2-4', 'Proyecto 3', 5, 1, '2023-11-22 12:00:00');
 
 /* in order to delete subject 5*/
-INSERT INTO activity (title, description, id_subject, type, id_user) VALUES ('Actividad Pregunta 1-1', 'Pregunta 1', 1, 0, 6);
-INSERT INTO activity (title, description, id_subject, type, date_max, id_user) VALUES ('Actividad Pregunta 2-1', 'Pregunta 2', 1, 0, '2023-11-19 12:00:00', 6);
-INSERT INTO activity (title, description, id_subject, type, date_max, id_user) VALUES ('Actividad Pregunta 1-2', 'Pregunta 3', 2, 0, '2023-11-20 12:00:00', 6);
-INSERT INTO activity (title, description, id_subject, type,  id_user) VALUES ('Actividad Proyecto 2-2', 'Proyecto 1', 2, 1, 6);
-INSERT INTO activity (title, description, id_subject, type, date_max, id_user) VALUES ('Actividad Pregunta 1-3', 'Pregunta 4', 4, 0, '2023-11-21 12:00:00', 6);
+INSERT INTO activity (title, description, id_subject, type, id_user) VALUES ('Actividad Pregunta 1-1', 'Pregunta 1', 1, 0);
+INSERT INTO activity (title, description, id_subject, type, date_max, id_user) VALUES ('Actividad Pregunta 2-1', 'Pregunta 2', 1, 0, '2023-11-19 12:00:00');
+INSERT INTO activity (title, description, id_subject, type, date_max, id_user) VALUES ('Actividad Pregunta 1-2', 'Pregunta 3', 2, 0, '2023-11-20 12:00:00');
+INSERT INTO activity (title, description, id_subject, type,  id_user) VALUES ('Actividad Proyecto 2-2', 'Proyecto 1', 2, 1);
+INSERT INTO activity (title, description, id_subject, type, date_max, id_user) VALUES ('Actividad Pregunta 1-3', 'Pregunta 4', 4, 0, '2023-11-21 12:00:00');
 
 
 /******* starter *************/

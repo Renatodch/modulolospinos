@@ -9,7 +9,7 @@ const ActivityQuestionList = ({ activities }: { activities: Activity[] }) => {
         <Card
           key={p.id}
           size="2"
-          style={{ minWidth: "440px", maxWidth: "440px", height: "250px" }}
+          style={{ minWidth: "440px", maxWidth: "440px", height: "230px" }}
           className="flex-1"
         >
           <p

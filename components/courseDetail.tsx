@@ -1,9 +1,9 @@
 "use client";
 import { saveUserCourse } from "@/controllers/user-course.controller";
 import { getDateString } from "@/lib/date-lib";
+import { isUserCourseNotInit } from "@/lib/utils";
 import {
   APPROVED,
-  Activity,
   IN_PROGRESS,
   NOT_INIT,
   PRIMARY_COLOR,
@@ -25,14 +25,12 @@ import NotesReport from "./notesReport";
 const CourseDetail = ({
   tasksDetail,
   subjects,
-  activities,
   user,
   onStart,
   user_course,
 }: {
   tasksDetail: TaskActivityDetail[];
   subjects: Subject[];
-  activities: Activity[];
   user: User;
   onStart: () => void;
   user_course: User_Course | null | undefined;
@@ -133,7 +131,13 @@ const CourseDetail = ({
         {ste > NOT_INIT && (
           <div className="flex w-full gap-4 my-2 justify-end items-center">
             <strong>Reporte de Notas</strong>
-            <NotesReport user={user} />
+            <NotesReport
+              user={user}
+              tasksDetail={tasksDetail}
+              subjects={subjects}
+              notInit={isUserCourseNotInit(user_course)}
+              progress={user_course?.progress!}
+            />
           </div>
         )}
       </div>

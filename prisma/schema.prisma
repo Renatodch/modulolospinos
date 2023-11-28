@@ -16,9 +16,7 @@ model activity {
   type        Int
   date_max    DateTime? @db.Timestamp(6)
   id_subject  Int?
-  id_user     Int?
   subject     subject?  @relation(fields: [id_subject], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  user        user?     @relation(fields: [id_user], references: [id], onDelete: NoAction, onUpdate: NoAction)
   task        task[]
 }
 
@@ -43,7 +41,6 @@ model user {
   type        Int
   email       String        @db.VarChar(255)
   name        String        @db.VarChar(50)
-  activity    activity[]
   task        task[]
   user_course user_course[]
 }

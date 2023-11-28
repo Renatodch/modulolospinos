@@ -2,7 +2,6 @@
 import NotAllowed from "@/components/notAllowed";
 import UserForm from "@/components/userForm";
 import UserList from "@/components/userList";
-import { getUserCourses } from "@/controllers/user-course.controller";
 import { getUsers } from "@/controllers/user.controller";
 
 import { getSession, loginIsRequiredServer } from "@/lib/auth-config";
@@ -15,7 +14,6 @@ const AdministratorsPage = async () => {
 
   const res = await getUsers();
   const users = getTeachers(res);
-  const user_courses = await getUserCourses();
 
   return isAdmin(_user?.type) ? (
     <div className="flex flex-col items-center justify-center w-full py-8 px-16">

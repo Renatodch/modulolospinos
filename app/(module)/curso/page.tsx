@@ -120,7 +120,6 @@ const CoursePage = () => {
                   user_course={userCourse}
                   tasksDetail={tasksDetail}
                   subjects={subjects}
-                  activities={activities}
                 />
               ) : (
                 <LoadingGeneric />

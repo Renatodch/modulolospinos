@@ -25,7 +25,6 @@ export interface Activity {
   //subject: number;
   type: number;
   date_max: Date | null;
-  id_user: number | null;
   id_subject: number | null;
 }
 
