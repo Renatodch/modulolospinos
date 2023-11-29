@@ -135,6 +135,9 @@ export const TOAST_TASK_EVALUATED = "Se calificó la tarea";
 export const TOAST_PROJECT_SAVE_SUCCESS = "Proyecto subido con éxito";
 export const TOAST_PROJECT_SAVE_ERROR_1 =
   "Ya tiene un proyecto subido para esta actividad";
+export const TOAST_PROJECT_SAVE_ERROR_IMAGE =
+  "Ocurrió un error subiendo la image";
+
 export const TOAST_ANSWER_SAVE_SUCCESS = "Se envió su respuesta";
 export const TOAST_ANSWER_SAVE_ERROR_1 =
   "Ya tiene una respuesta subida para esta actividad";
@@ -143,6 +146,8 @@ export const TOAST_ACTIVITY_DELETE_ERROR =
   "Actividad no se puede borrar porque hay tareas hechas para ella";
 export const TOAST_ACTIVITY_DELETE_SUCCESS = "Actividad borrada con éxito";
 export const TOAST_ACTIVITY_SAVE_SUCCESS = "Actitividad guardada con éxito";
+export const TOAST_ACTIVITY_SAVE_ERROR_RUBRIC =
+  "Ocurrió un error subiendo la rúbrica";
 
 export const TOAST_BD_ERROR = "Ocurrió un error con la operación";
 
@@ -167,6 +172,7 @@ export const TOAST_USER_COURSE_SAVE_NOTE_NOT_CHANGE =
 export const TOAST_USER_COURSE_SAVE_NOTE_SUCCESS =
   "Se registró el promedio final con éxito";
 
+export const TOAST_LOADING = "Subiendo...";
 export const NO_DATE_MAX_MESSAGE_TASK =
   "No hay límite de tiempo para esta tarea";
 

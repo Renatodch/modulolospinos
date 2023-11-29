@@ -8,7 +8,9 @@ import {
   PRIMARY_COLOR,
   PROJECT,
   TOAST_BD_ERROR,
+  TOAST_LOADING,
   TOAST_PROJECT_SAVE_ERROR_1,
+  TOAST_PROJECT_SAVE_ERROR_IMAGE,
   TOAST_PROJECT_SAVE_SUCCESS,
   Task,
   TaskActivityDetail,
@@ -66,56 +68,74 @@ const ProjectForm = ({
 
   const onSubmit = async (data: FieldValues) => {
     setSubmitted(true);
-    const projectExist = await getTaskByUserIdAndActivityId(
-      user?.id,
-      taskActivityDetail.id_activity
-    );
-    let temp: Task | undefined = undefined;
-    if (projectExist) {
-      toast.error(TOAST_PROJECT_SAVE_ERROR_1);
-    } else {
-      temp = {
-        id: 0,
-        title: data.title,
-        description: data.desc,
-        image1: null,
-        date_upload: new Date(),
-        score: null,
-        comment: null,
-        type: PROJECT,
-        id_activity: taskActivityDetail.id_activity,
-        id_user: user?.id || 0,
-      };
 
-      try {
-        if (image != null) {
-          const response = await fetch(
-            `/api/file/upload?filename=${image?.name}`,
-            {
-              method: "POST",
-              body: image,
+    toast.promise(
+      new Promise<Task>((resolve, reject) => {
+        getTaskByUserIdAndActivityId(user?.id, taskActivityDetail.id_activity)
+          .then((res) => {
+            if (res) {
+              reject(res);
+              return;
             }
-          );
-          const blob = (await response.json()) as PutBlobResult;
-          if (!blob) throw new Error("Image was not loaded correctly");
-          temp.image1 = blob.url;
-        }
+            const temp: Task = {
+              id: 0,
+              title: data.title,
+              description: data.desc,
+              image1: null,
+              date_upload: new Date(),
+              score: null,
+              comment: null,
+              type: PROJECT,
+              id_activity: taskActivityDetail.id_activity,
+              id_user: user?.id || 0,
+            };
 
-        temp = await saveTask(temp);
-        !temp
-          ? toast.error(TOAST_BD_ERROR)
-          : toast.success(TOAST_PROJECT_SAVE_SUCCESS);
-      } catch (e) {
-        toast.error(TOAST_BD_ERROR);
+            if (image != null) {
+              fetch(`/api/file/upload?filename=${image?.name}`, {
+                method: "POST",
+                body: image,
+              })
+                .then((response) => response.json())
+                .then((blob: PutBlobResult) => {
+                  if (!blob) {
+                    reject(TOAST_PROJECT_SAVE_ERROR_IMAGE);
+                  }
+                  temp!.image1 = blob.url;
+                })
+                .then(() => saveTask(temp))
+                .then((res) => resolve(res as Task))
+                .catch(() => reject(undefined));
+            } else
+              saveTask(temp)
+                .then((res) => resolve(res as Task))
+                .catch(() => reject(undefined));
+          })
+          .catch(() => reject(undefined));
+      }),
+      {
+        loading: TOAST_LOADING,
+        success: (res) => {
+          setTask(res);
+          return TOAST_PROJECT_SAVE_SUCCESS;
+        },
+        error: (res) => {
+          if (res) {
+            setTask(res);
+            return TOAST_PROJECT_SAVE_ERROR_1;
+          } else {
+            return TOAST_BD_ERROR;
+          }
+        },
+        finally: () => {
+          setSubmitted(false);
+          setValidFile(false);
+          setImage(null);
+          setOpenDialog(false);
+          reset();
+          router.refresh();
+        },
       }
-    }
-
-    setTask(temp);
-    setSubmitted(false);
-    setValidFile(false);
-    setImage(null);
-    setOpenDialog(false);
-    router.refresh();
+    );
   };
 
   const toggleDialog = (e: boolean) => {

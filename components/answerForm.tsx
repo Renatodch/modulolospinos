@@ -10,6 +10,7 @@ import {
   TOAST_ANSWER_SAVE_ERROR_1,
   TOAST_ANSWER_SAVE_SUCCESS,
   TOAST_BD_ERROR,
+  TOAST_LOADING,
   Task,
   TaskActivityDetail,
 } from "@/model/types";
@@ -41,42 +42,53 @@ const AnswerForm = ({
 
   const onSubmit = async (data: FieldValues) => {
     setSubmitted(true);
-    const answerExist = await getTaskByUserIdAndActivityId(
-      user?.id,
-      taskActivityDetail.id_activity
-    );
-    let temp: Task | undefined = undefined;
-    if (answerExist) {
-      toast.error(TOAST_ANSWER_SAVE_ERROR_1);
-    } else {
-      temp = {
-        id: 0,
-        title: "",
-        description: data.answer,
-        image1: null,
-        date_upload: new Date(),
-        score: null,
-        comment: null,
-        type: QUESTION,
-        id_activity: taskActivityDetail.id_activity,
-        id_user: user?.id || 0,
-      };
+    toast.promise(
+      new Promise<Task>((resolve, reject) => {
+        getTaskByUserIdAndActivityId(user?.id, taskActivityDetail.id_activity)
+          .then((res) => {
+            if (res) {
+              reject(res);
+              return;
+            }
 
-      try {
-        temp = await saveTask(temp);
-        !temp
-          ? toast.error(TOAST_BD_ERROR)
-          : toast.success(TOAST_ANSWER_SAVE_SUCCESS);
-      } catch (e) {
-        toast.error(TOAST_BD_ERROR);
+            return saveTask({
+              id: 0,
+              title: "",
+              description: data.answer,
+              image1: null,
+              date_upload: new Date(),
+              score: null,
+              comment: null,
+              type: QUESTION,
+              id_activity: taskActivityDetail.id_activity,
+              id_user: user?.id || 0,
+            });
+          })
+          .then((val) => resolve(val as Task))
+          .catch(() => reject(undefined));
+      }),
+      {
+        loading: TOAST_LOADING,
+        success: (res: Task) => {
+          setTask(res);
+          return TOAST_ANSWER_SAVE_SUCCESS;
+        },
+        error: (res) => {
+          if (res) {
+            setTask(res);
+            return TOAST_ANSWER_SAVE_ERROR_1;
+          } else {
+            return TOAST_BD_ERROR;
+          }
+        },
+        finally: () => {
+          setSubmitted(false);
+          setOpenDialog(false);
+          reset();
+          router.refresh();
+        },
       }
-    }
-
-    setTask(temp);
-    setSubmitted(false);
-    reset();
-    setOpenDialog(false);
-    router.refresh();
+    );
   };
 
   const toggleDialog = (e: boolean) => {

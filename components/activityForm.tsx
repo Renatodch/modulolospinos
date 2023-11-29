@@ -5,8 +5,10 @@ import {
   Activity,
   PRIMARY_COLOR,
   Subject,
+  TOAST_ACTIVITY_SAVE_ERROR_RUBRIC,
   TOAST_ACTIVITY_SAVE_SUCCESS,
   TOAST_BD_ERROR,
+  TOAST_LOADING,
 } from "@/model/types";
 import {
   Button,
@@ -65,41 +67,53 @@ const ActivityForm = ({
   const onUpload = () => (hiddenInputRef.current! as HTMLFormElement).click();
   const onSubmit = async (data: FieldValues) => {
     setSubmitted(true);
-    let temp: Activity | undefined = {
-      id: target?.id || 0,
-      title: data.title,
-      description: data.desc,
-      rubric: null,
-      id_subject: +data.subject,
-      type: +data.type,
-      date_max: new Date(data.dateMax),
-    };
 
-    try {
-      if (rubric != null) {
-        const response = await fetch(
-          `/api/file/upload?filename=${rubric?.name}`,
-          {
+    toast.promise(
+      new Promise((resolve, reject) => {
+        let temp: Activity = {
+          id: target?.id || 0,
+          title: data.title,
+          description: data.desc,
+          rubric: null,
+          id_subject: +data.subject,
+          type: +data.type,
+          date_max: new Date(data.dateMax),
+        };
+
+        if (rubric != null) {
+          fetch(`/api/file/upload?filename=${rubric?.name}`, {
             method: "POST",
             body: rubric,
-          }
-        );
-        const blob = (await response.json()) as PutBlobResult;
-        if (!blob) throw new Error("Rubric was not loaded correctly");
-        temp.rubric = blob.url;
+          })
+            .then((response) => response.json())
+            .then((blob: PutBlobResult) => {
+              if (!blob) {
+                reject(TOAST_ACTIVITY_SAVE_ERROR_RUBRIC);
+              }
+              temp!.rubric = blob.url;
+            })
+            .then(() => saveActivity(temp))
+            .then(resolve)
+            .catch(() => reject(TOAST_BD_ERROR));
+        } else
+          saveActivity(temp)
+            .then(resolve)
+            .catch(() => reject(TOAST_BD_ERROR));
+      }),
+      {
+        loading: TOAST_LOADING,
+        success: () => TOAST_ACTIVITY_SAVE_SUCCESS,
+        error: (msg) => msg,
+        finally: () => {
+          setSubmitted(false);
+          setValidFile(false);
+          setRubric(null);
+          setOpenDialog(false);
+          reset();
+          router.refresh();
+        },
       }
-      temp = await saveActivity(temp);
-      !temp
-        ? toast.error(TOAST_BD_ERROR)
-        : toast.success(TOAST_ACTIVITY_SAVE_SUCCESS);
-    } catch (e) {
-      toast.error(TOAST_BD_ERROR);
-    }
-    setSubmitted(false);
-    setValidFile(false);
-    setRubric(null);
-    router.refresh();
-    setOpenDialog(false);
+    );
   };
 
   const toggleDialog = (e: boolean) => {
@@ -153,11 +167,7 @@ const ActivityForm = ({
               control={control}
               name="subject"
               rules={{ required: true }}
-              defaultValue={
-                target?.id_subject !== undefined
-                  ? "" + target?.id_subject
-                  : undefined
-              }
+              defaultValue={target ? "" + target?.id_subject : undefined}
               render={({ field }) => {
                 return (
                   <div {...field}>
@@ -165,9 +175,7 @@ const ActivityForm = ({
                       size={"3"}
                       onValueChange={field.onChange}
                       defaultValue={
-                        target?.id_subject !== undefined
-                          ? "" + target?.id_subject
-                          : undefined
+                        target ? "" + target?.id_subject : undefined
                       }
                     >
                       <Select.Trigger

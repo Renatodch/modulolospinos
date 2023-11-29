@@ -9,7 +9,6 @@ import {
 } from "@/lib/utils";
 import {
   IN_PROGRESS,
-  NOT_INIT,
   PRIMARY_COLOR,
   Subject,
   TOAST_COURSE_START_FAILED,
@@ -57,32 +56,35 @@ const CourseDetail = ({
       toast.error(TOAST_COURSE_START_FAILED);
       return;
     }
-    if (user_course?.state! > NOT_INIT) {
+    if (isUserCourseInProgress(user_course)) {
       toast.error("Usted ya inició el curso");
       return;
     }
     setClicked(true);
-    toast.loading("Iniciando...");
-    let userCourse;
-    try {
-      userCourse = await saveUserCourse({
-        ...user_course,
-        date_start: new Date(),
-        date_update: new Date(),
-        state: IN_PROGRESS,
-        progress: 0,
-      });
-      toast.dismiss();
-      userCourse
-        ? toast.success(TOAST_COURSE_START_SUCCESS)
-        : toast.error(TOAST_COURSE_START_FAILED);
-    } catch (e) {
-      toast.dismiss();
-      toast.error(TOAST_COURSE_START_FAILED);
-    }
-    router.refresh();
-    onStart();
-    setClicked(false);
+
+    toast.promise(
+      new Promise((resolve, reject) => {
+        saveUserCourse({
+          ...user_course,
+          date_start: new Date(),
+          date_update: new Date(),
+          state: IN_PROGRESS,
+          progress: 0,
+        })
+          .then(resolve)
+          .catch(reject);
+      }),
+      {
+        loading: "Iniciando...",
+        success: () => TOAST_COURSE_START_SUCCESS,
+        error: () => TOAST_COURSE_START_FAILED,
+        finally: () => {
+          onStart();
+          setClicked(false);
+          router.refresh();
+        },
+      }
+    );
   };
   return (
     <>

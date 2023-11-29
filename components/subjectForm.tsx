@@ -4,6 +4,7 @@ import {
   PRIMARY_COLOR,
   Subject,
   TOAST_BD_ERROR,
+  TOAST_LOADING,
   TOAST_SUBJECT_SAVE_SUCCESS,
 } from "@/model/types";
 import { Button, Dialog, Flex, TextArea, TextField } from "@radix-ui/themes";
@@ -30,32 +31,30 @@ const SubjectForm = ({ target }: Props) => {
 
   const onSubmit = async (data: FieldValues) => {
     setSubmitted(true);
-    try {
-      let temp: Subject | undefined = {
-        title: data.title,
-        description: data.desc,
-        url: data.url,
-        id: target?.id || 0,
-      };
-      temp = await saveSubject(temp);
-      if (!temp) {
-        toast.error(TOAST_BD_ERROR);
 
-        setOpenDialog(false);
-        reset();
-      } else {
-        toast.success(TOAST_SUBJECT_SAVE_SUCCESS);
-
-        setOpenDialog(false);
-        reset();
-        router.refresh();
+    toast.promise(
+      new Promise((resolve, reject) => {
+        saveSubject({
+          title: data.title,
+          description: data.desc,
+          url: data.url,
+          id: target?.id || 0,
+        })
+          .then(resolve)
+          .catch(reject);
+      }),
+      {
+        loading: TOAST_LOADING,
+        success: () => TOAST_SUBJECT_SAVE_SUCCESS,
+        error: () => TOAST_BD_ERROR,
+        finally: () => {
+          setSubmitted(false);
+          setOpenDialog(false);
+          reset();
+          router.refresh();
+        },
       }
-    } catch (e) {
-      toast.error(TOAST_BD_ERROR);
-      reset();
-    }
-
-    setSubmitted(false);
+    );
   };
 
   const toggleDialog = (e: boolean) => {

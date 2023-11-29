@@ -8,6 +8,7 @@ import {
   STUDENT,
   TEACHER,
   TOAST_BD_ERROR,
+  TOAST_LOADING,
   TOAST_USER_SAVE_SUCCESS,
   USER_TYPES,
   User,
@@ -45,47 +46,45 @@ const UserForm = ({ target, user_type }: Props) => {
   const onSubmit = async (data: FieldValues) => {
     const type = +data.type;
     setSubmitted(true);
-    try {
-      let temp: User | undefined = {
-        type,
-        password: data.password,
-        name: data.name,
-        email: data.email,
-        id: target?.id || 0,
-      };
-      temp = await saveUser(temp);
-
-      if (type === STUDENT && !target && temp) {
-        await saveUserCourse({
-          id: 0,
-          date_start: null,
-          date_update: new Date(),
-          state: NOT_INIT,
-          progress: 0,
-          average: null,
-          id_user: temp?.id!,
-        });
+    toast.promise(
+      new Promise((resolve, reject) => {
+        const temp: User = {
+          type,
+          password: data.password,
+          name: data.name,
+          email: data.email,
+          id: target?.id || 0,
+        };
+        saveUser(temp)
+          .then((res) => {
+            if (res?.type === STUDENT && !target) {
+              return saveUserCourse({
+                id: 0,
+                date_start: null,
+                date_update: new Date(),
+                state: NOT_INIT,
+                progress: 0,
+                average: null,
+                id_user: res?.id!,
+              });
+            } else resolve(true);
+          })
+          .then(resolve)
+          .catch(reject);
+      }),
+      {
+        loading: TOAST_LOADING,
+        success: () => TOAST_USER_SAVE_SUCCESS,
+        error: () => TOAST_BD_ERROR,
+        finally: () => {
+          setSubmitted(false);
+          setPassHidden(true);
+          setOpenDialog(false);
+          reset();
+          router.refresh();
+        },
       }
-
-      if (!temp) {
-        toast.error(TOAST_BD_ERROR);
-        setPassHidden(true);
-        setOpenDialog(false);
-        reset();
-      } else {
-        toast.success(TOAST_USER_SAVE_SUCCESS);
-        setPassHidden(true);
-        setOpenDialog(false);
-        reset();
-        router.refresh();
-      }
-    } catch (e) {
-      toast.error(TOAST_BD_ERROR);
-      setPassHidden(true);
-      reset();
-    }
-
-    setSubmitted(false);
+    );
   };
 
   const togglePassword = () => setPassHidden(!passHidden);
