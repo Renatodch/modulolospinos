@@ -1,9 +1,13 @@
 "use client";
 import { saveUserCourse } from "@/controllers/user-course.controller";
 import { getDateString } from "@/lib/date-lib";
-import { isUserCourseNotInit } from "@/lib/utils";
 import {
-  APPROVED,
+  isUserCourseCompleted,
+  isUserCourseInProgress,
+  isUserCourseNotInit,
+  isUserCourseReproved,
+} from "@/lib/utils";
+import {
   IN_PROGRESS,
   NOT_INIT,
   PRIMARY_COLOR,
@@ -38,13 +42,15 @@ const CourseDetail = ({
   const router = useRouter();
   const [clicked, setClicked] = useState(false);
 
-  const ste = user_course?.state!;
   const progress = user_course?.progress!;
   const totalSubjects = subjects.length;
   const part = 100 / totalSubjects;
-  const value =
-    part * (user_course?.progress! + +(user_course?.state === APPROVED));
+  const value = isUserCourseCompleted(user_course) ? 100 : part * progress;
+
   const progressPercent = Math.round(value);
+  const subjectsCompleted = isUserCourseCompleted(user_course)
+    ? `${progress + 1}/${progress + 1}`
+    : `${progress}/${totalSubjects}`;
 
   const handleStartCourseClick = async () => {
     if (!user_course) {
@@ -90,36 +96,46 @@ const CourseDetail = ({
           />
         </p>
         <p className="flex justify-between mb-4 flex-col">
-          <span>
-            {progress + +(ste === APPROVED)}/{totalSubjects}
-          </span>
+          <span>{subjectsCompleted}</span>
           <span>{progressPercent}% Completado</span>
         </p>
         <Slider
-          color={ste === 1 ? "green" : ste === 2 ? "red" : "blue"}
+          color={
+            isUserCourseInProgress(user_course)
+              ? "green"
+              : isUserCourseReproved(user_course)
+              ? "red"
+              : "blue"
+          }
           value={[progressPercent]}
           className="mb-8"
         />
 
-        {ste === IN_PROGRESS && (
-          <Button
-            size="3"
-            disabled={Boolean(user_course && ste > IN_PROGRESS)}
-            style={{ backgroundColor: PRIMARY_COLOR }}
-          >
+        {isUserCourseInProgress(user_course) && (
+          <Button size="3" style={{ backgroundColor: PRIMARY_COLOR }}>
             <Link href="/curso/clases" target="_blank">
               Continuar el aprendizaje
             </Link>
           </Button>
         )}
-        {(ste === NOT_INIT || ste > IN_PROGRESS) && (
+        {isUserCourseNotInit(user_course) && (
           <Button
             size="3"
-            disabled={Boolean((user_course && ste > IN_PROGRESS) || clicked)}
+            disabled={clicked}
             style={{ backgroundColor: PRIMARY_COLOR }}
             onClick={handleStartCourseClick}
           >
             Empezar el aprendizaje
+          </Button>
+        )}
+        {isUserCourseCompleted(user_course) && (
+          <Button
+            size="3"
+            disabled
+            style={{ backgroundColor: PRIMARY_COLOR }}
+            onClick={handleStartCourseClick}
+          >
+            Curso finalizado
           </Button>
         )}
 
@@ -128,7 +144,7 @@ const CourseDetail = ({
             Empezó el día {getDateString(user_course?.date_start)}
           </span>
         )}
-        {ste > NOT_INIT && (
+        {!isUserCourseNotInit(user_course) && (
           <div className="flex w-full gap-4 my-2 justify-end items-center">
             <strong>Reporte de Notas</strong>
             <NotesReport
@@ -137,6 +153,7 @@ const CourseDetail = ({
               subjects={subjects}
               notInit={isUserCourseNotInit(user_course)}
               progress={user_course?.progress!}
+              avgFinalSaved={user_course?.average}
             />
           </div>
         )}

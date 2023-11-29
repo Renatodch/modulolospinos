@@ -1,5 +1,4 @@
 "use client";
-import { useUserContext } from "@/app/context";
 import { saveActivity } from "@/controllers/activity.controller";
 import {
   ACTIVITY_TYPES,
@@ -33,8 +32,6 @@ const ActivityForm = ({
   target?: Activity;
   subjects: Subject[];
 }) => {
-  const { user } = useUserContext();
-
   const router = useRouter();
   const [submitted, setSubmitted] = useState<boolean>(false);
   const [openDialog, setOpenDialog] = useState<boolean>(false);
@@ -76,7 +73,6 @@ const ActivityForm = ({
       id_subject: +data.subject,
       type: +data.type,
       date_max: new Date(data.dateMax),
-      id_user: user?.id || 0,
     };
 
     try {
@@ -102,7 +98,6 @@ const ActivityForm = ({
     setSubmitted(false);
     setValidFile(false);
     setRubric(null);
-    reset();
     router.refresh();
     setOpenDialog(false);
   };

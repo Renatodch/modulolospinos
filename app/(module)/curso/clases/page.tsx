@@ -3,6 +3,7 @@
 import { useUserContext } from "@/app/context";
 import ClassItem from "@/components/classItem";
 import CourseContentItems from "@/components/courseContentItems";
+import FinishCourse from "@/components/finishCourse";
 import LoadingGeneric from "@/components/loadingGeneric";
 import NotAllowed from "@/components/notAllowed";
 import NotInitCourse from "@/components/notInitCourse";
@@ -13,10 +14,13 @@ import {
   getUserCourseByUserId,
   saveUserCourse,
 } from "@/controllers/user-course.controller";
-import { getTasksActivityDetail, isUserCourseInit } from "@/lib/utils";
+import {
+  getTasksActivityDetail,
+  isUserCourseCompleted,
+  isUserCourseNotInit,
+} from "@/lib/utils";
 
 import {
-  NOT_INIT,
   Subject,
   TEACHER,
   TaskActivityDetail,
@@ -26,12 +30,13 @@ import { useEffect, useState } from "react";
 
 export default function ClasesPage(props: any) {
   const { user } = useUserContext();
-  const [user_course, setUserCourse] = useState<User_Course | undefined | null>(
+  const [userCourse, setUserCourse] = useState<User_Course | undefined | null>(
     undefined
   );
   const [loaded, setLoaded] = useState<boolean>(false);
   const [loadedSubject, setLoadedSubject] = useState<boolean>(false);
   const [initCourse, setInitCourse] = useState<boolean>(true);
+  const [finisCourse, setFinishCourse] = useState<boolean>(true);
   const [tasksDetail, setTasksDetail] = useState<TaskActivityDetail[]>([]);
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [progress, setProgress] = useState<number>(0);
@@ -43,7 +48,14 @@ export default function ClasesPage(props: any) {
       const _index = props.searchParams.index;
 
       let userCourse = await getUserCourseByUserId(id_user);
-      setInitCourse(isUserCourseInit(userCourse));
+      const notinit = isUserCourseNotInit(userCourse);
+      const completed = isUserCourseCompleted(userCourse);
+      setInitCourse(!notinit);
+      setFinishCourse(completed);
+      if (notinit || completed) {
+        setLoaded(true);
+        return;
+      }
 
       const _progress = userCourse?.progress!;
       const _subjects = await getSubjects();
@@ -68,8 +80,8 @@ export default function ClasesPage(props: any) {
       setProgress(value_subject);
       setSelected(_index ? +_index : id_subject);
       setUserCourse(userCourse);
-      setLoaded(true);
       setLoadedSubject(true);
+      setLoaded(true);
     };
     updateData();
   }, []);
@@ -78,8 +90,15 @@ export default function ClasesPage(props: any) {
 
   const HandleClickLink = async (id_subject: number, value_subject: number) => {
     setLoadedSubject(false);
-    let userCourse = await getUserCourseByUserId(id_user);
-    if (!userCourse || user_course?.state === NOT_INIT) return;
+    let user_course = await getUserCourseByUserId(id_user);
+    const notinit = isUserCourseNotInit(userCourse);
+    const completed = isUserCourseCompleted(userCourse);
+    setInitCourse(!notinit);
+    setFinishCourse(completed);
+    if (notinit || completed || !user_course) {
+      setLoadedSubject(true);
+      return;
+    }
 
     setSelected(id_subject);
     //const _subjects = await getSubjects();
@@ -91,25 +110,25 @@ export default function ClasesPage(props: any) {
       subjects
     ).filter((t) => t.id_subject === id_subject);
 
-    if (value_subject > userCourse?.progress) {
-      userCourse = await saveUserCourse({
-        ...userCourse,
+    if (value_subject > user_course?.progress) {
+      user_course = await saveUserCourse({
+        ...user_course,
         progress: value_subject,
         date_update: new Date(),
       });
     } else {
-      value_subject = userCourse.progress;
+      value_subject = user_course.progress;
     }
     //setSubjects(_subjects);
     setTasksDetail(_tasksDetail);
     setProgress(value_subject);
-    setUserCourse(userCourse);
+    setUserCourse(user_course);
     setLoadedSubject(true);
   };
 
-  return initCourse ? (
+  return loaded ? (
     <div className="flex items-start justify-center w-full px-16 py-8 gap-6">
-      {loaded ? (
+      {initCourse && !finisCourse ? (
         <>
           <div className=" w-1/3 h-max" style={{ height: "300px" }}>
             <CourseContentItems
@@ -125,7 +144,7 @@ export default function ClasesPage(props: any) {
             {loadedSubject ? (
               <ClassItem
                 tasksDetail={tasksDetail}
-                userCourse={user_course}
+                userCourse={userCourse}
                 subject={subjects.find((s) => s.id === selected)}
                 noActivities={
                   !tasksDetail?.some((t) => t.id_subject === selected)
@@ -138,13 +157,15 @@ export default function ClasesPage(props: any) {
             )}
           </div>
         </>
+      ) : finisCourse ? (
+        <FinishCourse />
       ) : (
-        <div style={{ height: 460 }}>
-          <LoadingGeneric />
-        </div>
+        <NotInitCourse />
       )}
     </div>
   ) : (
-    <NotInitCourse />
+    <div style={{ height: 460 }}>
+      <LoadingGeneric />
+    </div>
   );
 }

@@ -154,7 +154,7 @@ const CourseProgressDetail = ({
                 )}
               </div>
               <div className="mt-4">
-                Su promedio ponderado es de:&nbsp;
+                Su promedio final es de:&nbsp;
                 <span
                   className={`${state === APPROVED && "text-blue-600"} ${
                     state === REPROVED && "text-red-600"

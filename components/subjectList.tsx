@@ -1,9 +1,12 @@
 "use client";
 import { getActivities } from "@/controllers/activity.controller";
 import { deleteSubjectById } from "@/controllers/subject.controller";
+import { getUserCourses } from "@/controllers/user-course.controller";
+import { isUserCourseInProgress } from "@/lib/utils";
 import {
   Subject,
-  TOAST_SUBJECT_DELETE_ERROR,
+  TOAST_SUBJECT_DELETE_ERROR_ACTIVITIES,
+  TOAST_SUBJECT_DELETE_ERROR_USER_COURSES,
   TOAST_SUBJECT_DELETE_SUCCESS,
 } from "@/model/types";
 import { Button, Table } from "@radix-ui/themes";
@@ -23,12 +26,28 @@ const SubjectList = ({ subjects }: { subjects: Subject[] }) => {
 
     const activities = await getActivities(id_subject);
     if (activities.length > 0) {
-      toast.error(TOAST_SUBJECT_DELETE_ERROR);
-    } else {
-      await deleteSubjectById(id_subject);
-      toast.success(TOAST_SUBJECT_DELETE_SUCCESS);
+      toast.error(TOAST_SUBJECT_DELETE_ERROR_ACTIVITIES);
+      reset();
+      return;
+    }
+    const user_courses = await getUserCourses();
+    const _progress = subjects.findIndex((s) => s.id === id_subject);
+    const some_uc = user_courses.find(
+      (uc) => uc.progress >= _progress && isUserCourseInProgress(uc)
+    );
+
+    if (some_uc) {
+      toast.error(TOAST_SUBJECT_DELETE_ERROR_USER_COURSES);
+      reset();
+      return;
     }
 
+    await deleteSubjectById(id_subject);
+    toast.success(TOAST_SUBJECT_DELETE_SUCCESS);
+    reset();
+  };
+
+  const reset = () => {
     setOnDelete(false);
     setDeletedIndex(null);
     router.refresh();

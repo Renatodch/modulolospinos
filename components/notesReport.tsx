@@ -17,12 +17,14 @@ const NotesReport = ({
   notInit,
   tasksDetail,
   subjects,
+  avgFinalSaved,
 }: {
   user: User;
   progress: number;
   notInit: boolean;
   tasksDetail: TaskActivityDetail[];
   subjects: Subject[];
+  avgFinalSaved: number | null | undefined;
 }) => {
   const cellStyle = "border-black border-2";
   let avgFinal = 0,
@@ -57,6 +59,10 @@ const NotesReport = ({
             <strong className="text-black">iD: &nbsp;</strong>
             {user?.id}
           </span>
+          <p className="italic mt-2 flex justify-center">
+            (Si ya completó el curso y la lista de temas varía, el promedio
+            final se mantiene)
+          </p>
         </Dialog.Description>
         <Table.Root variant="surface">
           <Table.Header style={{ backgroundColor: PRIMARY_COLOR }}>
@@ -136,18 +142,23 @@ const NotesReport = ({
             <Table.Row align={"center"}>
               <Table.Cell justify="center" colSpan={2} className={cellStyle}>
                 <strong>
-                  PROMEDIO FINAL &nbsp; ({avgFinalComponents})/#Temas
+                  PROMEDIO FINAL &nbsp;
+                  {avgFinalSaved === null || avgFinalSaved === undefined ? (
+                    <span> ({avgFinalComponents})/#Temas</span>
+                  ) : (
+                    <span>REGISTRADO</span>
+                  )}
                 </strong>
               </Table.Cell>
               <Table.Cell
                 justify="center"
                 className={`${cellStyle} ${
-                  avgFinal >= MIN_NOTE_APPROVED
+                  avgFinalSaved ?? avgFinal >= MIN_NOTE_APPROVED
                     ? "text-blue-600"
                     : "text-red-600"
                 } font-semibold text-lg text-center`}
               >
-                {!notInit && getFormatedNote(avgFinal)}
+                {!notInit && getFormatedNote(avgFinalSaved ?? avgFinal)}
               </Table.Cell>
             </Table.Row>
           </Table.Body>

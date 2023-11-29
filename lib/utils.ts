@@ -75,6 +75,12 @@ export const isUserCourseCompleted = (
 ) =>
   !!user_course &&
   (user_course.state === APPROVED || user_course.state === REPROVED);
+export const isUserCourseReproved = (
+  user_course: User_Course | undefined | null
+) => !!user_course && user_course.state === REPROVED;
+export const isUserCourseApproved = (
+  user_course: User_Course | undefined | null
+) => !!user_course && user_course.state === APPROVED;
 
 export const isUserCourseInit = (user_course: User_Course | undefined | null) =>
   !!user_course && user_course.state > NOT_INIT;

@@ -125,65 +125,67 @@ const StudentListRow = ({
   };
 
   const handleCompute = async () => {
+    if (!user_course || isUserCourseNotInit(user_course)) {
+      toast.error(TOAST_USER_COURSE_NOT_STARTED);
+      return;
+    }
+
+    const courseLastItemIndex = subjects.length - 1;
+    if (
+      user_course.progress < courseLastItemIndex ||
+      tasksDetail.some((t) => !t.done || !t.evaluated)
+    ) {
+      toast.error(TOAST_USER_COURSE_NOT_COMPLETED, { duration: 5000 });
+      return;
+    }
+
     const id = user.id;
     setComputedIndex(id);
     setOnCompute(true);
-    toast.loading("Calculando promedio final...");
 
-    try {
-      if (!user_course) {
-        toast.error(TOAST_USER_COURSE_NOT_STARTED);
-        reset();
-        return;
-      }
+    toast.promise(
+      new Promise((resolve, reject) => {
+        let avgFinal = 0;
+        for (let s of subjects) {
+          const notes = tasksDetail
+            .filter((t) => t.id_subject === s.id)
+            .map((n) =>
+              n.score === null || n.score === undefined ? 0 : n.score
+            );
+          const len = notes.length;
+          const pc =
+            len > 0
+              ? notes.reduce((acc, current) => acc + current, 0) / len
+              : 20;
+          avgFinal += pc / subjects.length;
+        }
+        const change = Math.round(avgFinal) !== user_course?.average;
 
-      const courseLastItemIndex = subjects.length - 1;
-      if (
-        user_course.progress < courseLastItemIndex ||
-        tasksDetail.some((t) => !t.done || !t.evaluated)
-      ) {
-        toast.error(TOAST_USER_COURSE_NOT_COMPLETED, { duration: 5000 });
-        reset();
-        return;
-      }
-
-      let avgFinal = 0;
-      for (let s of subjects) {
-        const notes = tasksDetail
-          .filter((t) => t.id_subject === s.id)
-          .map((n) =>
-            n.score === null || n.score === undefined ? 0 : n.score
-          );
-        const len = notes.length;
-        const pc =
-          len > 0 ? notes.reduce((acc, current) => acc + current, 0) / len : 20;
-        avgFinal += pc / subjects.length;
-      }
-      toast.dismiss();
-      const change = Math.round(avgFinal) !== user_course?.average;
-      if (user_course && change) {
         let res: User_Course | undefined = {
           ...user_course,
           average: Math.round(avgFinal),
           state: avgFinal >= MIN_NOTE_APPROVED ? APPROVED : REPROVED,
         };
-        res = await saveUserCourse(res);
-        res
-          ? toast.success(TOAST_USER_COURSE_SAVE_NOTE_SUCCESS)
-          : toast.success(TOAST_BD_ERROR);
+        if (!change) resolve(false);
+        else
+          saveUserCourse(res)
+            .then((r) => resolve(true))
+            .catch(() => reject());
+      }),
+      {
+        loading: "Calculando promedio final...",
+
+        success: (change) =>
+          change
+            ? TOAST_USER_COURSE_SAVE_NOTE_SUCCESS
+            : TOAST_USER_COURSE_SAVE_NOTE_NOT_CHANGE,
+        error: () => TOAST_BD_ERROR,
       }
-      !change && toast.info(TOAST_USER_COURSE_SAVE_NOTE_NOT_CHANGE);
-    } catch (e) {
-      toast.success(TOAST_BD_ERROR);
-    }
-    reset();
-  };
-  const reset = () => {
+    );
     setOnCompute(false);
     setComputedIndex(null);
     router.refresh();
   };
-
   return (
     <Table.Row>
       <Table.RowHeaderCell width={100}>{user.id}</Table.RowHeaderCell>
@@ -227,6 +229,7 @@ const StudentListRow = ({
             notInit={isUserCourseNotInit(user_course)}
             subjects={subjects}
             tasksDetail={tasksDetail}
+            avgFinalSaved={user_course?.average}
           />
         ) : (
           <LoadingGeneric size={20} />

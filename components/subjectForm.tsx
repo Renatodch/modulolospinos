@@ -100,7 +100,7 @@ const SubjectForm = ({ target }: Props) => {
                 maxLength: 64,
               })}
             />
-            {errors.name?.type === "required" && (
+            {errors.title?.type === "required" && (
               <span role="alert" className="font-semibold text-red-500 ">
                 Es requerido el titulo del tema
               </span>

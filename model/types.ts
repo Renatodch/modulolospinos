@@ -125,8 +125,10 @@ export const TOAST_USER_DELETE_SUCCESS = "Usuario borrado con éxito";
 export const TOAST_USER_SAVE_SUCCESS = "Usuario guardado con éxito";
 
 export const TOAST_SUBJECT_DELETE_SUCCESS = "Tema borrado con éxito";
-export const TOAST_SUBJECT_DELETE_ERROR =
+export const TOAST_SUBJECT_DELETE_ERROR_ACTIVITIES =
   "Tema no se puede borrar porque hay actividades que lo utilizan";
+export const TOAST_SUBJECT_DELETE_ERROR_USER_COURSES =
+  "Tema no se puede borrar porque hay estudiantes que lo estan llevando";
 export const TOAST_SUBJECT_SAVE_SUCCESS = "Tema guardado con éxito";
 
 export const TOAST_TASK_EVALUATED = "Se calificó la tarea";
@@ -138,7 +140,7 @@ export const TOAST_ANSWER_SAVE_ERROR_1 =
   "Ya tiene una respuesta subida para esta actividad";
 
 export const TOAST_ACTIVITY_DELETE_ERROR =
-  "Actividad no se puede borrar porque ya hay tareas para ella";
+  "Actividad no se puede borrar porque hay tareas hechas para ella";
 export const TOAST_ACTIVITY_DELETE_SUCCESS = "Actividad borrada con éxito";
 export const TOAST_ACTIVITY_SAVE_SUCCESS = "Actitividad guardada con éxito";
 
@@ -163,7 +165,7 @@ export const TOAST_USER_COURSE_NOT_COMPLETED =
 export const TOAST_USER_COURSE_SAVE_NOTE_NOT_CHANGE =
   "No hubieron cambios en el promedio";
 export const TOAST_USER_COURSE_SAVE_NOTE_SUCCESS =
-  "Se calculó el promedio con éxito";
+  "Se registró el promedio final con éxito";
 
 export const NO_DATE_MAX_MESSAGE_TASK =
   "No hay límite de tiempo para esta tarea";
