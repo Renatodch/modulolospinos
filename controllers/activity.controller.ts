@@ -3,22 +3,6 @@ import { Activity, PROJECT, QUESTION } from "@/model/types";
 import { del } from "@vercel/blob";
 import { prisma } from "../prisma/prisma";
 
-export const deleteRubricsByUserId = async (id_user: number) => {
-  let urls: string[] = [];
-  try {
-    const activities = await prisma.activity.findMany({
-      where: {
-        id_user,
-      },
-      select: {
-        rubric: true,
-      },
-    });
-    activities.forEach((p) => p.rubric && urls.push(p.rubric));
-    await del(urls);
-  } catch (e) {}
-};
-
 export const deleteRubricById = async (id: number) => {
   try {
     const activity = await prisma.activity.findUnique({
@@ -44,16 +28,7 @@ export const deleteActivityById = async (id: number) => {
 
   return activities;
 };
-/* export const deleteActivitiesByUserId = async (id_user: number) => {
-  await deleteRubricsByUserId(id_user);
-  const activities = await prisma.activity.deleteMany({
-    where: {
-      id_user,
-    },
-  });
 
-  return activities;
-}; */
 export const getActivities = async (id_subject?: number) => {
   let res: Activity[] = [];
   try {
