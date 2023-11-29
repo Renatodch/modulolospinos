@@ -23,7 +23,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import CourseProgressDetail from "./courseProgressDetail";
-import NotesReport from "./notesReport";
+import ScoreReport from "./scoreReport";
 
 const CourseDetail = ({
   tasksDetail,
@@ -149,7 +149,7 @@ const CourseDetail = ({
         {!isUserCourseNotInit(user_course) && (
           <div className="flex w-full gap-4 my-2 justify-end items-center">
             <strong>Reporte de Notas</strong>
-            <NotesReport
+            <ScoreReport
               user={user}
               tasksDetail={tasksDetail}
               subjects={subjects}

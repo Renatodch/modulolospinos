@@ -56,8 +56,10 @@ export const getTasksActivityDetail = (
   return tasksDetail;
 };
 
-export const getFormatedNote = (note: number) =>
-  Number.isInteger(note) ? note.toString().padStart(2, "0") : note.toFixed(1);
+export const getFormatedScore = (score: number) =>
+  Number.isInteger(score)
+    ? score.toString().padStart(2, "0")
+    : score.toFixed(1);
 
 export const getStudents = (users: User[]) =>
   users.filter((u) => isStudent(u.type));

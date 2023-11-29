@@ -92,7 +92,7 @@ export const USER_PROGRESS = [
 
 export const PRIMARY_COLOR = "#98bf64";
 
-export const MIN_NOTE_APPROVED = 10.5;
+export const MIN_SCORE_APPROVED = 10.5;
 export const COURSE_ITEMS_LENGHT = 5;
 export const DEVELOPER = 2;
 export const TEACHER = 1;
@@ -167,9 +167,9 @@ export const TOAST_USER_COURSE_NOT_STARTED =
   "El usuario no ha iniciado el curso";
 export const TOAST_USER_COURSE_NOT_COMPLETED =
   "El usuario aun no completa el curso, le faltan tareas o no esta al día con el tema";
-export const TOAST_USER_COURSE_SAVE_NOTE_NOT_CHANGE =
+export const TOAST_USER_COURSE_SAVE_SCORE_NOT_CHANGE =
   "No hubieron cambios en el promedio";
-export const TOAST_USER_COURSE_SAVE_NOTE_SUCCESS =
+export const TOAST_USER_COURSE_SAVE_SCORE_SUCCESS =
   "Se registró el promedio final con éxito";
 
 export const TOAST_LOADING = "Subiendo...";

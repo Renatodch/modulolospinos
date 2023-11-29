@@ -1,5 +1,5 @@
 "use client";
-import { MIN_NOTE_APPROVED, PRIMARY_COLOR, Task } from "@/model/types";
+import { MIN_SCORE_APPROVED, PRIMARY_COLOR, Task } from "@/model/types";
 import { Button, Card, Inset, Strong } from "@radix-ui/themes";
 import Image from "next/image";
 import Link from "next/link";
@@ -58,7 +58,7 @@ const ProjectList = ({ projects }: { projects: Task[] }) => {
             {p.score !== null && (
               <p
                 className={`${
-                  p.score >= MIN_NOTE_APPROVED
+                  p.score >= MIN_SCORE_APPROVED
                     ? "text-blue-600"
                     : "text-red-600"
                 } text-base`}

@@ -6,7 +6,7 @@ import { getTasksActivityDetail, isUserCourseNotInit } from "@/lib/utils";
 import {
   APPROVED,
   Activity,
-  MIN_NOTE_APPROVED,
+  MIN_SCORE_APPROVED,
   NOT_INIT,
   REPROVED,
   STUDENT,
@@ -14,8 +14,8 @@ import {
   TOAST_BD_ERROR,
   TOAST_USER_COURSE_NOT_COMPLETED,
   TOAST_USER_COURSE_NOT_STARTED,
-  TOAST_USER_COURSE_SAVE_NOTE_NOT_CHANGE,
-  TOAST_USER_COURSE_SAVE_NOTE_SUCCESS,
+  TOAST_USER_COURSE_SAVE_SCORE_NOT_CHANGE,
+  TOAST_USER_COURSE_SAVE_SCORE_SUCCESS,
   TOAST_USER_DELETE_SUCCESS,
   TaskActivityDetail,
   USER_PROGRESS,
@@ -29,7 +29,7 @@ import { AiFillDelete } from "react-icons/ai";
 import { MdCalculate } from "react-icons/md";
 import { toast } from "sonner";
 import LoadingGeneric from "./loadingGeneric";
-import NotesReport from "./notesReport";
+import ScoreReport from "./scoreReport";
 import UserForm from "./userForm";
 
 const StudentList = ({
@@ -147,15 +147,15 @@ const StudentListRow = ({
       new Promise((resolve, reject) => {
         let avgFinal = 0;
         for (let s of subjects) {
-          const notes = tasksDetail
+          const scores = tasksDetail
             .filter((t) => t.id_subject === s.id)
             .map((n) =>
               n.score === null || n.score === undefined ? 0 : n.score
             );
-          const len = notes.length;
+          const len = scores.length;
           const pc =
             len > 0
-              ? notes.reduce((acc, current) => acc + current, 0) / len
+              ? scores.reduce((acc, current) => acc + current, 0) / len
               : 20;
           avgFinal += pc / subjects.length;
         }
@@ -164,7 +164,7 @@ const StudentListRow = ({
         let res: User_Course | undefined = {
           ...user_course,
           average: Math.round(avgFinal),
-          state: avgFinal >= MIN_NOTE_APPROVED ? APPROVED : REPROVED,
+          state: avgFinal >= MIN_SCORE_APPROVED ? APPROVED : REPROVED,
         };
         if (!change) resolve(false);
         else
@@ -177,8 +177,8 @@ const StudentListRow = ({
 
         success: (change) =>
           change
-            ? TOAST_USER_COURSE_SAVE_NOTE_SUCCESS
-            : TOAST_USER_COURSE_SAVE_NOTE_NOT_CHANGE,
+            ? TOAST_USER_COURSE_SAVE_SCORE_SUCCESS
+            : TOAST_USER_COURSE_SAVE_SCORE_NOT_CHANGE,
         error: () => TOAST_BD_ERROR,
       }
     );
@@ -197,7 +197,7 @@ const StudentListRow = ({
         width={250}
         className={`font-semibold ${
           avgFinal != -1
-            ? avgFinal >= MIN_NOTE_APPROVED
+            ? avgFinal >= MIN_SCORE_APPROVED
               ? "text-blue-600"
               : "text-red-600"
             : ""
@@ -223,7 +223,7 @@ const StudentListRow = ({
       </Table.Cell>
       <Table.Cell width={100}>
         {reportReady ? (
-          <NotesReport
+          <ScoreReport
             user={user}
             progress={user_course?.progress!}
             notInit={isUserCourseNotInit(user_course)}

@@ -1,6 +1,6 @@
 "use client";
 import {
-  MIN_NOTE_APPROVED,
+  MIN_SCORE_APPROVED,
   PRIMARY_COLOR,
   Task,
   isTeacher,
@@ -16,7 +16,7 @@ const TaskEvalDetail = ({ task, type }: { task: Task; type: number }) => {
         {task?.score !== null && task?.score !== undefined && (
           <p
             className={`${
-              task?.score >= MIN_NOTE_APPROVED
+              task?.score >= MIN_SCORE_APPROVED
                 ? "text-blue-600"
                 : "text-red-600"
             } text-base`}

@@ -41,7 +41,6 @@ CREATE TABLE activity (
   id_subject INT REFERENCES "subject"(id)
 );
 
-
 CREATE TABLE task (
   id SERIAL PRIMARY KEY,
   title VARCHAR(64) NOT NULL,
@@ -52,6 +51,14 @@ CREATE TABLE task (
   comment VARCHAR(255),
   type INT NOT NULL,
   id_activity INT REFERENCES activity(id),
+  id_user INT REFERENCES "user"(id)
+);
+
+CREATE TABLE score (
+  id SERIAL PRIMARY KEY,
+  activity VARCHAR(64) NOT NULL,
+  "subject" VARCHAR(64) NOT NULL,
+  value INT NOT NULL,
   id_user INT REFERENCES "user"(id)
 );
 

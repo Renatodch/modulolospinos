@@ -1,7 +1,7 @@
 "use client";
-import { getFormatedNote } from "@/lib/utils";
+import { getFormatedScore } from "@/lib/utils";
 import {
-  MIN_NOTE_APPROVED,
+  MIN_SCORE_APPROVED,
   PRIMARY_COLOR,
   Subject,
   TaskActivityDetail,
@@ -11,7 +11,7 @@ import { Button, Dialog, Flex, Table } from "@radix-ui/themes";
 import React from "react";
 import { CgNotes } from "react-icons/cg";
 
-const NotesReport = ({
+const ScoreReport = ({
   user,
   progress,
   notInit,
@@ -59,10 +59,10 @@ const NotesReport = ({
             <strong className="text-black">iD: &nbsp;</strong>
             {user?.id}
           </span>
-          <p className="italic mt-2 flex justify-center">
+          <span className="italic mt-2 flex justify-center">
             (Si ya completó el curso y la lista de temas varía, el promedio
             final se mantiene)
-          </p>
+          </span>
         </Dialog.Description>
         <Table.Root variant="surface">
           <Table.Header style={{ backgroundColor: PRIMARY_COLOR }}>
@@ -85,12 +85,12 @@ const NotesReport = ({
                 (t) => t.id_subject === s.id
               );
               const len = tasksDetailBySubject.length;
-              const notes = tasksDetailBySubject.map((n) =>
+              const scores = tasksDetailBySubject.map((n) =>
                 n.score === null || n.score === undefined ? 0 : n.score
               );
               const pc: number =
                 len > 0
-                  ? notes.reduce((acc, current) => acc + current, 0) / len
+                  ? scores.reduce((acc, current) => acc + current, 0) / len
                   : progress >= index
                   ? 20
                   : 0;
@@ -128,7 +128,7 @@ const NotesReport = ({
                     <Table.Cell
                       justify="center"
                       className={`${
-                        pc >= MIN_NOTE_APPROVED
+                        pc >= MIN_SCORE_APPROVED
                           ? "text-blue-600"
                           : "text-red-600"
                       } font-semibold text-center ${cellStyle}`}
@@ -153,12 +153,12 @@ const NotesReport = ({
               <Table.Cell
                 justify="center"
                 className={`${cellStyle} ${
-                  avgFinalSaved ?? avgFinal >= MIN_NOTE_APPROVED
+                  avgFinalSaved ?? avgFinal >= MIN_SCORE_APPROVED
                     ? "text-blue-600"
                     : "text-red-600"
                 } font-semibold text-lg text-center`}
               >
-                {!notInit && getFormatedNote(avgFinalSaved ?? avgFinal)}
+                {!notInit && getFormatedScore(avgFinalSaved ?? avgFinal)}
               </Table.Cell>
             </Table.Row>
           </Table.Body>
@@ -168,4 +168,4 @@ const NotesReport = ({
   );
 };
 
-export default NotesReport;
+export default ScoreReport;
