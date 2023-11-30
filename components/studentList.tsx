@@ -190,6 +190,7 @@ const StudentListRow = ({
         }
         saveUserCourse({
           ...user_course,
+          date_end: new Date(),
           average: Math.round(avgFinal),
           state: avgFinal >= MIN_SCORE_APPROVED ? APPROVED : REPROVED,
         })

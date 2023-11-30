@@ -50,9 +50,7 @@ export const getTasks = async (
       },
     });
     res = tasks;
-  } catch (e) {
-    console.log(e);
-  }
+  } catch (e) {}
   return res;
 };
 export const getTaskById = async (id: number) => {
@@ -77,9 +75,7 @@ export const getTasksByUserId = async (id_user: number, type?: number) => {
       },
     });
     res = tasks;
-  } catch (e) {
-    console.log(e);
-  }
+  } catch (e) {}
   return res;
 };
 export const getTaskByUserIdAndActivityId = async (

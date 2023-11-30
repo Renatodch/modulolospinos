@@ -61,6 +61,7 @@ const UserForm = ({ target, user_type }: Props) => {
               return saveUserCourse({
                 id: 0,
                 date_start: null,
+                date_end: null,
                 date_update: new Date(),
                 state: NOT_INIT,
                 progress: 0,

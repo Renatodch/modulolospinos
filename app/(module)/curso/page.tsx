@@ -112,7 +112,10 @@ const CoursePage = () => {
         />
         {isStudent(type) && (
           <div className="lg:w-1/3 w-full flex-col self-stretch border-4 border-gray-300 rounded-md ">
-            <div className="bg-gray-200 box-border px-8 py-12 w-full h-3/5">
+            <div
+              className="bg-gray-200 box-border px-8 py-12 w-full"
+              style={{ height: "70%" }}
+            >
               {loaded ? (
                 <CourseDetail
                   onStart={handleStart}
@@ -125,7 +128,10 @@ const CoursePage = () => {
                 <LoadingGeneric />
               )}
             </div>
-            <div className="p-8  w-full flex flex-col items-start justify-center overflow-hidden h-2/5">
+            <div
+              className="p-8  w-full flex flex-col items-start justify-center overflow-hidden h-2/5"
+              style={{ height: "30%" }}
+            >
               <Flex justify="between" height={"6"}>
                 <div style={{ width: "40px", height: "20px" }}>
                   <TbAntennaBars5 size="20" className="inline-block" />

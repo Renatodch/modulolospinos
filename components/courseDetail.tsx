@@ -147,6 +147,11 @@ const CourseDetail = ({
             Empezó el día {getDateString(user_course?.date_start)}
           </span>
         )}
+        {user_course?.date_end && (
+          <span className="italic text-sm mt-2">
+            Curso evaluado el día {getDateString(user_course?.date_end)}
+          </span>
+        )}
         <div className="flex w-full gap-4 my-2 justify-end items-center">
           <strong>Reporte de Notas</strong>
 
