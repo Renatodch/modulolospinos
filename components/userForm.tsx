@@ -116,8 +116,12 @@ const UserForm = ({ target, user_type }: Props) => {
       <Dialog.Content style={{ maxWidth: 450 }}>
         <Dialog.Title align={"center"}>
           {!target
-            ? "Formulario de Nuevo Estudiante"
-            : "Formulario de Estudiante"}
+            ? user_type === STUDENT
+              ? "Formulario de Nuevo Estudiante"
+              : "Formulario de Nuevo Usuario"
+            : user_type === STUDENT
+            ? "Formulario de Estudiante"
+            : "Formulario de Usuario"}
         </Dialog.Title>
         <Dialog.Description size="2" mb="4"></Dialog.Description>
         <form className="w-full" onSubmit={handleSubmit(onSubmit)}>
