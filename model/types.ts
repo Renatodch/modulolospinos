@@ -202,3 +202,8 @@ export const getToastPendingActivities = (
   }" del tema "${
     subjects.find((s) => s.id === taskDetail.id_subject)?.title
   }" vence el dia ${getDateString(taskDetail.date_max)}`;
+
+export const getFormatId = (id: number) => id.toString().padStart(4, "0");
+export const DeleteUserTitle = "Eliminación de usuario";
+export const DeleteUserStudentMessage = (id: number) =>
+  `Estas seguro que deseas borrar al estudiante ${getFormatId(id)}?`;

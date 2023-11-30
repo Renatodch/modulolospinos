@@ -16,6 +16,8 @@ import {
 import {
   APPROVED,
   Activity,
+  DeleteUserStudentMessage,
+  DeleteUserTitle,
   MIN_SCORE_APPROVED,
   NOT_INIT,
   REPROVED,
@@ -37,9 +39,9 @@ import {
 import { Button, Table } from "@radix-ui/themes";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
-import { AiFillDelete } from "react-icons/ai";
 import { MdCalculate } from "react-icons/md";
 import { toast } from "sonner";
+import DeleteModal from "./deleteModal";
 import LoadingGeneric from "./loadingGeneric";
 import ScoreHistory from "./scoreHistory";
 import ScoreReport from "./scoreReport";
@@ -133,7 +135,7 @@ const StudentListRow = ({
     getData();
   }, [activities, subjects, _user, user_course]);
 
-  const handleDelete = async () => {
+  const handleDelete = () => {
     const id = _user.id;
     setDeleting(true);
     toast.promise(
@@ -165,7 +167,7 @@ const StudentListRow = ({
     );
   };
 
-  const handleCompute = async () => {
+  const handleCompute = () => {
     if (!user_course || isUserCourseNotInit(user_course)) {
       toast.error(TOAST_USER_COURSE_NOT_STARTED);
       return;
@@ -298,9 +300,12 @@ const StudentListRow = ({
         <UserForm target={_user} user_type={STUDENT} />
       </Table.Cell>
       <Table.Cell width={100}>
-        <Button disabled={deleting} onClick={handleDelete} color="red" size="3">
-          <AiFillDelete />
-        </Button>
+        <DeleteModal
+          title={DeleteUserTitle}
+          message={DeleteUserStudentMessage(_user.id)}
+          deleting={deleting}
+          deleteHandler={handleDelete}
+        />
       </Table.Cell>
     </Table.Row>
   );

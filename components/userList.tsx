@@ -44,7 +44,7 @@ const UserListRow = ({ _user }: { _user: User }) => {
   const router = useRouter();
   const [deleting, setDeleting] = useState(false);
   const id_user = user?.id!;
-  const handleDelete = async () => {
+  const handleDelete = () => {
     const id = _user.id;
     setDeleting(true);
 

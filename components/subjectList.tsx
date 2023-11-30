@@ -49,7 +49,7 @@ const SubjectListRow = ({
   const router = useRouter();
   const [deleting, setDeleting] = useState(false);
 
-  const handleDelete = async () => {
+  const handleDelete = () => {
     const id_subject = subject.id;
 
     setDeleting(true);

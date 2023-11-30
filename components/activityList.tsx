@@ -60,7 +60,7 @@ const ActivityListRow = ({
   const router = useRouter();
   const [deleting, setDeleting] = useState(false);
 
-  const handleDeleteActivity = async () => {
+  const handleDeleteActivity = () => {
     const id = activity.id;
     setDeleting(true);
 
