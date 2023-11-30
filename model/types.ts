@@ -206,4 +206,4 @@ export const getToastPendingActivities = (
 export const getFormatId = (id: number) => id.toString().padStart(4, "0");
 export const DeleteUserTitle = "Eliminación de usuario";
 export const DeleteUserStudentMessage = (id: number) =>
-  `Estas seguro que deseas borrar al estudiante ${getFormatId(id)}?`;
+  `Estas seguro que deseas eliminar al estudiante ${getFormatId(id)}?`;
