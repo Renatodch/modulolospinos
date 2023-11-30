@@ -41,6 +41,7 @@ model user {
   type        Int
   email       String        @db.VarChar(255)
   name        String        @db.VarChar(50)
+  score       score[]
   task        task[]
   user_course user_course[]
 }
@@ -48,6 +49,7 @@ model user {
 model user_course {
   id          Int       @id @default(autoincrement())
   date_start  DateTime? @db.Timestamp(6)
+  date_end    DateTime? @db.Timestamp(6)
   date_update DateTime? @db.Timestamp(6)
   state       Int
   average     Int?
@@ -62,4 +64,14 @@ model subject {
   description String?    @db.VarChar(255)
   url         String?    @db.VarChar(255)
   activity    activity[]
+}
+
+model score {
+  id       Int     @id @default(autoincrement())
+  activity String? @db.VarChar(64)
+  subject  String  @db.VarChar(64)
+  value    Int
+  order    Int
+  id_user  Int?
+  user     user?   @relation(fields: [id_user], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }

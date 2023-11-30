@@ -1,8 +1,16 @@
 "use client";
+import {
+  deleteScoresByUserId,
+  saveScores,
+} from "@/controllers/score.controller";
 import { getTasksByUserId } from "@/controllers/task.controller";
 import { saveUserCourse } from "@/controllers/user-course.controller";
 import { deleteUserById } from "@/controllers/user.controller";
-import { getTasksActivityDetail, isUserCourseNotInit } from "@/lib/utils";
+import {
+  getTasksActivityDetail,
+  isUserCourseCompleted,
+  isUserCourseNotInit,
+} from "@/lib/utils";
 import {
   APPROVED,
   Activity,
@@ -10,11 +18,11 @@ import {
   NOT_INIT,
   REPROVED,
   STUDENT,
+  Score,
   Subject,
   TOAST_BD_ERROR,
   TOAST_USER_COURSE_NOT_COMPLETED,
   TOAST_USER_COURSE_NOT_STARTED,
-  TOAST_USER_COURSE_SAVE_SCORE_NOT_CHANGE,
   TOAST_USER_COURSE_SAVE_SCORE_SUCCESS,
   TOAST_USER_DELETE_SUCCESS,
   TaskActivityDetail,
@@ -29,6 +37,7 @@ import { AiFillDelete } from "react-icons/ai";
 import { MdCalculate } from "react-icons/md";
 import { toast } from "sonner";
 import LoadingGeneric from "./loadingGeneric";
+import ScoreHistory from "./scoreHistory";
 import ScoreReport from "./scoreReport";
 import UserForm from "./userForm";
 
@@ -52,7 +61,7 @@ const StudentList = ({
           <Table.ColumnHeaderCell>Email</Table.ColumnHeaderCell>
           <Table.ColumnHeaderCell>Estado Curso</Table.ColumnHeaderCell>
           <Table.ColumnHeaderCell>Promedio Final</Table.ColumnHeaderCell>
-          <Table.ColumnHeaderCell>Calcular Promedio</Table.ColumnHeaderCell>
+          <Table.ColumnHeaderCell>Registrar Notas</Table.ColumnHeaderCell>
           <Table.ColumnHeaderCell>Reporte Notas</Table.ColumnHeaderCell>
           <Table.ColumnHeaderCell>Modificar</Table.ColumnHeaderCell>
           <Table.ColumnHeaderCell>Borrar</Table.ColumnHeaderCell>
@@ -145,40 +154,53 @@ const StudentListRow = ({
 
     toast.promise(
       new Promise((resolve, reject) => {
+        const scoreList: Omit<Score, "id">[] = [];
         let avgFinal = 0;
+
         for (let s of subjects) {
           const scores = tasksDetail
             .filter((t) => t.id_subject === s.id)
-            .map((n) =>
-              n.score === null || n.score === undefined ? 0 : n.score
-            );
+            .map((n) => {
+              const score =
+                n.score === null || n.score === undefined ? 0 : n.score;
+              scoreList.push({
+                id_user: id,
+                subject: s.title,
+                order: n.value_subject,
+                activity: n.activity_title,
+                value: score,
+              });
+
+              return score;
+            });
           const len = scores.length;
-          const pc =
-            len > 0
-              ? scores.reduce((acc, current) => acc + current, 0) / len
-              : 20;
+          let pc = 20;
+          if (len > 0) {
+            pc = scores.reduce((acc, current) => acc + current, 0) / len;
+          } else {
+            scoreList.push({
+              id_user: id,
+              subject: s.title,
+              order: subjects.findIndex((subject) => subject.id === s.id),
+              activity: null,
+              value: pc,
+            });
+          }
           avgFinal += pc / subjects.length;
         }
-        const change = Math.round(avgFinal) !== user_course?.average;
-
-        let res: User_Course | undefined = {
+        saveUserCourse({
           ...user_course,
           average: Math.round(avgFinal),
           state: avgFinal >= MIN_SCORE_APPROVED ? APPROVED : REPROVED,
-        };
-        if (!change) resolve(false);
-        else
-          saveUserCourse(res)
-            .then((r) => resolve(true))
-            .catch(() => reject());
+        })
+          .then(() => deleteScoresByUserId(id))
+          .then(() => saveScores(scoreList))
+          .then(resolve)
+          .catch(reject);
       }),
       {
         loading: "Calculando promedio final...",
-
-        success: (change) =>
-          change
-            ? TOAST_USER_COURSE_SAVE_SCORE_SUCCESS
-            : TOAST_USER_COURSE_SAVE_SCORE_NOT_CHANGE,
+        success: () => TOAST_USER_COURSE_SAVE_SCORE_SUCCESS,
         error: () => TOAST_BD_ERROR,
       }
     );
@@ -223,14 +245,17 @@ const StudentListRow = ({
       </Table.Cell>
       <Table.Cell width={100}>
         {reportReady ? (
-          <ScoreReport
-            user={user}
-            progress={user_course?.progress!}
-            notInit={isUserCourseNotInit(user_course)}
-            subjects={subjects}
-            tasksDetail={tasksDetail}
-            avgFinalSaved={user_course?.average}
-          />
+          isUserCourseCompleted(user_course) ? (
+            <ScoreHistory user={user} avgFinalSaved={user_course?.average!} />
+          ) : (
+            <ScoreReport
+              user={user}
+              progress={user_course?.progress!}
+              notInit={isUserCourseNotInit(user_course)}
+              subjects={subjects}
+              tasksDetail={tasksDetail}
+            />
+          )
         ) : (
           <LoadingGeneric size={20} />
         )}

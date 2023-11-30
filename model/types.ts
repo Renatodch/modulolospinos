@@ -11,6 +11,7 @@ export interface User {
 export interface User_Course {
   id: number;
   date_start: Date | null;
+  date_end: Date | null;
   date_update: Date | null;
   state: number;
   progress: number;
@@ -22,12 +23,18 @@ export interface Activity {
   title: string;
   description: string;
   rubric: string | null;
-  //subject: number;
   type: number;
   date_max: Date | null;
   id_subject: number | null;
 }
-
+export interface Score {
+  id: number;
+  activity: string | null;
+  subject: string;
+  value: number;
+  order: number;
+  id_user: number | null;
+}
 export interface Subject {
   id: number;
   title: string;
@@ -75,6 +82,18 @@ export interface QuestionAnswers {
   date_max?: Date | null;
   rubric?: string | null;
   answers: Answer[];
+}
+
+export interface ScoreActivityDetail {
+  activity: string | null;
+  score: number;
+}
+export interface ScoreSubjectDetail {
+  id: number;
+  activities: ScoreActivityDetail[];
+  subject: string;
+  order: number;
+  id_user: number | null;
 }
 
 export const NOT_INIT = -1;
@@ -167,8 +186,6 @@ export const TOAST_USER_COURSE_NOT_STARTED =
   "El usuario no ha iniciado el curso";
 export const TOAST_USER_COURSE_NOT_COMPLETED =
   "El usuario aun no completa el curso, le faltan tareas o no esta al día con el tema";
-export const TOAST_USER_COURSE_SAVE_SCORE_NOT_CHANGE =
-  "No hubieron cambios en el promedio";
 export const TOAST_USER_COURSE_SAVE_SCORE_SUCCESS =
   "Se registró el promedio final con éxito";
 

@@ -2,6 +2,7 @@ DROP TABLE IF EXISTS user_course;
 DROP TABLE IF EXISTS task;
 DROP TABLE IF EXISTS activity;
 DROP TABLE IF EXISTS "subject";
+DROP TABLE IF EXISTS "score";
 DROP TABLE IF EXISTS "user";
 
 CREATE TABLE "user" (
@@ -16,6 +17,7 @@ CREATE TABLE "user" (
 CREATE TABLE user_course (
   id SERIAL PRIMARY KEY,
   date_start TIMESTAMP,
+  date_end TIMESTAMP,
   date_update TIMESTAMP,
   state INT NOT NULL,
   average INT,
@@ -56,9 +58,10 @@ CREATE TABLE task (
 
 CREATE TABLE score (
   id SERIAL PRIMARY KEY,
-  activity VARCHAR(64) NOT NULL,
+  activity VARCHAR(64),
   "subject" VARCHAR(64) NOT NULL,
-  value INT NOT NULL,
+  "value" INT NOT NULL,
+  "order" INT NOT NULL,
   id_user INT REFERENCES "user"(id)
 );
 

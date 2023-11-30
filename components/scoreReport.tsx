@@ -17,14 +17,12 @@ const ScoreReport = ({
   notInit,
   tasksDetail,
   subjects,
-  avgFinalSaved,
 }: {
   user: User;
   progress: number;
   notInit: boolean;
   tasksDetail: TaskActivityDetail[];
   subjects: Subject[];
-  avgFinalSaved: number | null | undefined;
 }) => {
   const cellStyle = "border-black border-2";
   let avgFinal = 0,
@@ -46,9 +44,7 @@ const ScoreReport = ({
       </Dialog.Trigger>
 
       <Dialog.Content style={{ maxWidth: 650 }}>
-        <Dialog.Title align={"center"}>
-          Reporte Actualizado de notas
-        </Dialog.Title>
+        <Dialog.Title align={"center"}>Reporte de notas</Dialog.Title>
         <Dialog.Description size="2" mb="4" className="flex flex-col ">
           <strong className="uppercase mb-2">Datos del estudiante</strong>
           <span>
@@ -58,10 +54,6 @@ const ScoreReport = ({
           <span>
             <strong className="text-black">iD: &nbsp;</strong>
             {user?.id}
-          </span>
-          <span className="italic mt-2 flex justify-center">
-            (Si ya completó el curso y la lista de temas varía, el promedio
-            final se mantiene)
           </span>
         </Dialog.Description>
         <Table.Root variant="surface">
@@ -95,9 +87,10 @@ const ScoreReport = ({
                   ? 20
                   : 0;
 
-              avgFinalComponents += `PC${index + 1} ${
-                index < subjects.length - 1 ? "+" : ""
-              }`;
+              avgFinalComponents = subjects
+                .map((detail, index) => `PC${index + 1}`)
+                .join("+");
+
               avgFinal += pc / subjects.length;
               return (
                 <React.Fragment key={index}>
@@ -141,24 +134,17 @@ const ScoreReport = ({
             })}
             <Table.Row align={"center"}>
               <Table.Cell justify="center" colSpan={2} className={cellStyle}>
-                <strong>
-                  PROMEDIO FINAL &nbsp;
-                  {avgFinalSaved === null || avgFinalSaved === undefined ? (
-                    <span> ({avgFinalComponents})/#Temas</span>
-                  ) : (
-                    <span>REGISTRADO</span>
-                  )}
-                </strong>
+                <strong>PROMEDIO FINAL = ({avgFinalComponents})/#Temas</strong>
               </Table.Cell>
               <Table.Cell
                 justify="center"
                 className={`${cellStyle} ${
-                  avgFinalSaved ?? avgFinal >= MIN_SCORE_APPROVED
+                  avgFinal >= MIN_SCORE_APPROVED
                     ? "text-blue-600"
                     : "text-red-600"
                 } font-semibold text-lg text-center`}
               >
-                {!notInit && getFormatedScore(avgFinalSaved ?? avgFinal)}
+                {!notInit && false && getFormatedScore(avgFinal)}
               </Table.Cell>
             </Table.Row>
           </Table.Body>

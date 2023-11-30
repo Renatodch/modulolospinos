@@ -23,6 +23,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import CourseProgressDetail from "./courseProgressDetail";
+import ScoreHistory from "./scoreHistory";
 import ScoreReport from "./scoreReport";
 
 const CourseDetail = ({
@@ -146,19 +147,21 @@ const CourseDetail = ({
             Empezó el día {getDateString(user_course?.date_start)}
           </span>
         )}
-        {!isUserCourseNotInit(user_course) && (
-          <div className="flex w-full gap-4 my-2 justify-end items-center">
-            <strong>Reporte de Notas</strong>
+        <div className="flex w-full gap-4 my-2 justify-end items-center">
+          <strong>Reporte de Notas</strong>
+
+          {isUserCourseCompleted(user_course) ? (
+            <ScoreHistory user={user} avgFinalSaved={user_course?.average!} />
+          ) : (
             <ScoreReport
               user={user}
               tasksDetail={tasksDetail}
               subjects={subjects}
               notInit={isUserCourseNotInit(user_course)}
               progress={user_course?.progress!}
-              avgFinalSaved={user_course?.average}
             />
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </>
   );
