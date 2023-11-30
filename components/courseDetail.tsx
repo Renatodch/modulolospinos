@@ -163,7 +163,7 @@ const CourseDetail = ({
               tasksDetail={tasksDetail}
               subjects={subjects}
               notInit={isUserCourseNotInit(user_course)}
-              progress={user_course?.progress!}
+              progress={progress}
             />
           )}
         </div>

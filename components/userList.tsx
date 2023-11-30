@@ -1,27 +1,21 @@
 "use client";
-import { deleteUserById } from "@/controllers/user.controller";
-import { TOAST_USER_DELETE_SUCCESS, User } from "@/model/types";
+import { useUserContext } from "@/app/context";
+import { deleteUserById, getUserById } from "@/controllers/user.controller";
+import {
+  TOAST_BD_ERROR,
+  TOAST_DELETING,
+  TOAST_USER_DELETE_ERROR_1,
+  TOAST_USER_DELETE_SUCCESS,
+  User,
+} from "@/model/types";
 import { Button, Table } from "@radix-ui/themes";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import React, { useState } from "react";
 import { AiFillDelete } from "react-icons/ai";
 import { toast } from "sonner";
 import UserForm from "./userForm";
 
 const UserList = ({ users }: { users: User[] }) => {
-  const router = useRouter();
-  const [onDelete, setOnDelete] = useState<boolean>(false);
-  const [deletedIndex, setDeletedIndex] = useState<number | null>(null);
-  const handleDelete = async (id: number) => {
-    setDeletedIndex(id);
-    setOnDelete(true);
-    await deleteUserById(id);
-    setOnDelete(false);
-    setDeletedIndex(null);
-    toast.success(TOAST_USER_DELETE_SUCCESS);
-    router.refresh();
-  };
-
   return (
     <Table.Root className="w-full">
       <Table.Header>
@@ -35,30 +29,68 @@ const UserList = ({ users }: { users: User[] }) => {
       </Table.Header>
 
       <Table.Body>
-        {users.map((user) => {
-          return (
-            <Table.Row key={user.id}>
-              <Table.RowHeaderCell width={100}>{user.id}</Table.RowHeaderCell>
-              <Table.Cell width={300}>{user.name}</Table.Cell>
-              <Table.Cell width={250}>{user.email}</Table.Cell>
-              <Table.Cell width={100}>
-                <UserForm target={user} />
-              </Table.Cell>
-              <Table.Cell width={100}>
-                <Button
-                  disabled={onDelete && user.id === deletedIndex}
-                  onClick={() => handleDelete(user.id)}
-                  color="red"
-                  size="3"
-                >
-                  <AiFillDelete />
-                </Button>
-              </Table.Cell>
-            </Table.Row>
-          );
-        })}
+        {users.map((user) => (
+          <React.Fragment key={user.id}>
+            <UserListRow _user={user} key={user.id} />
+          </React.Fragment>
+        ))}
       </Table.Body>
     </Table.Root>
+  );
+};
+
+const UserListRow = ({ _user }: { _user: User }) => {
+  const { user } = useUserContext();
+  const router = useRouter();
+  const [deleting, setDeleting] = useState(false);
+  const id_user = user?.id!;
+  const handleDelete = async () => {
+    const id = _user.id;
+    setDeleting(true);
+
+    toast.promise(
+      new Promise((resolve, reject) => {
+        getUserById(id)
+          .then((res) => {
+            if (res && res?.id === id_user) {
+              reject(1);
+              return;
+            }
+            return deleteUserById(id);
+          })
+          .then(resolve)
+          .catch(reject);
+      }),
+      {
+        loading: TOAST_DELETING,
+        success: () => {
+          return TOAST_USER_DELETE_SUCCESS;
+        },
+        error: (val) => {
+          setDeleting(false);
+          return val === 1 ? TOAST_USER_DELETE_ERROR_1 : TOAST_BD_ERROR;
+        },
+        finally: () => {
+          router.refresh();
+        },
+      }
+    );
+  };
+
+  return (
+    <Table.Row key={_user.id}>
+      <Table.RowHeaderCell width={100}>{_user.id}</Table.RowHeaderCell>
+      <Table.Cell width={300}>{_user.name}</Table.Cell>
+      <Table.Cell width={250}>{_user.email}</Table.Cell>
+      <Table.Cell width={100}>
+        <UserForm target={_user} />
+      </Table.Cell>
+      <Table.Cell width={100}>
+        <Button disabled={deleting} onClick={handleDelete} color="red" size="3">
+          <AiFillDelete />
+        </Button>
+      </Table.Cell>
+    </Table.Row>
   );
 };
 

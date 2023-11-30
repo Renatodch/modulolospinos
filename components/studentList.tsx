@@ -1,11 +1,12 @@
 "use client";
+import { useUserContext } from "@/app/context";
 import {
   deleteScoresByUserId,
   saveScores,
 } from "@/controllers/score.controller";
 import { getTasksByUserId } from "@/controllers/task.controller";
 import { saveUserCourse } from "@/controllers/user-course.controller";
-import { deleteUserById } from "@/controllers/user.controller";
+import { deleteUserById, getUserById } from "@/controllers/user.controller";
 import {
   getTasksActivityDetail,
   isUserCourseCompleted,
@@ -21,9 +22,11 @@ import {
   Score,
   Subject,
   TOAST_BD_ERROR,
+  TOAST_DELETING,
   TOAST_USER_COURSE_NOT_COMPLETED,
   TOAST_USER_COURSE_NOT_STARTED,
   TOAST_USER_COURSE_SAVE_SCORE_SUCCESS,
+  TOAST_USER_DELETE_ERROR_1,
   TOAST_USER_DELETE_SUCCESS,
   TaskActivityDetail,
   USER_PROGRESS,
@@ -32,7 +35,7 @@ import {
 } from "@/model/types";
 import { Button, Table } from "@radix-ui/themes";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { AiFillDelete } from "react-icons/ai";
 import { MdCalculate } from "react-icons/md";
 import { toast } from "sonner";
@@ -72,13 +75,14 @@ const StudentList = ({
         {users.map((user) => {
           const user_course = user_courses.find((u) => u.id_user === user.id);
           return (
-            <StudentListRow
-              key={user.id}
-              user_course={user_course}
-              user={user}
-              subjects={subjects}
-              activities={activities}
-            />
+            <React.Fragment key={user.id}>
+              <StudentListRow
+                user_course={user_course}
+                _user={user}
+                subjects={subjects}
+                activities={activities}
+              />
+            </React.Fragment>
           );
         })}
       </Table.Body>
@@ -87,20 +91,21 @@ const StudentList = ({
 };
 
 const StudentListRow = ({
-  user,
+  _user,
   user_course,
   subjects,
   activities,
 }: {
-  user: User;
+  _user: User;
   user_course: User_Course | undefined;
   subjects: Subject[];
   activities: Activity[];
 }) => {
+  const { user } = useUserContext();
+
   const router = useRouter();
-  const [onDelete, setOnDelete] = useState<boolean>(false);
   const [onCompute, setOnCompute] = useState<boolean>(false);
-  const [deletedIndex, setDeletedIndex] = useState<number | null>(null);
+  const [deleting, setDeleting] = useState(false);
   const [computedIndex, setComputedIndex] = useState<number | null>(null);
   const [tasksDetail, setTasksDetail] = useState<TaskActivityDetail[]>([]);
   const [reportReady, setReportReady] = useState<boolean>(false);
@@ -112,7 +117,7 @@ const StudentListRow = ({
 
   useEffect(() => {
     const getData = async () => {
-      const id = user.id;
+      const id = _user.id;
       const tasks = await getTasksByUserId(id);
       const _tasksDetail = getTasksActivityDetail(activities, tasks, subjects);
 
@@ -120,17 +125,40 @@ const StudentListRow = ({
       setReportReady(true);
     };
     getData();
-  }, [activities, subjects, user]);
+  }, [activities, subjects, _user]);
 
   const handleDelete = async () => {
-    const id = user.id;
-    setDeletedIndex(id);
-    setOnDelete(true);
-    await deleteUserById(id);
-    setOnDelete(false);
-    setDeletedIndex(null);
-    toast.success(TOAST_USER_DELETE_SUCCESS);
-    router.refresh();
+    const id = _user.id;
+
+    setDeleting(true);
+
+    toast.promise(
+      new Promise((resolve, reject) => {
+        getUserById(id)
+          .then((res) => {
+            if (res && id === user?.id!) {
+              reject(1);
+              return;
+            }
+            return deleteUserById(id);
+          })
+          .then(resolve)
+          .catch(reject);
+      }),
+      {
+        loading: TOAST_DELETING,
+        success: () => {
+          return TOAST_USER_DELETE_SUCCESS;
+        },
+        error: (val) => {
+          setDeleting(false);
+          return val === 1 ? TOAST_USER_DELETE_ERROR_1 : TOAST_BD_ERROR;
+        },
+        finally: () => {
+          router.refresh();
+        },
+      }
+    );
   };
 
   const handleCompute = async () => {
@@ -148,7 +176,7 @@ const StudentListRow = ({
       return;
     }
 
-    const id = user.id;
+    const id = _user.id;
     setComputedIndex(id);
     setOnCompute(true);
 
@@ -211,9 +239,9 @@ const StudentListRow = ({
   };
   return (
     <Table.Row>
-      <Table.RowHeaderCell width={100}>{user.id}</Table.RowHeaderCell>
-      <Table.Cell width={300}>{user.name}</Table.Cell>
-      <Table.Cell width={250}>{user.email}</Table.Cell>
+      <Table.RowHeaderCell width={100}>{_user.id}</Table.RowHeaderCell>
+      <Table.Cell width={300}>{_user.name}</Table.Cell>
+      <Table.Cell width={250}>{_user.email}</Table.Cell>
       <Table.Cell width={250}>{state.label}</Table.Cell>
       <Table.Cell
         justify={"center"}
@@ -232,7 +260,7 @@ const StudentListRow = ({
         {reportReady ? (
           <Button
             disabled={
-              (onCompute && user.id === computedIndex) ||
+              (onCompute && _user.id === computedIndex) ||
               state.value === NOT_INIT
             }
             onClick={handleCompute}
@@ -247,10 +275,10 @@ const StudentListRow = ({
       <Table.Cell width={100}>
         {reportReady ? (
           isUserCourseCompleted(user_course) ? (
-            <ScoreHistory user={user} avgFinalSaved={user_course?.average!} />
+            <ScoreHistory user={_user} avgFinalSaved={user_course?.average!} />
           ) : (
             <ScoreReport
-              user={user}
+              user={_user}
               progress={user_course?.progress!}
               notInit={isUserCourseNotInit(user_course)}
               subjects={subjects}
@@ -262,15 +290,10 @@ const StudentListRow = ({
         )}
       </Table.Cell>
       <Table.Cell width={100}>
-        <UserForm target={user} user_type={STUDENT} />
+        <UserForm target={_user} user_type={STUDENT} />
       </Table.Cell>
       <Table.Cell width={100}>
-        <Button
-          disabled={onDelete && user.id === deletedIndex}
-          onClick={handleDelete}
-          color="red"
-          size="3"
-        >
+        <Button disabled={deleting} onClick={handleDelete} color="red" size="3">
           <AiFillDelete />
         </Button>
       </Table.Cell>

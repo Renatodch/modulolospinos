@@ -140,14 +140,15 @@ export const USER_TYPES = [
   { name: "Administrador", value: DEVELOPER },
 ];
 
+export const TOAST_USER_DELETE_ERROR_1 = "No puedes borrar tu usuario";
 export const TOAST_USER_DELETE_SUCCESS = "Usuario borrado con éxito";
 export const TOAST_USER_SAVE_SUCCESS = "Usuario guardado con éxito";
 
 export const TOAST_SUBJECT_DELETE_SUCCESS = "Tema borrado con éxito";
 export const TOAST_SUBJECT_DELETE_ERROR_ACTIVITIES =
   "Tema no se puede borrar porque hay actividades que lo utilizan";
-export const TOAST_SUBJECT_DELETE_ERROR_USER_COURSES =
-  "Tema no se puede borrar porque hay estudiantes que lo estan llevando";
+/* export const TOAST_SUBJECT_DELETE_ERROR_USER_COURSES =
+  "Tema no se puede borrar porque hay estudiantes que lo estan llevando"; */
 export const TOAST_SUBJECT_SAVE_SUCCESS = "Tema guardado con éxito";
 
 export const TOAST_TASK_EVALUATED = "Se calificó la tarea";
@@ -190,6 +191,7 @@ export const TOAST_USER_COURSE_SAVE_SCORE_SUCCESS =
   "Se registró el promedio final con éxito";
 
 export const TOAST_LOADING = "Subiendo...";
+export const TOAST_DELETING = "Borrando...";
 export const NO_DATE_MAX_MESSAGE_TASK =
   "No hay límite de tiempo para esta tarea";
 
