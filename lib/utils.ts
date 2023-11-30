@@ -4,6 +4,7 @@ import {
   IN_PROGRESS,
   NOT_INIT,
   REPROVED,
+  Score,
   Subject,
   Task,
   TaskActivityDetail,
@@ -23,13 +24,13 @@ export const getTasksActivityDetail = (
   subjects: Subject[],
   progress?: number
 ) => {
-  const activitySubjects: (Activity & { value_subject: number })[] =
-    activities.map((a) => {
-      const value_subject = subjects.findIndex((s) => s.id === a.id_subject);
-      return { ...a, value_subject };
-    });
+  const activitySubjects: (Activity & { value_subject: number })[] = [];
+  activities.forEach((a) => {
+    const value_subject = subjects.findIndex((s) => s.id === a.id_subject);
+    value_subject !== -1 && activitySubjects.push({ ...a, value_subject });
+  });
 
-  const _progress = progress ?? subjects.length - 1; // COURSE_MAX_ITEM_INDEX
+  const _progress = progress ?? subjects.length - 1;
   const tasksDetail: TaskActivityDetail[] = activitySubjects
     .filter((a) => a.value_subject <= _progress)
     .map((a) => {
@@ -86,3 +87,15 @@ export const isUserCourseApproved = (
 
 export const isUserCourseInit = (user_course: User_Course | undefined | null) =>
   !!user_course && user_course.state > NOT_INIT;
+
+export const getScoreListSummary = (scores: Score[]) => {
+  const valueSet = new Set<number>();
+  const _scoreListSummary: Score[] = [];
+  for (let score of scores) {
+    if (!valueSet.has(score.order)) {
+      valueSet.add(score.order);
+      _scoreListSummary.push(score);
+    }
+  }
+  return _scoreListSummary;
+};

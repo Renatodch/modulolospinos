@@ -25,22 +25,27 @@ const CourseProgressDetail = ({
   tasksDetail,
   subjects,
 }: {
-  user_course: User_Course | null | undefined;
+  user_course: User_Course;
   tasksDetail: TaskActivityDetail[];
   subjects: Subject[];
 }) => {
   const [open, setOpen] = useState<boolean>(false);
-  const state = user_course?.state!;
-  const progress = user_course?.progress!;
   const notinit = isUserCourseNotInit(user_course);
   const inprogress = isUserCourseInProgress(user_course);
   const endcourse = isUserCourseCompleted(user_course);
   const courseLastItemIndex = subjects.length - 1;
-
+  const totalActivities = tasksDetail.length;
+  const state = user_course.state!;
+  const progress =
+    user_course.progress > courseLastItemIndex
+      ? courseLastItemIndex
+      : user_course.progress!;
+  const currentSubjectTitle = subjects.find(
+    (_, index) => index === progress
+  )?.title;
   const currentTasksDetail = tasksDetail.filter(
     (t) => t.value_subject <= progress
   );
-  const totalActivities = tasksDetail.length;
 
   const noActivity =
     (currentTasksDetail.length === 0 ||
@@ -90,7 +95,7 @@ const CourseProgressDetail = ({
               Tema actual: &nbsp;
               <strong>
                 {progress + 1}.&nbsp;
-                {subjects.find((_, index) => index === progress)?.title}
+                {currentSubjectTitle}
               </strong>
             </div>
           )}
@@ -160,7 +165,7 @@ const CourseProgressDetail = ({
                     state === REPROVED && "text-red-600"
                   } text-xl`}
                 >
-                  {user_course?.average}
+                  {user_course.average}
                 </span>
               </div>
             </>

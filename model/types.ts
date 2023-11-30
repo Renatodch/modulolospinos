@@ -106,7 +106,7 @@ export const USER_PROGRESS = [
   { value: NOT_INIT, label: "NO INICIADO" },
   { value: IN_PROGRESS, label: "EN PROGRESO" },
   { value: APPROVED, label: "APROBADO" },
-  { value: REPROVED, label: "DESAPROBADO" },
+  { value: REPROVED, label: "REPROBADO" },
 ];
 
 export const PRIMARY_COLOR = "#98bf64";
@@ -147,8 +147,6 @@ export const TOAST_USER_SAVE_SUCCESS = "Usuario guardado con éxito";
 export const TOAST_SUBJECT_DELETE_SUCCESS = "Tema borrado con éxito";
 export const TOAST_SUBJECT_DELETE_ERROR_ACTIVITIES =
   "Tema no se puede borrar porque hay actividades que lo utilizan";
-/* export const TOAST_SUBJECT_DELETE_ERROR_USER_COURSES =
-  "Tema no se puede borrar porque hay estudiantes que lo estan llevando"; */
 export const TOAST_SUBJECT_SAVE_SUCCESS = "Tema guardado con éxito";
 
 export const TOAST_TASK_EVALUATED = "Se calificó la tarea";

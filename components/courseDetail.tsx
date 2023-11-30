@@ -2,6 +2,7 @@
 import { saveUserCourse } from "@/controllers/user-course.controller";
 import { getDateString } from "@/lib/date-lib";
 import {
+  getScoreListSummary,
   isUserCourseCompleted,
   isUserCourseInProgress,
   isUserCourseNotInit,
@@ -10,6 +11,7 @@ import {
 import {
   IN_PROGRESS,
   PRIMARY_COLOR,
+  Score,
   Subject,
   TOAST_COURSE_START_FAILED,
   TOAST_COURSE_START_SUCCESS,
@@ -29,35 +31,48 @@ import ScoreReport from "./scoreReport";
 const CourseDetail = ({
   tasksDetail,
   subjects,
+  scores,
   user,
   onStart,
   user_course,
 }: {
   tasksDetail: TaskActivityDetail[];
   subjects: Subject[];
+  scores: Score[];
   user: User;
   onStart: () => void;
-  user_course: User_Course | null | undefined;
+  user_course: User_Course;
 }) => {
   const router = useRouter();
   const [clicked, setClicked] = useState(false);
 
-  const progress = user_course?.progress!;
-  const totalSubjects = subjects.length;
-  const part = 100 / totalSubjects;
-  const value = isUserCourseCompleted(user_course) ? 100 : part * progress;
+  const completed = isUserCourseCompleted(user_course);
+  const inprogress = isUserCourseInProgress(user_course);
+  const notinit = isUserCourseNotInit(user_course);
+  const reproved = isUserCourseReproved(user_course);
+  const subjectsLen = subjects.length;
 
-  const progressPercent = Math.round(value);
-  const subjectsCompleted = isUserCourseCompleted(user_course)
-    ? `${progress + 1}/${progress + 1}`
-    : `${progress}/${totalSubjects}`;
+  const _scoreListSummary: Score[] = completed
+    ? getScoreListSummary(scores)
+    : [];
+
+  let progress = completed
+    ? _scoreListSummary.length
+    : inprogress && user_course.progress >= subjectsLen
+    ? subjectsLen - 1
+    : user_course.progress;
+
+  const totalSubjects = completed ? progress : subjectsLen;
+  const part = 100 / totalSubjects;
+  const progressPercent = Math.round(part * progress);
+  const subjectsCompleted = `${progress}/${totalSubjects}`;
 
   const handleStartCourseClick = async () => {
     if (!user_course) {
       toast.error(TOAST_COURSE_START_FAILED);
       return;
     }
-    if (isUserCourseInProgress(user_course)) {
+    if (inprogress) {
       toast.error("Usted ya inició el curso");
       return;
     }
@@ -103,25 +118,19 @@ const CourseDetail = ({
           <span>{progressPercent}% Completado</span>
         </p>
         <Slider
-          color={
-            isUserCourseInProgress(user_course)
-              ? "green"
-              : isUserCourseReproved(user_course)
-              ? "red"
-              : "blue"
-          }
+          color={inprogress ? "green" : reproved ? "red" : "blue"}
           value={[progressPercent]}
           className="mb-8"
         />
 
-        {isUserCourseInProgress(user_course) && (
+        {inprogress && (
           <Button size="3" style={{ backgroundColor: PRIMARY_COLOR }}>
             <Link href="/curso/clases" target="_blank">
               Continuar el aprendizaje
             </Link>
           </Button>
         )}
-        {isUserCourseNotInit(user_course) && (
+        {notinit && (
           <Button
             size="3"
             disabled={clicked}
@@ -131,7 +140,7 @@ const CourseDetail = ({
             Empezar el aprendizaje
           </Button>
         )}
-        {isUserCourseCompleted(user_course) && (
+        {completed && (
           <Button
             size="3"
             disabled
@@ -142,27 +151,32 @@ const CourseDetail = ({
           </Button>
         )}
 
-        {user_course?.date_start && (
+        {user_course.date_start && (
           <span className="italic text-sm mt-2">
-            Empezó el día {getDateString(user_course?.date_start)}
+            Empezó el día {getDateString(user_course.date_start)}
           </span>
         )}
-        {user_course?.date_end && (
+        {user_course.date_end && (
           <span className="italic text-sm mt-2">
-            Curso evaluado el día {getDateString(user_course?.date_end)}
+            Curso finalizado con promedio final registrado el día{" "}
+            {getDateString(user_course.date_end)}
           </span>
         )}
         <div className="flex w-full gap-4 my-2 justify-end items-center">
-          <strong>Reporte de Notas</strong>
-
-          {isUserCourseCompleted(user_course) ? (
-            <ScoreHistory user={user} avgFinalSaved={user_course?.average!} />
-          ) : (
+          {!notinit && <strong>Reporte de Notas</strong>}
+          {completed && (
+            <ScoreHistory
+              user={user}
+              avgFinalSaved={user_course.average!}
+              scores={scores}
+            />
+          )}
+          {inprogress && (
             <ScoreReport
               user={user}
               tasksDetail={tasksDetail}
               subjects={subjects}
-              notInit={isUserCourseNotInit(user_course)}
+              notInit={false}
               progress={progress}
             />
           )}

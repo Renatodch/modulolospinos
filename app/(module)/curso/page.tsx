@@ -4,13 +4,15 @@ import CourseContentItems from "@/components/courseContentItems";
 import CourseDetail from "@/components/courseDetail";
 import LoadingGeneric from "@/components/loadingGeneric";
 import { getActivities } from "@/controllers/activity.controller";
+import { getScoresByUserId } from "@/controllers/score.controller";
 import { getSubjects } from "@/controllers/subject.controller";
 import { getTasksByUserId } from "@/controllers/task.controller";
 import { getUserCourses } from "@/controllers/user-course.controller";
-import { getTasksActivityDetail } from "@/lib/utils";
+import { getTasksActivityDetail, isUserCourseCompleted } from "@/lib/utils";
 import {
   Activity,
   IN_PROGRESS,
+  Score,
   Subject,
   TaskActivityDetail,
   User_Course,
@@ -31,6 +33,7 @@ const CoursePage = () => {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [tasksDetail, setTasksDetail] = useState<TaskActivityDetail[]>([]);
   const [subjects, setSubjects] = useState<Subject[]>([]);
+  const [scores, setScores] = useState<Score[]>([]);
   const [userCourse, setUserCourse] = useState<User_Course | null | undefined>(
     undefined
   );
@@ -58,6 +61,11 @@ const CoursePage = () => {
         tasks,
         _subjects
       );
+
+      if (isUserCourseCompleted(user_course)) {
+        const _scores = await getScoresByUserId(id_user);
+        setScores(_scores);
+      }
 
       setActivities(_activities);
       setUserCourse(user_course);
@@ -116,13 +124,14 @@ const CoursePage = () => {
               className="bg-gray-200 box-border px-8 py-12 w-full"
               style={{ height: "70%" }}
             >
-              {loaded ? (
+              {loaded && userCourse ? (
                 <CourseDetail
                   onStart={handleStart}
                   user={user!}
                   user_course={userCourse}
                   tasksDetail={tasksDetail}
                   subjects={subjects}
+                  scores={scores}
                 />
               ) : (
                 <LoadingGeneric />

@@ -57,17 +57,24 @@ export default function ClasesPage(props: any) {
         return;
       }
 
-      const _progress = userCourse?.progress!;
       const _subjects = await getSubjects();
-      const value_subject = _subjects.findIndex(
+      const courseLastItemIndex = _subjects.length - 1;
+
+      const _progress =
+        userCourse?.progress! > courseLastItemIndex
+          ? courseLastItemIndex
+          : userCourse?.progress!;
+      /* const currentProgress = _subjects.findIndex(
         (s, index) => index === _progress
       );
-      const _subject = _subjects[value_subject];
-      const id_subject = _subject?.id;
+      const value_subject =
+        currentProgress === -1 ? _subjects.length - 1 : currentProgress; */
 
-      const _activities = id_subject
-        ? await getActivitiesBySubject(_index ? +_index : id_subject)
-        : [];
+      const _subject = _subjects[_progress];
+      const id_subject = _index ? +_index : _subject.id;
+
+      const _activities = await getActivitiesBySubject(id_subject);
+
       const tasks = await getTasksByUserId(id_user);
       const _tasksDetail = getTasksActivityDetail(
         _activities,
@@ -77,8 +84,8 @@ export default function ClasesPage(props: any) {
 
       setSubjects(_subjects);
       setTasksDetail(_tasksDetail);
-      setProgress(value_subject);
-      setSelected(_index ? +_index : id_subject);
+      setProgress(_progress);
+      setSelected(id_subject);
       setUserCourse(userCourse);
       setLoadedSubject(true);
       setLoaded(true);
@@ -100,12 +107,11 @@ export default function ClasesPage(props: any) {
       return;
     }
 
-    setSelected(id_subject);
     //const _subjects = await getSubjects();
-    const activities = await getActivitiesBySubject(id_subject);
+    const _activities = await getActivitiesBySubject(id_subject);
     const tasks = await getTasksByUserId(id_user);
     const _tasksDetail = getTasksActivityDetail(
-      activities,
+      _activities,
       tasks,
       subjects
     ).filter((t) => t.id_subject === id_subject);
@@ -122,6 +128,7 @@ export default function ClasesPage(props: any) {
     //setSubjects(_subjects);
     setTasksDetail(_tasksDetail);
     setProgress(value_subject);
+    setSelected(id_subject);
     setUserCourse(user_course);
     setLoadedSubject(true);
   };

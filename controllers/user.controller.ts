@@ -2,6 +2,7 @@
 
 import { User } from "@/model/types";
 import { prisma } from "../prisma/prisma";
+import { deleteScoresByUserId } from "./score.controller";
 import { deleteTasksByUserId } from "./task.controller";
 import {
   deleteUserCoursesByUserId,
@@ -59,8 +60,9 @@ export const deleteUserById = async (id: number) => {
     let user: User | undefined;
     const user_course = await getUserCourseByUserId(id);
     if (user_course) {
-      const user_courses = await deleteUserCoursesByUserId(id);
-      const tasks = await deleteTasksByUserId(id);
+      await deleteUserCoursesByUserId(id);
+      await deleteTasksByUserId(id);
+      await deleteScoresByUserId(id);
     }
     user = await prisma.user.delete({
       where: {

@@ -1,6 +1,5 @@
 "use client";
-import { getScoresByUserId } from "@/controllers/score.controller";
-import { getFormatedScore } from "@/lib/utils";
+import { getFormatedScore, getScoreListSummary } from "@/lib/utils";
 import {
   MIN_SCORE_APPROVED,
   PRIMARY_COLOR,
@@ -17,9 +16,11 @@ import LoadingGeneric from "./loadingGeneric";
 const ScoreHistory = ({
   user,
   avgFinalSaved,
+  scores,
 }: {
   user: User;
   avgFinalSaved: number;
+  scores: Score[];
 }) => {
   const [scoreSubjectDetail, setScoreDetail] = useState<ScoreSubjectDetail[]>(
     []
@@ -30,23 +31,15 @@ const ScoreHistory = ({
   let avgFinalComponents = "";
 
   useEffect(() => {
-    const getData = async () => {
-      const _scoreList = await getScoresByUserId(user.id);
-      const valueSet = new Set<number>();
+    const getData = () => {
       const _scoreSubjectDetail: ScoreSubjectDetail[] = [];
-      const _scoreListSummary: Score[] = [];
-      for (let score of _scoreList) {
-        if (!valueSet.has(score.order)) {
-          valueSet.add(score.order);
-          _scoreListSummary.push(score);
-        }
-      }
+      const _scoreListSummary: Score[] = getScoreListSummary(scores);
 
       _scoreListSummary
         .sort((s) => s.order)
         .forEach((score: Score) => {
           const _activities: ScoreActivityDetail[] = [];
-          const detail = _scoreList.filter((s) => s.order === score.order);
+          const detail = scores.filter((s) => s.order === score.order);
           for (let d of detail) {
             _activities.push({
               activity: d.activity,
@@ -65,7 +58,7 @@ const ScoreHistory = ({
       setLoaded(true);
     };
     getData();
-  }, [user]);
+  }, [user, scores]);
 
   return (
     <Dialog.Root>

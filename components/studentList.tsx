@@ -2,6 +2,7 @@
 import { useUserContext } from "@/app/context";
 import {
   deleteScoresByUserId,
+  getScoresByUserId,
   saveScores,
 } from "@/controllers/score.controller";
 import { getTasksByUserId } from "@/controllers/task.controller";
@@ -106,7 +107,7 @@ const StudentListRow = ({
   const router = useRouter();
   const [onCompute, setOnCompute] = useState<boolean>(false);
   const [deleting, setDeleting] = useState(false);
-  const [computedIndex, setComputedIndex] = useState<number | null>(null);
+  const [scores, setScores] = useState<Score[]>([]);
   const [tasksDetail, setTasksDetail] = useState<TaskActivityDetail[]>([]);
   const [reportReady, setReportReady] = useState<boolean>(false);
 
@@ -121,17 +122,20 @@ const StudentListRow = ({
       const tasks = await getTasksByUserId(id);
       const _tasksDetail = getTasksActivityDetail(activities, tasks, subjects);
 
+      if (isUserCourseCompleted(user_course)) {
+        const _scores = await getScoresByUserId(id);
+        setScores(_scores);
+      }
+
       setTasksDetail(_tasksDetail);
       setReportReady(true);
     };
     getData();
-  }, [activities, subjects, _user]);
+  }, [activities, subjects, _user, user_course]);
 
   const handleDelete = async () => {
     const id = _user.id;
-
     setDeleting(true);
-
     toast.promise(
       new Promise((resolve, reject) => {
         getUserById(id)
@@ -177,7 +181,6 @@ const StudentListRow = ({
     }
 
     const id = _user.id;
-    setComputedIndex(id);
     setOnCompute(true);
 
     toast.promise(
@@ -185,15 +188,14 @@ const StudentListRow = ({
         const scoreList: Omit<Score, "id">[] = [];
         let avgFinal = 0;
 
-        for (let s of subjects) {
+        subjects.forEach((subject, index) => {
           const scores = tasksDetail
-            .filter((t) => t.id_subject === s.id)
+            .filter((t) => t.id_subject === subject.id)
             .map((n) => {
-              const score =
-                n.score === null || n.score === undefined ? 0 : n.score;
+              const score = n.score ?? 0;
               scoreList.push({
                 id_user: id,
-                subject: s.title,
+                subject: subject.title,
                 order: n.value_subject,
                 activity: n.activity_title,
                 value: score,
@@ -208,14 +210,15 @@ const StudentListRow = ({
           } else {
             scoreList.push({
               id_user: id,
-              subject: s.title,
-              order: subjects.findIndex((subject) => subject.id === s.id),
+              subject: subject.title,
+              order: index,
               activity: null,
               value: pc,
             });
           }
           avgFinal += pc / subjects.length;
-        }
+        });
+
         saveUserCourse({
           ...user_course,
           date_end: new Date(),
@@ -231,11 +234,12 @@ const StudentListRow = ({
         loading: "Calculando promedio final...",
         success: () => TOAST_USER_COURSE_SAVE_SCORE_SUCCESS,
         error: () => TOAST_BD_ERROR,
+        finally: () => {
+          setOnCompute(false);
+          router.refresh();
+        },
       }
     );
-    setOnCompute(false);
-    setComputedIndex(null);
-    router.refresh();
   };
   return (
     <Table.Row>
@@ -259,10 +263,7 @@ const StudentListRow = ({
       <Table.Cell width={100}>
         {reportReady ? (
           <Button
-            disabled={
-              (onCompute && _user.id === computedIndex) ||
-              state.value === NOT_INIT
-            }
+            disabled={onCompute || state.value === NOT_INIT}
             onClick={handleCompute}
             size="3"
           >
@@ -275,7 +276,11 @@ const StudentListRow = ({
       <Table.Cell width={100}>
         {reportReady ? (
           isUserCourseCompleted(user_course) ? (
-            <ScoreHistory user={_user} avgFinalSaved={user_course?.average!} />
+            <ScoreHistory
+              user={_user}
+              avgFinalSaved={user_course?.average!}
+              scores={scores}
+            />
           ) : (
             <ScoreReport
               user={_user}
