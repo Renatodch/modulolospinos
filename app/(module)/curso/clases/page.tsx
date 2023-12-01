@@ -64,11 +64,6 @@ export default function ClasesPage(props: any) {
         userCourse?.progress! > courseLastItemIndex
           ? courseLastItemIndex
           : userCourse?.progress!;
-      /* const currentProgress = _subjects.findIndex(
-        (s, index) => index === _progress
-      );
-      const value_subject =
-        currentProgress === -1 ? _subjects.length - 1 : currentProgress; */
 
       const _subject = _subjects[_progress];
       const id_subject = _index ? +_index : _subject.id;

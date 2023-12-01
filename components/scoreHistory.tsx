@@ -1,4 +1,6 @@
 "use client";
+import { getScoresByUserId } from "@/controllers/score.controller";
+import { getUserCourseByUserId } from "@/controllers/user-course.controller";
 import { getFormatedScore, getScoreListSummary } from "@/lib/utils";
 import {
   MIN_SCORE_APPROVED,
@@ -9,37 +11,31 @@ import {
   User,
 } from "@/model/types";
 import { Button, Dialog, Flex, Table } from "@radix-ui/themes";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { CgNotes } from "react-icons/cg";
 import LoadingGeneric from "./loadingGeneric";
 
-const ScoreHistory = ({
-  user,
-  avgFinalSaved,
-  scores,
-}: {
-  user: User;
-  avgFinalSaved: number;
-  scores: Score[];
-}) => {
+const ScoreHistory = ({ user }: { user: User }) => {
   const [scoreSubjectDetail, setScoreDetail] = useState<ScoreSubjectDetail[]>(
     []
   );
   const [loaded, setLoaded] = useState(false);
-
+  const [avgFinalComponents, setAvgFinalComponents] = useState("");
+  const [avgFinal, setAvgFinal] = useState<number>(0);
   const cellStyle = "border-black border-2";
-  let avgFinalComponents = "";
 
-  useEffect(() => {
-    const getData = () => {
+  const handleOpen = async (open: boolean) => {
+    if (open) {
+      const user_course = await getUserCourseByUserId(user.id);
+      const _scores = await getScoresByUserId(user.id);
       const _scoreSubjectDetail: ScoreSubjectDetail[] = [];
-      const _scoreListSummary: Score[] = getScoreListSummary(scores);
+      const _scoreListSummary: Score[] = getScoreListSummary(_scores);
 
       _scoreListSummary
         .sort((s) => s.order)
         .forEach((score: Score) => {
           const _activities: ScoreActivityDetail[] = [];
-          const detail = scores.filter((s) => s.order === score.order);
+          const detail = _scores.filter((s) => s.order === score.order);
           for (let d of detail) {
             _activities.push({
               activity: d.activity,
@@ -54,14 +50,23 @@ const ScoreHistory = ({
             id_user: user.id,
           });
         });
-      setScoreDetail(_scoreSubjectDetail);
-      setLoaded(true);
-    };
-    getData();
-  }, [user, scores]);
+
+      const _avgFinalComponents = scoreSubjectDetail
+        .map((detail, index) => `PC${index + 1}`)
+        .join("+");
+      if (user_course?.average !== undefined && user_course?.average !== null) {
+        setAvgFinalComponents(_avgFinalComponents);
+        setAvgFinal(user_course?.average);
+        setScoreDetail(_scoreSubjectDetail);
+        setLoaded(true);
+      }
+    } else {
+      setLoaded(false);
+    }
+  };
 
   return (
-    <Dialog.Root>
+    <Dialog.Root onOpenChange={handleOpen}>
       <Dialog.Trigger>
         <Flex justify={"start"}>
           <Button
@@ -125,10 +130,6 @@ const ScoreHistory = ({
                       ? scores.reduce((acc, current) => acc + current, 0) / len
                       : 20;
 
-                  avgFinalComponents = scoreSubjectDetail
-                    .map((detail, index) => `PC${index + 1}`)
-                    .join("+");
-
                   return (
                     <React.Fragment key={index}>
                       <Table.Row align={"center"}>
@@ -179,12 +180,12 @@ const ScoreHistory = ({
                 <Table.Cell
                   justify="center"
                   className={`${cellStyle} ${
-                    avgFinalSaved >= MIN_SCORE_APPROVED
+                    avgFinal >= MIN_SCORE_APPROVED
                       ? "text-blue-600"
                       : "text-red-600"
                   } font-semibold text-lg text-center`}
                 >
-                  {getFormatedScore(avgFinalSaved)}
+                  {getFormatedScore(avgFinal)}
                 </Table.Cell>
               </Table.Row>
             </Table.Body>

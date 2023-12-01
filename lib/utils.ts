@@ -24,6 +24,8 @@ export const getTasksActivityDetail = (
   subjects: Subject[],
   progress?: number
 ) => {
+  if (subjects.length === 0) return [];
+
   const activitySubjects: (Activity & { value_subject: number })[] = [];
   activities.forEach((a) => {
     const value_subject = subjects.findIndex((s) => s.id === a.id_subject);

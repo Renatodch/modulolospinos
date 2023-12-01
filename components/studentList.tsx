@@ -1,12 +1,16 @@
 "use client";
 import { useUserContext } from "@/app/context";
+import { getActivities } from "@/controllers/activity.controller";
 import {
   deleteScoresByUserId,
-  getScoresByUserId,
   saveScores,
 } from "@/controllers/score.controller";
+import { getSubjects } from "@/controllers/subject.controller";
 import { getTasksByUserId } from "@/controllers/task.controller";
-import { saveUserCourse } from "@/controllers/user-course.controller";
+import {
+  getUserCourseByUserId,
+  saveUserCourse,
+} from "@/controllers/user-course.controller";
 import { deleteUserById, getUserById } from "@/controllers/user.controller";
 import {
   getTasksActivityDetail,
@@ -31,18 +35,17 @@ import {
   TOAST_USER_COURSE_SAVE_SCORE_SUCCESS,
   TOAST_USER_DELETE_ERROR_1,
   TOAST_USER_DELETE_SUCCESS,
-  TaskActivityDetail,
+  TOAST_VALIDATE_PROGRESS,
   USER_PROGRESS,
   User,
   User_Course,
 } from "@/model/types";
 import { Button, Table } from "@radix-ui/themes";
 import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { MdCalculate } from "react-icons/md";
 import { toast } from "sonner";
 import DeleteModal from "./deleteModal";
-import LoadingGeneric from "./loadingGeneric";
 import ScoreHistory from "./scoreHistory";
 import ScoreReport from "./scoreReport";
 import UserForm from "./userForm";
@@ -79,12 +82,7 @@ const StudentList = ({
           const user_course = user_courses.find((u) => u.id_user === user.id);
           return (
             <React.Fragment key={user.id}>
-              <StudentListRow
-                user_course={user_course}
-                _user={user}
-                subjects={subjects}
-                activities={activities}
-              />
+              <StudentListRow user_course={user_course} _user={user} />
             </React.Fragment>
           );
         })}
@@ -96,44 +94,20 @@ const StudentList = ({
 const StudentListRow = ({
   _user,
   user_course,
-  subjects,
-  activities,
 }: {
   _user: User;
   user_course: User_Course | undefined;
-  subjects: Subject[];
-  activities: Activity[];
 }) => {
   const { user } = useUserContext();
 
   const router = useRouter();
   const [onCompute, setOnCompute] = useState<boolean>(false);
   const [deleting, setDeleting] = useState(false);
-  const [scores, setScores] = useState<Score[]>([]);
-  const [tasksDetail, setTasksDetail] = useState<TaskActivityDetail[]>([]);
-  const [reportReady, setReportReady] = useState<boolean>(false);
 
   const state =
     USER_PROGRESS.find((u) => u.value === user_course?.state) ??
     USER_PROGRESS.find((u) => u.value === NOT_INIT)!;
   const avgFinal = user_course?.average ?? -1;
-
-  useEffect(() => {
-    const getData = async () => {
-      const id = _user.id;
-      const tasks = await getTasksByUserId(id);
-      const _tasksDetail = getTasksActivityDetail(activities, tasks, subjects);
-
-      if (isUserCourseCompleted(user_course)) {
-        const _scores = await getScoresByUserId(id);
-        setScores(_scores);
-      }
-
-      setTasksDetail(_tasksDetail);
-      setReportReady(true);
-    };
-    getData();
-  }, [activities, subjects, _user, user_course]);
 
   const handleDelete = () => {
     const id = _user.id;
@@ -167,31 +141,43 @@ const StudentListRow = ({
     );
   };
 
-  const handleCompute = () => {
-    if (!user_course || isUserCourseNotInit(user_course)) {
+  const handleCompute = async () => {
+    const id = _user.id;
+    setOnCompute(true);
+    const toast_id = toast.loading(TOAST_VALIDATE_PROGRESS, {
+      duration: 10000,
+    });
+
+    const _user_course = await getUserCourseByUserId(_user.id);
+    if (!_user_course || isUserCourseNotInit(_user_course)) {
+      setOnCompute(false);
       toast.error(TOAST_USER_COURSE_NOT_STARTED);
       return;
     }
 
-    const courseLastItemIndex = subjects.length - 1;
+    const _subjects = await getSubjects();
+    const _activities = await getActivities();
+    const _tasks = await getTasksByUserId(id);
+    const _tasksDetail = getTasksActivityDetail(_activities, _tasks, _subjects);
+
+    const courseLastItemIndex = _subjects.length - 1;
+    toast.dismiss(toast_id);
     if (
-      user_course.progress < courseLastItemIndex ||
-      tasksDetail.some((t) => !t.done || !t.evaluated)
+      _user_course.progress < courseLastItemIndex ||
+      _tasksDetail.some((t) => !t.done || !t.evaluated)
     ) {
+      setOnCompute(false);
       toast.error(TOAST_USER_COURSE_NOT_COMPLETED, { duration: 5000 });
       return;
     }
-
-    const id = _user.id;
-    setOnCompute(true);
 
     toast.promise(
       new Promise((resolve, reject) => {
         const scoreList: Omit<Score, "id">[] = [];
         let avgFinal = 0;
 
-        subjects.forEach((subject, index) => {
-          const scores = tasksDetail
+        _subjects.forEach((subject, index) => {
+          const scores = _tasksDetail
             .filter((t) => t.id_subject === subject.id)
             .map((n) => {
               const score = n.score ?? 0;
@@ -218,11 +204,11 @@ const StudentListRow = ({
               value: pc,
             });
           }
-          avgFinal += pc / subjects.length;
+          avgFinal += pc / _subjects.length;
         });
 
         saveUserCourse({
-          ...user_course,
+          ..._user_course,
           date_end: new Date(),
           average: Math.round(avgFinal),
           state: avgFinal >= MIN_SCORE_APPROVED ? APPROVED : REPROVED,
@@ -263,37 +249,15 @@ const StudentListRow = ({
         {avgFinal != -1 ? avgFinal.toString().padStart(2, "0") : ""}
       </Table.Cell>
       <Table.Cell width={100}>
-        {reportReady ? (
-          <Button
-            disabled={onCompute || state.value === NOT_INIT}
-            onClick={handleCompute}
-            size="3"
-          >
-            <MdCalculate />
-          </Button>
-        ) : (
-          <LoadingGeneric size={20} />
-        )}
+        <Button disabled={onCompute} onClick={handleCompute} size="3">
+          <MdCalculate />
+        </Button>
       </Table.Cell>
       <Table.Cell width={100}>
-        {reportReady ? (
-          isUserCourseCompleted(user_course) ? (
-            <ScoreHistory
-              user={_user}
-              avgFinalSaved={user_course?.average!}
-              scores={scores}
-            />
-          ) : (
-            <ScoreReport
-              user={_user}
-              progress={user_course?.progress!}
-              notInit={isUserCourseNotInit(user_course)}
-              subjects={subjects}
-              tasksDetail={tasksDetail}
-            />
-          )
+        {isUserCourseCompleted(user_course) ? (
+          <ScoreHistory user={_user} />
         ) : (
-          <LoadingGeneric size={20} />
+          <ScoreReport user={_user} />
         )}
       </Table.Cell>
       <Table.Cell width={100}>

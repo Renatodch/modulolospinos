@@ -1,11 +1,15 @@
 "use client";
 import { getActivities } from "@/controllers/activity.controller";
-import { deleteSubjectById } from "@/controllers/subject.controller";
+import {
+  deleteSubjectById,
+  getSubjects,
+} from "@/controllers/subject.controller";
 import {
   Subject,
   TOAST_BD_ERROR,
   TOAST_DELETING,
   TOAST_SUBJECT_DELETE_ERROR_ACTIVITIES,
+  TOAST_SUBJECT_DELETE_ERROR_MIN,
   TOAST_SUBJECT_DELETE_SUCCESS,
 } from "@/model/types";
 import { Button, Table } from "@radix-ui/themes";
@@ -56,7 +60,14 @@ const SubjectListRow = ({
 
     toast.promise(
       new Promise((resolve, reject) => {
-        getActivities(id_subject)
+        getSubjects()
+          .then((subjects) => {
+            if (subjects.length <= 1) {
+              reject(2);
+              return;
+            }
+            return getActivities(id_subject);
+          })
           .then((res) => {
             if (res && res.length > 0) {
               reject(1);
@@ -74,7 +85,9 @@ const SubjectListRow = ({
         },
         error: (val) => {
           setDeleting(false);
-          return val === 1
+          return val === 2
+            ? TOAST_SUBJECT_DELETE_ERROR_MIN
+            : val === 1
             ? TOAST_SUBJECT_DELETE_ERROR_ACTIVITIES
             : TOAST_BD_ERROR;
         },

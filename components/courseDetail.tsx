@@ -164,22 +164,8 @@ const CourseDetail = ({
         )}
         <div className="flex w-full gap-4 my-2 justify-end items-center">
           {!notinit && <strong>Reporte de Notas</strong>}
-          {completed && (
-            <ScoreHistory
-              user={user}
-              avgFinalSaved={user_course.average!}
-              scores={scores}
-            />
-          )}
-          {inprogress && (
-            <ScoreReport
-              user={user}
-              tasksDetail={tasksDetail}
-              subjects={subjects}
-              notInit={false}
-              progress={progress}
-            />
-          )}
+          {completed && <ScoreHistory user={user} />}
+          {inprogress && <ScoreReport user={user} />}
         </div>
       </div>
     </>
