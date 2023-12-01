@@ -19,7 +19,7 @@ const ActivityQuestionPage = async (props: any) => {
   const { _user } = await getSession();
 
   const id = +props.params.activity || 0;
-  const type = +props.searchParams.type || STUDENT;
+  const type = _user?.type!;
 
   const activity = await getActivityQuestionById(id);
 

@@ -15,7 +15,7 @@ import {
 } from "@/model/types";
 import { Button, Dialog, Flex, Select, TextField } from "@radix-ui/themes";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Controller, FieldValues, useForm } from "react-hook-form";
 import {
   AiFillEdit,
@@ -34,6 +34,14 @@ const UserForm = ({ target, user_type }: Props) => {
   const [submitted, setSubmitted] = useState<boolean>(false);
   const [passHidden, setPassHidden] = useState<boolean>(true);
   const [openDialog, setOpenDialog] = useState<boolean>(false);
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    const setData = () => {
+      setLoaded(true);
+    };
+    setData();
+  }, [target]);
 
   const {
     register,
@@ -81,6 +89,7 @@ const UserForm = ({ target, user_type }: Props) => {
           setSubmitted(false);
           setPassHidden(true);
           setOpenDialog(false);
+          target && setLoaded(false);
           reset();
           router.refresh();
         },
@@ -113,159 +122,165 @@ const UserForm = ({ target, user_type }: Props) => {
         </Flex>
       </Dialog.Trigger>
 
-      <Dialog.Content style={{ maxWidth: 450 }}>
-        <Dialog.Title align={"center"}>
-          {!target
-            ? user_type === STUDENT
-              ? "Formulario de Nuevo Estudiante"
-              : "Formulario de Nuevo Usuario"
-            : user_type === STUDENT
-            ? "Formulario de Estudiante"
-            : "Formulario de Usuario"}
-        </Dialog.Title>
-        <Dialog.Description size="2" mb="4"></Dialog.Description>
-        <form className="w-full" onSubmit={handleSubmit(onSubmit)}>
-          <Flex direction="column" gap="4">
-            <TextField.Input
-              defaultValue={target?.name || ""}
-              maxLength={32}
-              size="3"
-              color="gray"
-              variant="surface"
-              placeholder="Nombres Completos*"
-              {...register("name", {
-                required: true,
-                maxLength: 32,
-              })}
-            />
-            {errors.name?.type === "required" && (
-              <span role="alert" className="font-semibold text-red-500 ">
-                Es requerido el nombre del estudiante
-              </span>
-            )}
-            <TextField.Input
-              defaultValue={target?.email || ""}
-              maxLength={64}
-              size="3"
-              color="gray"
-              variant="surface"
-              placeholder="Correo"
-              {...register("email", {
-                maxLength: 64,
-                pattern: /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
-              })}
-            />
-            {errors.email?.type === "pattern" && (
-              <span role="alert" className="font-semibold text-red-500 ">
-                Correo electrónico inválido
-              </span>
-            )}
-            <TextField.Root>
+      {loaded && (
+        <Dialog.Content style={{ maxWidth: 450 }}>
+          <Dialog.Title align={"center"}>
+            {!target
+              ? user_type === STUDENT
+                ? "Formulario de Nuevo Estudiante"
+                : "Formulario de Nuevo Usuario"
+              : user_type === STUDENT
+              ? "Formulario de Estudiante"
+              : "Formulario de Usuario"}
+          </Dialog.Title>
+          <Dialog.Description size="2" mb="4"></Dialog.Description>
+          <form className="w-full" onSubmit={handleSubmit(onSubmit)}>
+            <Flex direction="column" gap="4">
               <TextField.Input
-                defaultValue={target?.password || ""}
+                defaultValue={target?.name || ""}
                 maxLength={32}
                 size="3"
-                type={passHidden ? "password" : "text"}
                 color="gray"
                 variant="surface"
-                placeholder="Contraseña*"
-                {...register("password", {
+                placeholder="Nombres Completos*"
+                {...register("name", {
                   required: true,
+                  maxLength: 32,
                 })}
               />
-              <TextField.Slot>
-                <Button type="button" variant="ghost" onClick={togglePassword}>
-                  {passHidden ? (
-                    <AiFillEyeInvisible size={20} />
-                  ) : (
-                    <AiFillEye size={20} />
-                  )}
+              {errors.name?.type === "required" && (
+                <span role="alert" className="font-semibold text-red-500 ">
+                  Es requerido el nombre del estudiante
+                </span>
+              )}
+              <TextField.Input
+                defaultValue={target?.email || ""}
+                maxLength={64}
+                size="3"
+                color="gray"
+                variant="surface"
+                placeholder="Correo"
+                {...register("email", {
+                  maxLength: 64,
+                  pattern: /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
+                })}
+              />
+              {errors.email?.type === "pattern" && (
+                <span role="alert" className="font-semibold text-red-500 ">
+                  Correo electrónico inválido
+                </span>
+              )}
+              <TextField.Root>
+                <TextField.Input
+                  defaultValue={target?.password || ""}
+                  maxLength={32}
+                  size="3"
+                  type={passHidden ? "password" : "text"}
+                  color="gray"
+                  variant="surface"
+                  placeholder="Contraseña*"
+                  {...register("password", {
+                    required: true,
+                  })}
+                />
+                <TextField.Slot>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={togglePassword}
+                  >
+                    {passHidden ? (
+                      <AiFillEyeInvisible size={20} />
+                    ) : (
+                      <AiFillEye size={20} />
+                    )}
+                  </Button>
+                </TextField.Slot>
+              </TextField.Root>
+              {errors.password?.type === "required" && (
+                <span role="alert" className="font-semibold text-red-500 ">
+                  Es requerida la contraseña del estudiante
+                </span>
+              )}
+              <Controller
+                control={control}
+                name="type"
+                rules={{ required: true }}
+                defaultValue={
+                  user_type === STUDENT
+                    ? user_type
+                    : target?.type !== undefined
+                    ? target?.type
+                    : undefined
+                }
+                render={({ field }) => {
+                  return (
+                    <div {...field}>
+                      <Select.Root
+                        size={"3"}
+                        onValueChange={field.onChange}
+                        defaultValue={
+                          user_type === STUDENT
+                            ? "" + user_type
+                            : target?.type !== undefined
+                            ? "" + target?.type
+                            : undefined
+                        }
+                      >
+                        <Select.Trigger
+                          className="w-full"
+                          placeholder={"Tipo de usuario"}
+                        />
+                        <Select.Content position="popper">
+                          <Select.Group>
+                            <Select.Label>Tipo de usuario</Select.Label>
+                            {USER_TYPES.filter((u) =>
+                              user_type === STUDENT
+                                ? u.value === user_type
+                                : u.value === TEACHER || u.value === DEVELOPER
+                            ).map((s) => {
+                              return (
+                                <Select.Item key={s.value} value={"" + s.value}>
+                                  {s.name}
+                                </Select.Item>
+                              );
+                            })}
+                          </Select.Group>
+                        </Select.Content>
+                      </Select.Root>
+                    </div>
+                  );
+                }}
+              />
+              {errors.type?.type === "required" && (
+                <span role="alert" className="font-semibold text-red-500 ">
+                  Es requerido el tipo de usuario
+                </span>
+              )}
+              <p>(*) campos obligatorios</p>
+            </Flex>
+            <Flex gap="3" mt="4" justify="end">
+              <Dialog.Close>
+                <Button
+                  size="3"
+                  variant="soft"
+                  color="gray"
+                  disabled={Boolean(submitted)}
+                >
+                  Cancelar
                 </Button>
-              </TextField.Slot>
-            </TextField.Root>
-            {errors.password?.type === "required" && (
-              <span role="alert" className="font-semibold text-red-500 ">
-                Es requerida la contraseña del estudiante
-              </span>
-            )}
-            <Controller
-              control={control}
-              name="type"
-              rules={{ required: true }}
-              defaultValue={
-                user_type === STUDENT
-                  ? user_type
-                  : target?.type !== undefined
-                  ? target?.type
-                  : undefined
-              }
-              render={({ field }) => {
-                return (
-                  <div {...field}>
-                    <Select.Root
-                      size={"3"}
-                      onValueChange={field.onChange}
-                      defaultValue={
-                        user_type === STUDENT
-                          ? "" + user_type
-                          : target?.type !== undefined
-                          ? "" + target?.type
-                          : undefined
-                      }
-                    >
-                      <Select.Trigger
-                        className="w-full"
-                        placeholder={"Tipo de usuario"}
-                      />
-                      <Select.Content position="popper">
-                        <Select.Group>
-                          <Select.Label>Tipo de usuario</Select.Label>
-                          {USER_TYPES.filter((u) =>
-                            user_type === STUDENT
-                              ? u.value === user_type
-                              : u.value === TEACHER || u.value === DEVELOPER
-                          ).map((s) => {
-                            return (
-                              <Select.Item key={s.value} value={"" + s.value}>
-                                {s.name}
-                              </Select.Item>
-                            );
-                          })}
-                        </Select.Group>
-                      </Select.Content>
-                    </Select.Root>
-                  </div>
-                );
-              }}
-            />
-            {errors.type?.type === "required" && (
-              <span role="alert" className="font-semibold text-red-500 ">
-                Es requerido el tipo de usuario
-              </span>
-            )}
-            <p>(*) campos obligatorios</p>
-          </Flex>
-          <Flex gap="3" mt="4" justify="end">
-            <Dialog.Close>
+              </Dialog.Close>
               <Button
                 size="3"
-                variant="soft"
-                color="gray"
                 disabled={Boolean(submitted)}
+                style={{ backgroundColor: PRIMARY_COLOR }}
               >
-                Cancelar
+                Guardar
               </Button>
-            </Dialog.Close>
-            <Button
-              size="3"
-              disabled={Boolean(submitted)}
-              style={{ backgroundColor: PRIMARY_COLOR }}
-            >
-              Guardar
-            </Button>
-          </Flex>
-        </form>
-      </Dialog.Content>
+            </Flex>
+          </form>
+        </Dialog.Content>
+      )}
     </Dialog.Root>
   );
 };

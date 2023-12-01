@@ -183,11 +183,9 @@ const CoursePage = () => {
             </Heading>
             <Flex direction="column" gap="4" mb="5">
               <Text as="p">
-                Three fundamental aspects of typography are legibility,
-                readability, and aesthetics. Although in a non-technical sense
-                &quot;legible&quot; and &quot;readable&quot; are often used
-                synonymously, typographically they are separate but related
-                concepts.
+                Las fracciones son expresiones matemáticas que representan una
+                parte de un todo. Consisten en dos partes: el numerador y el
+                denominador
               </Text>
             </Flex>
             <Heading size="4" mb="2" trim="start">
@@ -195,11 +193,13 @@ const CoursePage = () => {
             </Heading>
             <Flex direction="column" gap="4" mb="5">
               <Text as="p">
-                Three fundamental aspects of typography are legibility,
-                readability, and aesthetics. Although in a non-technical sense
-                &quot;legible&quot; and &quot;readable&quot; are often used
-                synonymously, typographically they are separate but related
-                concepts.
+                Los estudiantes aprenden a trabajar con expresiones matemáticas
+                que representan partes de un todo. Se enfocan en conceptos como
+                numeradores, denominadores y fracciones equivalentes. Las
+                operaciones básicas, como suma, resta, multiplicación y
+                división, son fundamentales, al igual que la comparación de
+                fracciones. Se emplean representaciones visuales para comprender
+                mejor estos conceptos.
               </Text>
             </Flex>
             <Heading size="4" mb="5" trim="start">

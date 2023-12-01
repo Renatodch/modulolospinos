@@ -21,8 +21,8 @@ const SubjectList = ({ subjects }: { subjects: Subject[] }) => {
       <Table.Header>
         <Table.Row>
           <Table.ColumnHeaderCell>Id</Table.ColumnHeaderCell>
-          <Table.ColumnHeaderCell>Título</Table.ColumnHeaderCell>
           <Table.ColumnHeaderCell>Orden</Table.ColumnHeaderCell>
+          <Table.ColumnHeaderCell>Título</Table.ColumnHeaderCell>
           <Table.ColumnHeaderCell>Modificar</Table.ColumnHeaderCell>
           <Table.ColumnHeaderCell>Borrar</Table.ColumnHeaderCell>
         </Table.Row>
@@ -88,8 +88,8 @@ const SubjectListRow = ({
   return (
     <Table.Row key={subject.id}>
       <Table.RowHeaderCell width={100}>{subject.id}</Table.RowHeaderCell>
+      <Table.Cell width={100}>#{index + 1}</Table.Cell>
       <Table.Cell width={300}>{subject.title}</Table.Cell>
-      <Table.Cell width={250}>#{index + 1}</Table.Cell>
       <Table.Cell width={100}>
         <SubjectForm target={subject} />
       </Table.Cell>
