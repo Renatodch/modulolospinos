@@ -51,7 +51,7 @@ const ScoreHistory = ({ user }: { user: User }) => {
           });
         });
 
-      const _avgFinalComponents = scoreSubjectDetail
+      const _avgFinalComponents = _scoreSubjectDetail
         .map((detail, index) => `PC${index + 1}`)
         .join("+");
       if (user_course?.average !== undefined && user_course?.average !== null) {

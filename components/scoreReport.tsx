@@ -174,7 +174,7 @@ const ScoreReport = ({ user }: { user: User }) => {
                       PROMEDIO FINAL = ({avgFinalComponents})/#Temas
                     </strong>
                   </Table.Cell>
-                  <Table.Cell></Table.Cell>
+                  <Table.Cell className={cellStyle}></Table.Cell>
                 </Table.Row>
               </Table.Body>
             </Table.Root>
