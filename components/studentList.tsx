@@ -19,7 +19,6 @@ import {
 } from "@/lib/utils";
 import {
   APPROVED,
-  Activity,
   DeleteUserStudentMessage,
   DeleteUserTitle,
   MIN_SCORE_APPROVED,
@@ -27,7 +26,6 @@ import {
   REPROVED,
   STUDENT,
   Score,
-  Subject,
   TOAST_BD_ERROR,
   TOAST_DELETING,
   TOAST_USER_COURSE_NOT_COMPLETED,
@@ -39,6 +37,7 @@ import {
   USER_PROGRESS,
   User,
   User_Course,
+  getFormatId,
 } from "@/model/types";
 import { Button, Table } from "@radix-ui/themes";
 import { useRouter } from "next/navigation";
@@ -53,19 +52,15 @@ import UserForm from "./userForm";
 const StudentList = ({
   users,
   user_courses,
-  subjects,
-  activities,
 }: {
   users: User[];
   user_courses: User_Course[];
-  subjects: Subject[];
-  activities: Activity[];
 }) => {
   return (
     <Table.Root className="w-full">
       <Table.Header>
         <Table.Row>
-          <Table.ColumnHeaderCell>Id</Table.ColumnHeaderCell>
+          <Table.ColumnHeaderCell>Código</Table.ColumnHeaderCell>
           <Table.ColumnHeaderCell>Nombres Completos</Table.ColumnHeaderCell>
           <Table.ColumnHeaderCell>Email</Table.ColumnHeaderCell>
           <Table.ColumnHeaderCell>Estado Curso</Table.ColumnHeaderCell>
@@ -231,13 +226,15 @@ const StudentListRow = ({
   };
   return (
     <Table.Row>
-      <Table.RowHeaderCell width={100}>{_user.id}</Table.RowHeaderCell>
+      <Table.RowHeaderCell width={100}>
+        {getFormatId(_user.id)}
+      </Table.RowHeaderCell>
       <Table.Cell width={300}>{_user.name}</Table.Cell>
       <Table.Cell width={250}>{_user.email}</Table.Cell>
       <Table.Cell width={250}>{state.label}</Table.Cell>
       <Table.Cell
-        justify={"center"}
-        width={250}
+        align="center"
+        width={200}
         className={`font-semibold ${
           avgFinal != -1
             ? avgFinal >= MIN_SCORE_APPROVED

@@ -7,6 +7,7 @@ import {
   TOAST_USER_DELETE_ERROR_1,
   TOAST_USER_DELETE_SUCCESS,
   User,
+  getFormatId,
 } from "@/model/types";
 import { Button, Table } from "@radix-ui/themes";
 import { useRouter } from "next/navigation";
@@ -20,7 +21,7 @@ const UserList = ({ users }: { users: User[] }) => {
     <Table.Root className="w-full">
       <Table.Header>
         <Table.Row>
-          <Table.ColumnHeaderCell>Id</Table.ColumnHeaderCell>
+          <Table.ColumnHeaderCell>Código</Table.ColumnHeaderCell>
           <Table.ColumnHeaderCell>Nombres Completos</Table.ColumnHeaderCell>
           <Table.ColumnHeaderCell>Email</Table.ColumnHeaderCell>
           <Table.ColumnHeaderCell>Modificar</Table.ColumnHeaderCell>
@@ -79,7 +80,9 @@ const UserListRow = ({ _user }: { _user: User }) => {
 
   return (
     <Table.Row key={_user.id}>
-      <Table.RowHeaderCell width={100}>{_user.id}</Table.RowHeaderCell>
+      <Table.RowHeaderCell width={100}>
+        {getFormatId(_user.id)}
+      </Table.RowHeaderCell>
       <Table.Cell width={300}>{_user.name}</Table.Cell>
       <Table.Cell width={250}>{_user.email}</Table.Cell>
       <Table.Cell width={100}>
