@@ -41,14 +41,6 @@ const Links = () => {
       width: "110px",
       ops: [
         {
-          label: "Temas",
-          href: "/temas",
-        },
-        {
-          label: "Actividades",
-          href: "/actividades",
-        },
-        {
           label: "Estudiantes",
           href: "/estudiantes",
         },
@@ -71,12 +63,28 @@ const Links = () => {
           label: "Preguntas",
           href: "/curso/preguntas",
         },
+        {
+          label: "Temas",
+          href: "/curso/temas",
+        },
+        {
+          label: "Actividades",
+          href: "/curso/actividades",
+        },
       ],
     },
   ];
 
-  user?.type === STUDENT && links.splice(1, 2);
-  user?.type === TEACHER && links.splice(1, 1);
+  if (user?.type === STUDENT) {
+    const link = links.find((l) => l.label === "Curso");
+    link?.ops?.splice(3, 2);
+    links.splice(1, 2);
+  }
+  if (user?.type === TEACHER) {
+    const link = links.find((l) => l.label === "Curso");
+    link?.ops?.splice(0, 1);
+    links.splice(1, 1);
+  }
   return (
     <>
       {links.map((link) => (

@@ -50,9 +50,10 @@ export default function ClasesPage(props: any) {
       let userCourse = await getUserCourseByUserId(id_user);
       const notinit = isUserCourseNotInit(userCourse);
       const completed = isUserCourseCompleted(userCourse);
+      const isTeacher = user?.type === TEACHER;
       setInitCourse(!notinit);
       setFinishCourse(completed);
-      if (notinit || completed) {
+      if (notinit || completed || isTeacher) {
         setLoaded(true);
         return;
       }

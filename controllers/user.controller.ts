@@ -9,11 +9,24 @@ import {
   getUserCourseByUserId,
 } from "./user-course.controller";
 
-export const loginUser = async (id: number, password: string) => {
+export const loginUserById = async (id: number, password: string) => {
   try {
     const res = await prisma.user.findFirst({
       where: {
         id,
+        password,
+      },
+    });
+    if (res) {
+      return res;
+    }
+  } catch (e) {}
+};
+export const loginUserByEmail = async (email: string, password: string) => {
+  try {
+    const res = await prisma.user.findFirst({
+      where: {
+        email: `${email}`,
         password,
       },
     });

@@ -28,7 +28,17 @@ const ScoreReport = ({ user }: { user: User }) => {
 
   const handleOpen = async (open: boolean) => {
     const user_course = await getUserCourseByUserId(user.id);
+    const _notInit = isUserCourseNotInit(user_course);
+
     if (user_course && open) {
+      setNotInit(_notInit);
+      setProgress(user_course.progress);
+
+      if (_notInit) {
+        setLoaded(true);
+        return;
+      }
+
       const _subjects = await getSubjects();
       const _activities = await getActivities();
       const _tasks = await getTasksByUserId(user.id);
@@ -37,9 +47,6 @@ const ScoreReport = ({ user }: { user: User }) => {
         _tasks,
         _subjects
       );
-
-      setNotInit(isUserCourseNotInit(user_course));
-      setProgress(user_course.progress);
 
       const _avgFinalComponents = _subjects
         .map((detail, index) => `PC${index + 1}`)
@@ -61,7 +68,7 @@ const ScoreReport = ({ user }: { user: User }) => {
           <Button
             size="3"
             style={{
-              backgroundColor: notInit ? "#f0f0f0" : PRIMARY_COLOR,
+              backgroundColor: PRIMARY_COLOR,
             }}
           >
             <CgNotes size="20" />
@@ -83,7 +90,7 @@ const ScoreReport = ({ user }: { user: User }) => {
           </span>
         </Dialog.Description>
         {loaded && progress != null ? (
-          !notInit && (
+          !notInit ? (
             <Table.Root variant="surface">
               <Table.Header style={{ backgroundColor: PRIMARY_COLOR }}>
                 <Table.Row>
@@ -178,6 +185,12 @@ const ScoreReport = ({ user }: { user: User }) => {
                 </Table.Row>
               </Table.Body>
             </Table.Root>
+          ) : (
+            <div className="flex justify-center w-full">
+              <span className="italic">
+                El estudiante aun no ha iniciado el curso
+              </span>
+            </div>
           )
         ) : (
           <div style={{ height: 300 }}>

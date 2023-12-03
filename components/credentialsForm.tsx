@@ -16,7 +16,7 @@ export function CredentialsForm() {
     const data = new FormData(e.currentTarget);
 
     const signInResponse = await signIn("credentials", {
-      id: parseInt(data.get("id") as string),
+      id: data.get("id"),
       password: data.get("password"),
       redirect: false,
     });
@@ -43,7 +43,7 @@ export function CredentialsForm() {
       <Flex direction="column" gap="4">
         <TextField.Input
           type="text"
-          maxLength={4}
+          maxLength={64}
           minLength={4}
           size="3"
           name="id"

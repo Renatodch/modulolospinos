@@ -10,7 +10,6 @@ import { getTasksByUserId } from "@/controllers/task.controller";
 import { getUserCourses } from "@/controllers/user-course.controller";
 import { getTasksActivityDetail, isUserCourseCompleted } from "@/lib/utils";
 import {
-  Activity,
   IN_PROGRESS,
   Score,
   Subject,
@@ -30,7 +29,6 @@ import mainPicture from "../../../public/curso.jpg";
 const CoursePage = () => {
   const [loaded, setLoaded] = useState(false);
   const [numberUsers, setNumberUsers] = useState(0);
-  const [activities, setActivities] = useState<Activity[]>([]);
   const [tasksDetail, setTasksDetail] = useState<TaskActivityDetail[]>([]);
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [scores, setScores] = useState<Score[]>([]);
@@ -67,7 +65,6 @@ const CoursePage = () => {
         setScores(_scores);
       }
 
-      setActivities(_activities);
       setUserCourse(user_course);
       setSubjects(_subjects);
       setTasksDetail(_tasksDetail);
@@ -92,7 +89,6 @@ const CoursePage = () => {
     const _activities = await getActivities();
     const _subjects = await getSubjects();
     const _tasksDetail = getTasksActivityDetail(_activities, tasks, _subjects);
-    setActivities(_activities);
     setUserCourse(user_course);
     setSubjects(_subjects);
     setTasksDetail(_tasksDetail);

@@ -2,7 +2,8 @@ import { getUserCourseByUserId } from "@/controllers/user-course.controller";
 import {
   getUserByEmail,
   getUserById,
-  loginUser,
+  loginUserByEmail,
+  loginUserById,
 } from "@/controllers/user.controller";
 import { User, User_Course } from "@/model/types";
 import { NextAuthOptions, Session, getServerSession } from "next-auth";
@@ -17,8 +18,8 @@ export const authConfig: NextAuthOptions = {
       credentials: {
         id: {
           label: "Id",
-          type: "number",
-          placeholder: "0004",
+          type: "text",
+          placeholder: "codigo",
         },
         password: { label: "Password", type: "text" },
       },
@@ -26,8 +27,11 @@ export const authConfig: NextAuthOptions = {
         if (!credentials || !credentials.id || !credentials.password)
           return null;
 
-        const res = await loginUser(+credentials.id, credentials.password);
-
+        const idCode = /^\d{4}$/.test(credentials.id);
+        console.log(idCode);
+        const res = !idCode
+          ? await loginUserByEmail(credentials.id, credentials.password)
+          : await loginUserById(+credentials.id, credentials.password);
         if (res) {
           const { password, ...dbUserWithoutPassword } = {
             ...res,
