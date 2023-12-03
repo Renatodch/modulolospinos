@@ -53,13 +53,14 @@ const AnswerForm = ({
 
             return saveTask({
               id: 0,
-              title: "",
+              title: null,
               description: data.answer,
               image1: null,
               date_upload: new Date(),
               score: null,
               comment: null,
               type: QUESTION,
+              rubric: null,
               id_activity: taskActivityDetail.id_activity,
               id_user: user?.id || 0,
             });

@@ -1,14 +1,18 @@
 "use client";
-import { saveActivity } from "@/controllers/activity.controller";
+import {
+  deleteRubricById,
+  saveActivity,
+} from "@/controllers/activity.controller";
+import { getSubjects } from "@/controllers/subject.controller";
 import {
   ACTIVITY_TYPES,
   Activity,
   PRIMARY_COLOR,
   Subject,
-  TOAST_ACTIVITY_SAVE_ERROR_RUBRIC,
   TOAST_ACTIVITY_SAVE_SUCCESS,
   TOAST_BD_ERROR,
   TOAST_LOADING,
+  TOAST_SAVE_ERROR_RUBRIC,
 } from "@/model/types";
 import {
   Button,
@@ -26,20 +30,17 @@ import { Controller, FieldValues, useForm } from "react-hook-form";
 import { AiFillEdit, AiOutlinePlusCircle } from "react-icons/ai";
 import { FaFileAlt } from "react-icons/fa";
 import { toast } from "sonner";
+import LoadingGeneric from "./loadingGeneric";
 
-const ActivityForm = ({
-  target,
-  subjects,
-}: {
-  target?: Activity;
-  subjects: Subject[];
-}) => {
+const ActivityForm = ({ target }: { target?: Activity }) => {
   const router = useRouter();
   const [submitted, setSubmitted] = useState<boolean>(false);
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const [validFile, setValidFile] = useState<"invalidSize" | boolean>(false);
   const [rubric, setRubric] = useState<File | null>(null);
   const [loaded, setLoaded] = useState(false);
+  const [loadedSubjects, setLoadedSubjects] = useState(false);
+  const [subjects, setSubjects] = useState<Subject[]>([]);
   const hiddenInputRef = useRef(null);
 
   useEffect(() => {
@@ -79,21 +80,25 @@ const ActivityForm = ({
           id: target?.id || 0,
           title: data.title,
           description: data.desc,
-          rubric: null,
+          rubric: target?.rubric ?? null,
           id_subject: +data.subject,
           type: +data.type,
+          url: data.url,
           date_max: new Date(data.dateMax),
         };
 
         if (rubric != null) {
-          fetch(`/api/file/upload?filename=${rubric?.name}`, {
-            method: "POST",
-            body: rubric,
-          })
+          deleteRubricById(temp.id)
+            .then(() =>
+              fetch(`/api/file/upload?filename=${rubric?.name}`, {
+                method: "POST",
+                body: rubric,
+              })
+            )
             .then((response) => response.json())
             .then((blob: PutBlobResult) => {
               if (!blob) {
-                reject(TOAST_ACTIVITY_SAVE_ERROR_RUBRIC);
+                reject(TOAST_SAVE_ERROR_RUBRIC);
               }
               temp!.rubric = blob.url;
             })
@@ -122,10 +127,15 @@ const ActivityForm = ({
     );
   };
 
-  const toggleDialog = (e: boolean) => {
+  const toggleDialog = async (e: boolean) => {
     setOpenDialog(e);
     if (!e) {
       reset();
+    } else {
+      setLoadedSubjects(false);
+      const _subjects = await getSubjects();
+      setSubjects(_subjects);
+      setLoadedSubjects(true);
     }
   };
 
@@ -171,40 +181,44 @@ const ActivityForm = ({
                   Es requerido el nombre de la actividad
                 </span>
               )}
-              <Controller
-                control={control}
-                name="subject"
-                rules={{ required: true }}
-                defaultValue={target ? "" + target?.id_subject : undefined}
-                render={({ field }) => {
-                  return (
-                    <div {...field}>
-                      <Select.Root
-                        size={"3"}
-                        onValueChange={field.onChange}
-                        defaultValue={
-                          target ? "" + target?.id_subject : undefined
-                        }
-                      >
-                        <Select.Trigger
-                          className="w-full"
-                          placeholder={"Tema del curso al que pertenece*"}
-                        />
-                        <Select.Content position="popper">
-                          <Select.Group>
-                            <Select.Label>Temas del Curso</Select.Label>
-                            {subjects.map((s) => (
-                              <Select.Item key={s.id} value={"" + s.id}>
-                                {s.title}
-                              </Select.Item>
-                            ))}
-                          </Select.Group>
-                        </Select.Content>
-                      </Select.Root>
-                    </div>
-                  );
-                }}
-              />
+              {loadedSubjects ? (
+                <Controller
+                  control={control}
+                  name="subject"
+                  rules={{ required: true }}
+                  defaultValue={target ? "" + target?.id_subject : undefined}
+                  render={({ field }) => {
+                    return (
+                      <div {...field}>
+                        <Select.Root
+                          size={"3"}
+                          onValueChange={field.onChange}
+                          defaultValue={
+                            target ? "" + target?.id_subject : undefined
+                          }
+                        >
+                          <Select.Trigger
+                            className="w-full"
+                            placeholder={"Tema del curso al que pertenece*"}
+                          />
+                          <Select.Content position="popper">
+                            <Select.Group>
+                              <Select.Label>Temas del Curso</Select.Label>
+                              {subjects.map((s) => (
+                                <Select.Item key={s.id} value={"" + s.id}>
+                                  {s.title}
+                                </Select.Item>
+                              ))}
+                            </Select.Group>
+                          </Select.Content>
+                        </Select.Root>
+                      </div>
+                    );
+                  }}
+                />
+              ) : (
+                <LoadingGeneric size={30} />
+              )}
               {errors.subject?.type === "required" && (
                 <span role="alert" className="font-semibold text-red-500 ">
                   Es requerido el tema al que pertenece la actividad
@@ -280,7 +294,15 @@ const ActivityForm = ({
                   {...register("dateMax")}
                 />
               </TextField.Root>
-
+              <TextField.Input
+                defaultValue={target?.url || ""}
+                maxLength={255}
+                size="3"
+                color="gray"
+                variant="surface"
+                placeholder="Url del contenido"
+                {...register("url")}
+              />
               <label htmlFor="rubrica">
                 Rúbrica de la actividad no mayor a 4.5 MB
               </label>
@@ -295,11 +317,7 @@ const ActivityForm = ({
                 />
               </TextField.Root>
               <div className="flex justify-start gap-4">
-                <Button
-                  onClick={onUpload}
-                  type="button"
-                  disabled={!!target?.rubric}
-                >
+                <Button onClick={onUpload} type="button">
                   <FaFileAlt />
                   Subir Rúbrica
                 </Button>
@@ -326,7 +344,7 @@ const ActivityForm = ({
               </Dialog.Close>
               <Button
                 size="3"
-                disabled={Boolean(submitted)}
+                disabled={submitted || !loadedSubjects}
                 style={{ backgroundColor: PRIMARY_COLOR }}
               >
                 Guardar

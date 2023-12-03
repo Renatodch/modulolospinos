@@ -42,7 +42,6 @@ const SubjectForm = ({ target }: Props) => {
         saveSubject({
           title: data.title,
           description: data.desc,
-          url: data.url,
           id: target?.id || 0,
         })
           .then(resolve)
@@ -121,15 +120,6 @@ const SubjectForm = ({ target }: Props) => {
                 variant="surface"
                 {...register("desc")}
                 placeholder="Descripción del tema"
-              />
-              <TextField.Input
-                defaultValue={target?.url || ""}
-                maxLength={255}
-                size="3"
-                color="gray"
-                variant="surface"
-                placeholder="Url del contenido"
-                {...register("url")}
               />
 
               <p>(*) campos obligatorios</p>

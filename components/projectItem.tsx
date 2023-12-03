@@ -4,6 +4,7 @@ import { getDateString } from "@/lib/date-lib";
 import {
   Activity,
   NO_DATE_MAX_MESSAGE_TASK,
+  PRIMARY_COLOR,
   Subject,
   Task,
   User,
@@ -26,7 +27,6 @@ const ProjectItem = ({
 }) => {
   const { user } = useUserContext();
   const titleClases = "font-bold uppercase text-lg text-left mt-4 mb-2 italic";
-
   return !project ? (
     <div className="w-full flex justify-center mt-16">
       <Strong>El proyecto no existe</Strong>
@@ -65,7 +65,7 @@ const ProjectItem = ({
               <strong>{NO_DATE_MAX_MESSAGE_TASK}</strong>
             </span>
           )}
-          <RubricLink url={activity?.rubric} />
+          <RubricLink url={activity?.rubric} text={"RUBRICA DE LA ACTIVIDAD"} />
         </div>
 
         <div className="flex flex-col">
@@ -110,7 +110,7 @@ const ProjectItem = ({
             <Image
               src={project?.image1}
               fill
-              alt={project.title}
+              alt={project?.title ?? ""}
               className="mb-4"
             />
           </div>
@@ -119,12 +119,20 @@ const ProjectItem = ({
         <p className="text-base w-full mb-4">{project?.description}</p>
       </div>
 
+      <hr style={{ borderColor: PRIMARY_COLOR }} className="border-3" />
       <div className="mb-16">
-        <TaskEvalDetail type={user?.type!} task={project as Task} />
+        <TaskEvalDetail
+          type={user?.type!}
+          task={project as Task}
+          isrubric={!!activity?.rubric}
+        />
       </div>
-
-      {activity?.rubric && (
-        <Rubric titleClases={titleClases} rubric={activity.rubric} />
+      {project.rubric && (
+        <Rubric
+          titleClases={titleClases}
+          rubric={project.rubric}
+          title={"Rubrica de Evaluación"}
+        />
       )}
     </div>
   );

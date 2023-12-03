@@ -86,6 +86,7 @@ const ProjectForm = ({
               score: null,
               comment: null,
               type: PROJECT,
+              rubric: null,
               id_activity: taskActivityDetail.id_activity,
               id_user: user?.id || 0,
             };

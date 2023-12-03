@@ -1,11 +1,11 @@
 import Link from "next/link";
 
-const RubricLink = ({ url }: { url?: string | null }) => {
+const RubricLink = ({ url, text }: { url?: string | null; text: string }) => {
   return (
     <div className="text-md">
       {url ? (
         <Link href={url} className="rubric_link">
-          DESCARGAR RUBRICA
+          {text}
         </Link>
       ) : (
         <span className="italic">Sin Rúbrica</span>

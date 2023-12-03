@@ -102,7 +102,7 @@ export const getActivitiesBySubject = async (id_subject: number) => {
   } catch (e) {}
   return res;
 };
-/* export const getActivityById = async (id: number) => {
+export const getActivityById = async (id: number) => {
   const activity = await prisma.activity.findUnique({
     where: {
       id,
@@ -110,14 +110,6 @@ export const getActivitiesBySubject = async (id_subject: number) => {
   });
   return activity;
 };
-export const getActivityByUserId = async (id_user: number) => {
-  const activity = await prisma.activity.findFirst({
-    where: {
-      id_user,
-    },
-  });
-  return activity;
-}; */
 
 export const saveActivity = async (activity: Activity) => {
   const { id, ...data } = activity;

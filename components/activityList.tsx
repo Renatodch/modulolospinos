@@ -113,7 +113,7 @@ const ActivityListRow = ({
         )}
       </Table.Cell>
       <Table.Cell width={100}>
-        <ActivityForm target={activity} subjects={subjects} />
+        <ActivityForm target={activity} />
       </Table.Cell>
       <Table.Cell width={100}>
         <Button

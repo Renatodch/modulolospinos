@@ -1,16 +1,18 @@
 "use client";
-import {
-  MIN_SCORE_APPROVED,
-  PRIMARY_COLOR,
-  Task,
-  isTeacher,
-} from "@/model/types";
+import { MIN_SCORE_APPROVED, Task, isTeacher } from "@/model/types";
 import TaskFormEval from "./taskFormEval";
 
-const TaskEvalDetail = ({ task, type }: { task: Task; type: number }) => {
+const TaskEvalDetail = ({
+  task,
+  type,
+  isrubric,
+}: {
+  task: Task;
+  type: number;
+  isrubric: boolean;
+}) => {
   return (
-    <>
-      <hr style={{ borderColor: PRIMARY_COLOR }} className="border-3" />
+    <div className="flex flex-col w-full">
       <div className="w-full flex justify-between items-center p-4">
         {task?.score === null && <p className="text-base">Pendiente</p>}
         {task?.score !== null && task?.score !== undefined && (
@@ -24,7 +26,9 @@ const TaskEvalDetail = ({ task, type }: { task: Task; type: number }) => {
             {task?.score}/20
           </p>
         )}
-        {isTeacher(type) && task && <TaskFormEval target={task as Task} />}
+        {isTeacher(type) && task && (
+          <TaskFormEval target={task as Task} isrubric={isrubric} />
+        )}
       </div>
       {task?.comment && (
         <div className="w-full p-4">
@@ -34,7 +38,7 @@ const TaskEvalDetail = ({ task, type }: { task: Task; type: number }) => {
           </span>
         </div>
       )}
-    </>
+    </div>
   );
 };
 

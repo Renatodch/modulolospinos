@@ -15,6 +15,7 @@ model activity {
   rubric      String?   @db.VarChar(255)
   type        Int
   date_max    DateTime? @db.Timestamp(6)
+  url         String?   @db.VarChar(255)
   id_subject  Int?
   subject     subject?  @relation(fields: [id_subject], references: [id], onDelete: NoAction, onUpdate: NoAction)
   task        task[]
@@ -22,13 +23,14 @@ model activity {
 
 model task {
   id          Int       @id @default(autoincrement())
-  title       String    @db.VarChar(64)
+  title       String?   @db.VarChar(64)
   description String?   @db.VarChar(255)
   image1      String?   @db.VarChar(255)
   date_upload DateTime  @db.Timestamp(6)
   score       Int?
   comment     String?   @db.VarChar(255)
   type        Int
+  rubric      String?   @db.VarChar(255)
   id_activity Int?
   id_user     Int?
   activity    activity? @relation(fields: [id_activity], references: [id], onDelete: NoAction, onUpdate: NoAction)
@@ -62,7 +64,6 @@ model subject {
   id          Int        @id @default(autoincrement())
   title       String     @db.VarChar(64)
   description String?    @db.VarChar(255)
-  url         String?    @db.VarChar(255)
   activity    activity[]
 }
 

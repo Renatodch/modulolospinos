@@ -25,6 +25,7 @@ export interface Activity {
   rubric: string | null;
   type: number;
   date_max: Date | null;
+  url: string | null;
   id_subject: number | null;
 }
 export interface Score {
@@ -39,17 +40,17 @@ export interface Subject {
   id: number;
   title: string;
   description: string | null;
-  url: string | null;
 }
 export interface Task {
   id: number;
-  title: string;
+  title: string | null;
   description: string | null;
   image1: string | null;
   date_upload: Date;
   score: number | null;
   comment: string | null;
   type: number;
+  rubric: string | null;
   id_activity: number | null;
   id_user: number | null;
 }
@@ -70,6 +71,7 @@ export interface TaskActivityDetail {
   rubric?: string | null;
   image?: string | null;
   task_title: string;
+  activity_url: string | null;
   task_description: string | null;
 }
 
@@ -151,7 +153,7 @@ export const TOAST_SUBJECT_DELETE_ERROR_MIN =
   "Tema no se puede borrar porque debe haber al menos un tema en el curso";
 export const TOAST_SUBJECT_SAVE_SUCCESS = "Tema guardado con éxito";
 
-export const TOAST_TASK_EVALUATED = "Se calificó la tarea";
+export const TOAST_TASK_EVALUATED = "Se evaluó la tarea";
 export const TOAST_PROJECT_SAVE_SUCCESS = "Proyecto subido con éxito";
 export const TOAST_PROJECT_SAVE_ERROR_1 =
   "Ya tiene un proyecto subido para esta actividad";
@@ -166,8 +168,7 @@ export const TOAST_ACTIVITY_DELETE_ERROR =
   "Actividad no se puede borrar porque hay tareas hechas para ella";
 export const TOAST_ACTIVITY_DELETE_SUCCESS = "Actividad borrada con éxito";
 export const TOAST_ACTIVITY_SAVE_SUCCESS = "Actitividad guardada con éxito";
-export const TOAST_ACTIVITY_SAVE_ERROR_RUBRIC =
-  "Ocurrió un error subiendo la rúbrica";
+export const TOAST_SAVE_ERROR_RUBRIC = "Ocurrió un error subiendo la rúbrica";
 
 export const TOAST_BD_ERROR = "Ocurrió un error con la operación";
 

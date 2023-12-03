@@ -1,7 +1,12 @@
 "use client";
 import { useUserContext } from "@/app/context";
 import { getDateString } from "@/lib/date-lib";
-import { NO_DATE_MAX_MESSAGE_TASK, QuestionAnswers, Task } from "@/model/types";
+import {
+  NO_DATE_MAX_MESSAGE_TASK,
+  PRIMARY_COLOR,
+  QuestionAnswers,
+  Task,
+} from "@/model/types";
 import { ScrollArea } from "@radix-ui/themes";
 import Rubric from "./rubric";
 import RubricLink from "./rubricLink";
@@ -44,7 +49,10 @@ const ActivityQuestionItem = ({
               <strong>{NO_DATE_MAX_MESSAGE_TASK}</strong>
             </span>
           )}
-          <RubricLink url={questionAnswers.rubric} />
+          <RubricLink
+            url={questionAnswers.rubric}
+            text={"RUBRICA DE LA ACTIVIDAD"}
+          />
         </div>
       </div>
       <hr className="border-gray-400" />
@@ -59,6 +67,7 @@ const ActivityQuestionItem = ({
         style={{ maxHeight: "500px" }}
       >
         {questionAnswers.answers.map((a) => {
+          const isRubric = !!questionAnswers.rubric;
           return (
             <div
               key={a.id}
@@ -88,16 +97,33 @@ const ActivityQuestionItem = ({
                   </div>
                 </div>
                 <div className="mb-4 pb-2  w-full p-4">{a.description}</div>
+                <hr
+                  style={{ borderColor: PRIMARY_COLOR }}
+                  className="border-3"
+                />
 
-                <TaskEvalDetail type={user?.type!} task={a as Task} />
+                <div className="flex justify-center items-start md:flex-row lg:flex-row flex-col w-full">
+                  <TaskEvalDetail
+                    type={user?.type!}
+                    task={a as Task}
+                    isrubric={isRubric}
+                  />
+                  {isRubric && (
+                    <div className="p-4">
+                      <Rubric
+                        titleClases={titleClases}
+                        rubric={a.rubric}
+                        title={"Rubrica de Evaluación"}
+                        modal
+                      />
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           );
         })}
       </ScrollArea>
-      {questionAnswers.rubric && (
-        <Rubric titleClases={titleClases} rubric={questionAnswers.rubric} />
-      )}
     </div>
   );
 };

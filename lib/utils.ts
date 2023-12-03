@@ -46,6 +46,7 @@ export const getTasksActivityDetail = (
         activity_title: a.title,
         activity_description: a.description,
         activity_type: a.type,
+        activity_url: a.url,
         date_upload: task?.date_upload ?? null,
         date_max: a.date_max,
         evaluated: !(task?.score === null || task?.score === undefined),

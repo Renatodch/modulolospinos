@@ -29,8 +29,7 @@ CREATE TABLE user_course (
 CREATE TABLE "subject" (
   id SERIAL PRIMARY KEY,
   title VARCHAR(64) NOT NULL,
-  description VARCHAR(255),
-  url VARCHAR(255)
+  description VARCHAR(255)
 );
 
 CREATE TABLE activity (
@@ -40,18 +39,20 @@ CREATE TABLE activity (
   rubric VARCHAR(255),
   type INT NOT NULL,
   date_max TIMESTAMP,
+  url VARCHAR(255),
   id_subject INT REFERENCES "subject"(id)
 );
 
 CREATE TABLE task (
   id SERIAL PRIMARY KEY,
-  title VARCHAR(64) NOT NULL,
+  title VARCHAR(64),
   description VARCHAR(255),
   image1 VARCHAR(255),
   date_upload TIMESTAMP NOT NULL,
   score INT,
   comment VARCHAR(255),
   type INT NOT NULL,
+  rubric VARCHAR(255),
   id_activity INT REFERENCES activity(id),
   id_user INT REFERENCES "user"(id)
 );
@@ -78,19 +79,19 @@ INSERT INTO "user_course" (state, progress, id_user) VALUES (-1,0,3);
 INSERT INTO "user_course" (state, progress, id_user) VALUES (-1,0,5);
 INSERT INTO "user_course" (state, progress, id_user) VALUES (-1,0,6);
 
-INSERT INTO subject (title, description, url) VALUES ('Qué es una fracción', 'Descripcion del tema 1', 'https://www.youtube.com/embed/g2rI5mAWPeU?si=gaIOzQXC2YIck04Q');
-INSERT INTO subject (title, description, url) VALUES ('Introducción a fracciones', 'Descripción del tema 2', 'https://www.youtube.com/embed/grlbI4ZgzXA?si=cwo501nM1bxquX2R');
-INSERT INTO subject (title, description, url) VALUES ('Suma y resta de fracciones con denominadores comunes', 'Descripción del tema 3', 'https://www.youtube.com/embed/qJtoI1ipxs8?si=3lhYpUKrMrkFhmtb');
-INSERT INTO subject (title, description, url) VALUES ('Suma y resta de fracciones con denominadores diferentes', 'Descripción del tema 4', 'https://www.youtube.com/embed/Ew9yAW7bf7U?si=xU_jO-6wOf2_5jTF');
+INSERT INTO subject (title, description) VALUES ('Qué es una fracción', 'Descripcion del tema 1');
+INSERT INTO subject (title, description) VALUES ('Introducción a fracciones', 'Descripción del tema 2');
+INSERT INTO subject (title, description) VALUES ('Suma y resta de fracciones con denominadores comunes', 'Descripción del tema 3');
+INSERT INTO subject (title, description) VALUES ('Suma y resta de fracciones con denominadores diferentes', 'Descripción del tema 4');
 INSERT INTO subject (title, description) VALUES ('Seccion final', 'En hora buena!, has llegado al final del curso. A continuación tendrás que resolver las actividades final aplicando todo lo aprendido');
 
 
-INSERT INTO activity (title, description, id_subject, type) VALUES ('Actividad Pregunta 1-1', 'Pregunta 1', 1, 0);
-INSERT INTO activity (title, description, id_subject, type, date_max) VALUES ('Actividad Pregunta 2-1', 'Pregunta 2', 1, 0, '2023-11-19 12:00:00');
+INSERT INTO activity (url,title, description, id_subject, type) VALUES ('https://www.youtube.com/embed/g2rI5mAWPeU?si=gaIOzQXC2YIck04Q','Actividad Pregunta 1-1', 'Pregunta 1', 1, 0);
+INSERT INTO activity (url,title, description, id_subject, type, date_max) VALUES ('https://www.youtube.com/embed/grlbI4ZgzXA?si=cwo501nM1bxquX2R','Actividad Pregunta 2-1', 'Pregunta 2', 1, 0, '2023-11-19 12:00:00');
 INSERT INTO activity (title, description, id_subject, type, date_max) VALUES ('Actividad Pregunta 1-2', 'Pregunta 3', 2, 0, '2023-11-20 12:00:00');
-INSERT INTO activity (title, description, id_subject, type) VALUES ('Actividad Proyecto 2-2', 'Proyecto 1', 2, 1);
+INSERT INTO activity (url,title, description, id_subject, type) VALUES ('https://www.youtube.com/embed/qJtoI1ipxs8?si=3lhYpUKrMrkFhmtb','Actividad Proyecto 2-2', 'Proyecto 1', 2, 1);
 INSERT INTO activity (title, description, id_subject, type, date_max) VALUES ('Actividad Pregunta 1-3', 'Pregunta 4', 4, 0, '2023-11-21 12:00:00');
-INSERT INTO activity (title, description, id_subject, type, date_max) VALUES ('Actividad Proyecto 1-4', 'Proyecto 2', 5, 1, '2023-11-22 12:00:00');
+INSERT INTO activity (url,title, description, id_subject, type, date_max) VALUES ('https://www.youtube.com/embed/Ew9yAW7bf7U?si=xU_jO-6wOf2_5jTF','Actividad Proyecto 1-4', 'Proyecto 2', 5, 1, '2023-11-22 12:00:00');
 INSERT INTO activity (title, description, id_subject, type, date_max) VALUES ('Actividad Proyecto 2-4', 'Proyecto 3', 5, 1, '2023-11-22 12:00:00');
 
 /* in order to delete subject 5*/

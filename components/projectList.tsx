@@ -22,7 +22,7 @@ const ProjectList = ({ projects }: { projects: Task[] }) => {
             }}
           >
             {p.image1 ? (
-              <Image src={p.image1} fill alt={p.title} />
+              <Image src={p.image1} fill alt={p.title ?? ""} />
             ) : (
               <div style={{ height: "100%" }}></div>
             )}

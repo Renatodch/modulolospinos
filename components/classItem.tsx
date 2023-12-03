@@ -38,16 +38,6 @@ const ClassItem = ({
           </span>
         </div>
         <div className="font-semibold text-xl mb-2">{subject?.title}</div>
-        {subject?.url && (
-          <iframe
-            style={{ width: "100%", height: "350px" }}
-            width="560"
-            height="315"
-            src={subject?.url}
-            title="YouTube video player"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          ></iframe>
-        )}
         {subject?.description && (
           <div className="m-4 w-full text-justify pr-2">
             {subject.description}
@@ -76,12 +66,23 @@ const ClassItem = ({
 const TaskActivity = ({ task }: { task: TaskActivityDetail }) => {
   return (
     <div className=" w-full flex flex-col justify-center items-center mb-4 pt-4 border-t-4">
-      <div className=" font-semibold text-md w-full mb-2">
+      <div className=" font-semibold text-md w-full mb-4">
         {task.activity_title}
       </div>
-      <div className=" w-full text-md mb-4">{task.activity_description}</div>
+      {task?.activity_url && (
+        <iframe
+          style={{ width: "100%", height: "350px" }}
+          width="560"
+          height="315"
+          src={task?.activity_url}
+          title="YouTube video player"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        ></iframe>
+      )}
+
+      <div className=" w-full text-md my-4">{task.activity_description}</div>
       <div className=" w-full flex  justify-between items-center ">
-        <RubricLink url={task.rubric} />
+        <RubricLink url={task.rubric} text={"DESCARGAR RUBRICA"} />
         <div>
           {task.activity_type === PROJECT ? (
             <ProjectForm taskActivityDetail={task} />

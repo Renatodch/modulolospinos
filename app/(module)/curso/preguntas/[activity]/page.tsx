@@ -1,5 +1,5 @@
 import ActivityQuestionItem from "@/components/activityQuestionItem";
-import { getActivityQuestionById } from "@/controllers/activity.controller";
+import { getActivityById } from "@/controllers/activity.controller";
 import { getSubjectById } from "@/controllers/subject.controller";
 import { getTasks, getTasksByUserId } from "@/controllers/task.controller";
 import { getUsers } from "@/controllers/user.controller";
@@ -18,10 +18,10 @@ const ActivityQuestionPage = async (props: any) => {
   await loginIsRequiredServer();
   const { _user } = await getSession();
 
-  const id = +props.params.activity || 0;
+  const id = +(props.params.activity || 0);
   const type = _user?.type!;
 
-  const activity = await getActivityQuestionById(id);
+  const activity = await getActivityById(id);
 
   let users: User[] = [];
   let tasks: Task[] = [];
@@ -39,10 +39,12 @@ const ActivityQuestionPage = async (props: any) => {
   const answers: Answer[] = [];
   tasks.forEach((t) => {
     const user = users.find((u) => u.id === t.id_user);
-    answers.push({
-      ...t,
-      user_name: user?.name,
-    });
+
+    t.id_activity === activity?.id &&
+      answers.push({
+        ...t,
+        user_name: user?.name,
+      });
   });
 
   const questionAnswers: QuestionAnswers = {
