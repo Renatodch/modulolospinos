@@ -28,7 +28,6 @@ export const authConfig: NextAuthOptions = {
           return null;
 
         const idCode = /^\d{4}$/.test(credentials.id);
-        console.log(idCode);
         const res = !idCode
           ? await loginUserByEmail(credentials.id, credentials.password)
           : await loginUserById(+credentials.id, credentials.password);

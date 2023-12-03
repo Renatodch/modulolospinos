@@ -9,7 +9,7 @@ CREATE TABLE "user" (
   id SERIAL PRIMARY KEY,
   password VARCHAR(50) NOT NULL,
   type INT NOT NULL,
-  email VARCHAR(255) NOT NULL,
+  email VARCHAR(255) UNIQUE NOT NULL,
   name VARCHAR(50) NOT NULL
 );
 
@@ -69,7 +69,7 @@ CREATE TABLE score (
 INSERT INTO "user" (password, type, email, name) VALUES ('1234', '1', '', 'Docente 1');
 INSERT INTO "user" (password, type, email, name) VALUES ('1234', '0', '', 'Alumno 1');
 INSERT INTO "user" (password, type, email, name) VALUES ('1234', '0', '', 'Alumno 2');
-INSERT INTO "user" (password, type, email, name) VALUES ('ariana159', '1', 'lucerito.sagas21@gmail.com', 'Docente 2');
+INSERT INTO "user" (password, type, email, name) VALUES ('1234', '1', '', 'Docente 2');
 INSERT INTO "user" (password, type, email, name) VALUES ('123', '0', 'alejandraquiroztoribio@gmail.com', 'Alumno 3');
 INSERT INTO "user" (password, type, email, name) VALUES ('1234', '2', 'lucerito.sagas21@gmail.com', 'Desarrollador');
 INSERT INTO "user" (password, type, email, name) VALUES ('123', '1', '', 'Docente 3');

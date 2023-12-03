@@ -145,6 +145,7 @@ export const USER_TYPES = [
 export const TOAST_USER_DELETE_ERROR_1 = "No puedes borrar tu usuario";
 export const TOAST_USER_DELETE_SUCCESS = "Usuario borrado con éxito";
 export const TOAST_USER_SAVE_SUCCESS = "Usuario guardado con éxito";
+export const TOAST_USER_SAVE_ERROR_EMAIL = "El email ingresado ya existe";
 
 export const TOAST_SUBJECT_DELETE_SUCCESS = "Tema borrado con éxito";
 export const TOAST_SUBJECT_DELETE_ERROR_ACTIVITIES =

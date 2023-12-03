@@ -1,6 +1,6 @@
 "use client";
 import { saveUserCourse } from "@/controllers/user-course.controller";
-import { saveUser } from "@/controllers/user.controller";
+import { getUsers, saveUser } from "@/controllers/user.controller";
 import {
   DEVELOPER,
   NOT_INIT,
@@ -9,6 +9,7 @@ import {
   TEACHER,
   TOAST_BD_ERROR,
   TOAST_LOADING,
+  TOAST_USER_SAVE_ERROR_EMAIL,
   TOAST_USER_SAVE_SUCCESS,
   USER_TYPES,
   User,
@@ -63,7 +64,14 @@ const UserForm = ({ target, user_type }: Props) => {
           email: data.email,
           id: target?.id || 0,
         };
-        saveUser(temp)
+        getUsers()
+          .then((users) => {
+            if (users.find((u) => u.email === temp.email)) {
+              reject(TOAST_USER_SAVE_ERROR_EMAIL);
+              return;
+            }
+            return saveUser(temp);
+          })
           .then((res) => {
             if (res?.type === STUDENT && !target) {
               return saveUserCourse({
@@ -79,12 +87,12 @@ const UserForm = ({ target, user_type }: Props) => {
             } else resolve(true);
           })
           .then(resolve)
-          .catch(reject);
+          .catch(() => reject(TOAST_BD_ERROR));
       }),
       {
         loading: TOAST_LOADING,
         success: () => TOAST_USER_SAVE_SUCCESS,
-        error: () => TOAST_BD_ERROR,
+        error: (msg) => msg,
         finally: () => {
           setSubmitted(false);
           setPassHidden(true);
