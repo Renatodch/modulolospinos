@@ -56,14 +56,6 @@ const Links = () => {
           href: "/curso/clases",
         },
         {
-          label: "Portafolio",
-          href: "/curso/portafolio",
-        },
-        {
-          label: "Preguntas",
-          href: "/curso/preguntas",
-        },
-        {
           label: "Temas",
           href: "/curso/temas",
         },
@@ -71,13 +63,21 @@ const Links = () => {
           label: "Actividades",
           href: "/curso/actividades",
         },
+        {
+          label: "Portafolio",
+          href: "/curso/portafolio",
+        },
+        {
+          label: "Preguntas",
+          href: "/curso/preguntas",
+        },
       ],
     },
   ];
 
   if (user?.type === STUDENT) {
     const link = links.find((l) => l.label === "Curso");
-    link?.ops?.splice(3, 2);
+    link?.ops?.splice(1, 2);
     links.splice(1, 2);
   }
   if (user?.type === TEACHER) {
