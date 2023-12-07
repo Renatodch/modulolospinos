@@ -10,6 +10,7 @@ import {
 import { ScrollArea } from "@radix-ui/themes";
 import AnswerForm from "./answerForm";
 import ProjectForm from "./projectForm";
+import Rubric from "./rubric";
 
 interface Props {
   tasksDetail?: TaskActivityDetail[];
@@ -81,6 +82,7 @@ const TaskActivity = ({ task }: { task: TaskActivityDetail }) => {
 
       <div className=" w-full text-md my-4">{task.activity_description}</div>
       <div className=" w-full flex  justify-between items-center ">
+        <Rubric title={"Rúbrica de Actividad"} />
         <div>
           {task.activity_type === PROJECT ? (
             <ProjectForm taskActivityDetail={task} />

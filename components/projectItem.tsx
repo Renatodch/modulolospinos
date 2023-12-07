@@ -66,7 +66,7 @@ const ProjectItem = ({
             </span>
           )}
           <div className="mt-2">
-            <Rubric title={"Rúbrica de Actividad"} readonly />
+            <Rubric title={"Rúbrica de Actividad"} />
           </div>
         </div>
 
