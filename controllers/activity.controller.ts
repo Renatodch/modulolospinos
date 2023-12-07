@@ -1,25 +1,8 @@
 "use server";
 import { Activity, PROJECT, QUESTION } from "@/model/types";
-import { del } from "@vercel/blob";
 import { prisma } from "../prisma/prisma";
 
-export const deleteRubricById = async (id: number) => {
-  try {
-    const activity = await prisma.activity.findUnique({
-      where: {
-        id,
-      },
-      select: {
-        rubric: true,
-      },
-    });
-    activity?.rubric && (await del(activity?.rubric));
-  } catch (e) {}
-};
-
 export const deleteActivityById = async (id: number) => {
-  await deleteRubricById(id);
-
   const activities = await prisma.activity.delete({
     where: {
       id,

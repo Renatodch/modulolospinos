@@ -10,7 +10,6 @@ import {
 import { ScrollArea } from "@radix-ui/themes";
 import AnswerForm from "./answerForm";
 import ProjectForm from "./projectForm";
-import RubricLink from "./rubricLink";
 
 interface Props {
   tasksDetail?: TaskActivityDetail[];
@@ -82,7 +81,6 @@ const TaskActivity = ({ task }: { task: TaskActivityDetail }) => {
 
       <div className=" w-full text-md my-4">{task.activity_description}</div>
       <div className=" w-full flex  justify-between items-center ">
-        <RubricLink url={task.rubric} text={"DESCARGAR RUBRICA"} />
         <div>
           {task.activity_type === PROJECT ? (
             <ProjectForm taskActivityDetail={task} />
@@ -91,7 +89,7 @@ const TaskActivity = ({ task }: { task: TaskActivityDetail }) => {
           )}
         </div>
       </div>
-      <div className=" w-full flex flex-col items-start text-xs ">
+      <div className=" w-full flex flex-col items-start text-xs mt-3">
         <span>
           {task.date_max ? (
             <>

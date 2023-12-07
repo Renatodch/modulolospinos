@@ -6,10 +6,10 @@ import {
   PRIMARY_COLOR,
   QuestionAnswers,
   Task,
+  getFormatId,
 } from "@/model/types";
 import { ScrollArea } from "@radix-ui/themes";
 import Rubric from "./rubric";
-import RubricLink from "./rubricLink";
 import TaskEvalDetail from "./taskEvalDetail";
 const ActivityQuestionItem = ({
   questionAnswers,
@@ -49,10 +49,9 @@ const ActivityQuestionItem = ({
               <strong>{NO_DATE_MAX_MESSAGE_TASK}</strong>
             </span>
           )}
-          <RubricLink
-            url={questionAnswers.rubric}
-            text={"RUBRICA DE LA ACTIVIDAD"}
-          />
+          <div className="mt-2">
+            <Rubric title={"Rúbrica de Actividad"} readonly />
+          </div>
         </div>
       </div>
       <hr className="border-gray-400" />
@@ -67,7 +66,6 @@ const ActivityQuestionItem = ({
         style={{ maxHeight: "500px" }}
       >
         {questionAnswers.answers.map((a) => {
-          const isRubric = !!questionAnswers.rubric;
           return (
             <div
               key={a.id}
@@ -80,7 +78,8 @@ const ActivityQuestionItem = ({
                       <strong>Estudiante:&nbsp;</strong> {a.user_name}
                     </span>
                     <span>
-                      <strong>id:&nbsp;</strong> {a.id_user}
+                      <strong>Código:&nbsp;</strong>{" "}
+                      {getFormatId(a.id_user ?? 0)}
                     </span>
                   </div>
                   <div className="text-xs italic p-4 ">
@@ -103,21 +102,15 @@ const ActivityQuestionItem = ({
                 />
 
                 <div className="flex justify-center items-start md:flex-row lg:flex-row flex-col w-full">
-                  <TaskEvalDetail
-                    type={user?.type!}
-                    task={a as Task}
-                    isrubric={isRubric}
-                  />
-                  {isRubric && (
-                    <div className="p-4">
-                      <Rubric
-                        titleClases={titleClases}
-                        rubric={a.rubric}
-                        title={"Rubrica de Evaluación"}
-                        modal
-                      />
-                    </div>
-                  )}
+                  <TaskEvalDetail type={user?.type!} task={a as Task} />
+                  <div className="p-4">
+                    <Rubric
+                      target={a as Task}
+                      title={"Resultados de la Evaluación"}
+                      readonly
+                      disabled={a.score === null}
+                    />
+                  </div>
                 </div>
               </div>
             </div>

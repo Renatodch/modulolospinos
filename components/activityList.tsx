@@ -11,7 +11,6 @@ import {
   TOAST_DELETING,
 } from "@/model/types";
 import { Button, Table } from "@radix-ui/themes";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { AiFillDelete } from "react-icons/ai";
@@ -33,7 +32,6 @@ const ActivityList = ({
           <Table.ColumnHeaderCell>Título</Table.ColumnHeaderCell>
           <Table.ColumnHeaderCell>Tipo</Table.ColumnHeaderCell>
           <Table.ColumnHeaderCell>Tema</Table.ColumnHeaderCell>
-          <Table.ColumnHeaderCell>Rubrica</Table.ColumnHeaderCell>
           <Table.ColumnHeaderCell>Modificar</Table.ColumnHeaderCell>
           <Table.ColumnHeaderCell>Borrar</Table.ColumnHeaderCell>
         </Table.Row>
@@ -102,15 +100,6 @@ const ActivityListRow = ({
       </Table.Cell>
       <Table.Cell width={250}>
         {subjects.find((s) => s.id === activity.id_subject)?.title}
-      </Table.Cell>
-      <Table.Cell width={250}>
-        {activity.rubric ? (
-          <Link href={activity.rubric} className="rubric_link">
-            DESCARGAR RUBRICA
-          </Link>
-        ) : (
-          <span className="italic">Sin Rúbrica</span>
-        )}
       </Table.Cell>
       <Table.Cell width={100}>
         <ActivityForm target={activity} />
