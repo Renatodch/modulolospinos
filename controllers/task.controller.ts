@@ -4,20 +4,6 @@ import { Task } from "@/model/types";
 import { del } from "@vercel/blob";
 import { prisma } from "../prisma/prisma";
 
-export const deleteRubricTaskById = async (id: number) => {
-  try {
-    const task = await prisma.task.findUnique({
-      where: {
-        id,
-      },
-      select: {
-        rubric: true,
-      },
-    });
-    task?.rubric && (await del(task?.rubric));
-  } catch (e) {}
-};
-
 export const deleteImagesByUserId = async (id_user: number) => {
   let urls: string[] = [];
   try {

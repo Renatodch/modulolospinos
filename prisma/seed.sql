@@ -36,7 +36,6 @@ CREATE TABLE activity (
   id SERIAL PRIMARY KEY,
   title VARCHAR(64) NOT NULL,
   description VARCHAR(255) NOT NULL,
-  rubric VARCHAR(255),
   type INT NOT NULL,
   date_max TIMESTAMP,
   url VARCHAR(255),
@@ -50,9 +49,13 @@ CREATE TABLE task (
   image1 VARCHAR(255),
   date_upload TIMESTAMP NOT NULL,
   score INT,
+  score1 INT,
+  score2 INT,
+  score3 INT,
+  score4 INT,
+  score5 INT,
   comment VARCHAR(255),
   type INT NOT NULL,
-  rubric VARCHAR(255),
   id_activity INT REFERENCES activity(id),
   id_user INT REFERENCES "user"(id)
 );

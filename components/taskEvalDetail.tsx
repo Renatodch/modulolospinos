@@ -1,16 +1,8 @@
 "use client";
 import { MIN_SCORE_APPROVED, Task, isTeacher } from "@/model/types";
-import TaskFormEval from "./taskFormEval";
+import Rubric from "./rubric";
 
-const TaskEvalDetail = ({
-  task,
-  type,
-  isrubric,
-}: {
-  task: Task;
-  type: number;
-  isrubric: boolean;
-}) => {
+const TaskEvalDetail = ({ task, type }: { task: Task; type: number }) => {
   return (
     <div className="flex flex-col w-full">
       <div className="w-full flex justify-between items-center p-4">
@@ -27,13 +19,13 @@ const TaskEvalDetail = ({
           </p>
         )}
         {isTeacher(type) && task && (
-          <TaskFormEval target={task as Task} isrubric={isrubric} />
+          <Rubric target={task as Task} title="Rúbrica de Evaluación" />
         )}
       </div>
       {task?.comment && (
         <div className="w-full p-4">
           <span>
-            <strong>Comentario:&nbsp;</strong>
+            <strong>Observaciones:&nbsp;</strong>
             {task?.comment}
           </span>
         </div>

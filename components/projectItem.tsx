@@ -8,11 +8,11 @@ import {
   Subject,
   Task,
   User,
+  getFormatId,
 } from "@/model/types";
 import { Strong } from "@radix-ui/themes";
 import Image from "next/image";
 import Rubric from "./rubric";
-import RubricLink from "./rubricLink";
 import TaskEvalDetail from "./taskEvalDetail";
 const ProjectItem = ({
   student,
@@ -65,7 +65,9 @@ const ProjectItem = ({
               <strong>{NO_DATE_MAX_MESSAGE_TASK}</strong>
             </span>
           )}
-          <RubricLink url={activity?.rubric} text={"RUBRICA DE LA ACTIVIDAD"} />
+          <div className="mt-2">
+            <Rubric title={"Rúbrica de Actividad"} readonly />
+          </div>
         </div>
 
         <div className="flex flex-col">
@@ -75,8 +77,8 @@ const ProjectItem = ({
             {student?.name}
           </span>
           <span>
-            <strong className="text-black">iD: &nbsp;</strong>
-            {student?.id}
+            <strong className="text-black">Código: &nbsp;</strong>
+            {getFormatId(student?.id ?? 0)}
           </span>
           <span
             className={`${
@@ -120,20 +122,18 @@ const ProjectItem = ({
       </div>
 
       <hr style={{ borderColor: PRIMARY_COLOR }} className="border-3" />
-      <div className="mb-16">
-        <TaskEvalDetail
-          type={user?.type!}
-          task={project as Task}
-          isrubric={!!activity?.rubric}
-        />
+
+      <div className="flex justify-center items-start md:flex-row lg:flex-row flex-col w-full mb-16">
+        <TaskEvalDetail type={user?.type!} task={project as Task} />
+        <div className="p-4">
+          <Rubric
+            target={project as Task}
+            title={"Resultados de la Evaluación"}
+            readonly
+            disabled={project.score === null}
+          />
+        </div>
       </div>
-      {project.rubric && (
-        <Rubric
-          titleClases={titleClases}
-          rubric={project.rubric}
-          title={"Rubrica de Evaluación"}
-        />
-      )}
     </div>
   );
 };

@@ -51,7 +51,6 @@ export const getTasksActivityDetail = (
         date_max: a.date_max,
         evaluated: !(task?.score === null || task?.score === undefined),
         score: task?.score,
-        rubric: a.rubric,
         image: task?.image1,
         task_title: task?.title ?? "",
         task_description: task?.description ?? null,

@@ -22,7 +22,6 @@ export interface Activity {
   id: number;
   title: string;
   description: string;
-  rubric: string | null;
   type: number;
   date_max: Date | null;
   url: string | null;
@@ -48,9 +47,13 @@ export interface Task {
   image1: string | null;
   date_upload: Date;
   score: number | null;
+  score1: number | null;
+  score2: number | null;
+  score3: number | null;
+  score4: number | null;
+  score5: number | null;
   comment: string | null;
   type: number;
-  rubric: string | null;
   id_activity: number | null;
   id_user: number | null;
 }
@@ -68,7 +71,6 @@ export interface TaskActivityDetail {
   date_upload: Date | null;
   evaluated: boolean;
   score?: number | null;
-  rubric?: string | null;
   image?: string | null;
   task_title: string;
   activity_url: string | null;
@@ -82,7 +84,6 @@ export interface QuestionAnswers {
   activity_id?: number;
   subject_title?: string;
   date_max?: Date | null;
-  rubric?: string | null;
   answers: Answer[];
 }
 

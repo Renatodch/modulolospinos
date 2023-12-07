@@ -12,7 +12,6 @@ model activity {
   id          Int       @id @default(autoincrement())
   title       String    @db.VarChar(64)
   description String    @db.VarChar(255)
-  rubric      String?   @db.VarChar(255)
   type        Int
   date_max    DateTime? @db.Timestamp(6)
   url         String?   @db.VarChar(255)
@@ -30,9 +29,13 @@ model task {
   score       Int?
   comment     String?   @db.VarChar(255)
   type        Int
-  rubric      String?   @db.VarChar(255)
   id_activity Int?
   id_user     Int?
+  score1      Int?
+  score2      Int?
+  score3      Int?
+  score4      Int?
+  score5      Int?
   activity    activity? @relation(fields: [id_activity], references: [id], onDelete: NoAction, onUpdate: NoAction)
   user        user?     @relation(fields: [id_user], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }

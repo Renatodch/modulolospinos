@@ -1,8 +1,5 @@
 "use client";
-import {
-  deleteRubricById,
-  saveActivity,
-} from "@/controllers/activity.controller";
+import { saveActivity } from "@/controllers/activity.controller";
 import { getSubjects } from "@/controllers/subject.controller";
 import {
   ACTIVITY_TYPES,
@@ -12,7 +9,6 @@ import {
   TOAST_ACTIVITY_SAVE_SUCCESS,
   TOAST_BD_ERROR,
   TOAST_LOADING,
-  TOAST_SAVE_ERROR_RUBRIC,
 } from "@/model/types";
 import {
   Button,
@@ -22,13 +18,11 @@ import {
   TextArea,
   TextField,
 } from "@radix-ui/themes";
-import { PutBlobResult } from "@vercel/blob";
 import moment from "moment";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Controller, FieldValues, useForm } from "react-hook-form";
 import { AiFillEdit, AiOutlinePlusCircle } from "react-icons/ai";
-import { FaFileAlt } from "react-icons/fa";
 import { toast } from "sonner";
 import LoadingGeneric from "./loadingGeneric";
 
@@ -36,12 +30,9 @@ const ActivityForm = ({ target }: { target?: Activity }) => {
   const router = useRouter();
   const [submitted, setSubmitted] = useState<boolean>(false);
   const [openDialog, setOpenDialog] = useState<boolean>(false);
-  const [validFile, setValidFile] = useState<"invalidSize" | boolean>(false);
-  const [rubric, setRubric] = useState<File | null>(null);
   const [loaded, setLoaded] = useState(false);
   const [loadedSubjects, setLoadedSubjects] = useState(false);
   const [subjects, setSubjects] = useState<Subject[]>([]);
-  const hiddenInputRef = useRef(null);
 
   useEffect(() => {
     setLoaded(true);
@@ -56,21 +47,7 @@ const ActivityForm = ({ target }: { target?: Activity }) => {
     setValue,
     watch,
   } = useForm();
-  const { ...rest } = register("rubric");
 
-  const handleUploadedFile = (event: any) => {
-    const maxSizeInBytes = 4.5 * 1024 * 1024;
-    const file = event.target.files[0];
-
-    if (file.size > maxSizeInBytes) {
-      setRubric(null);
-      setValidFile("invalidSize");
-      return;
-    }
-    setValidFile(true);
-    setRubric(file);
-  };
-  const onUpload = () => (hiddenInputRef.current! as HTMLFormElement).click();
   const onSubmit = async (data: FieldValues) => {
     setSubmitted(true);
 
@@ -80,35 +57,15 @@ const ActivityForm = ({ target }: { target?: Activity }) => {
           id: target?.id || 0,
           title: data.title,
           description: data.desc,
-          rubric: target?.rubric ?? null,
           id_subject: +data.subject,
           type: +data.type,
           url: data.url,
           date_max: new Date(data.dateMax),
         };
 
-        if (rubric != null) {
-          deleteRubricById(temp.id)
-            .then(() =>
-              fetch(`/api/file/upload?filename=${rubric?.name}`, {
-                method: "POST",
-                body: rubric,
-              })
-            )
-            .then((response) => response.json())
-            .then((blob: PutBlobResult) => {
-              if (!blob) {
-                reject(TOAST_SAVE_ERROR_RUBRIC);
-              }
-              temp!.rubric = blob.url;
-            })
-            .then(() => saveActivity(temp))
-            .then(resolve)
-            .catch(() => reject(TOAST_BD_ERROR));
-        } else
-          saveActivity(temp)
-            .then(resolve)
-            .catch(() => reject(TOAST_BD_ERROR));
+        saveActivity(temp)
+          .then(resolve)
+          .catch(() => reject(TOAST_BD_ERROR));
       }),
       {
         loading: TOAST_LOADING,
@@ -116,8 +73,6 @@ const ActivityForm = ({ target }: { target?: Activity }) => {
         error: (msg) => msg,
         finally: () => {
           setSubmitted(false);
-          setValidFile(false);
-          setRubric(null);
           setOpenDialog(false);
           target && setLoaded(false);
           router.refresh();
@@ -303,31 +258,6 @@ const ActivityForm = ({ target }: { target?: Activity }) => {
                 placeholder="Url del contenido"
                 {...register("url")}
               />
-              <label htmlFor="rubrica">
-                Rúbrica de la actividad no mayor a 4.5 MB
-              </label>
-              <TextField.Root style={{ display: "none" }}>
-                <TextField.Input
-                  id="rubrica"
-                  {...rest}
-                  accept="*"
-                  onChange={handleUploadedFile}
-                  type="file"
-                  ref={hiddenInputRef}
-                />
-              </TextField.Root>
-              <div className="flex justify-start gap-4">
-                <Button onClick={onUpload} type="button">
-                  <FaFileAlt />
-                  Subir Rúbrica
-                </Button>
-                <p className="font-bold">{(rubric as File)?.name}</p>
-              </div>
-              {validFile === "invalidSize" && (
-                <span role="alert" className="font-semibold text-red-500 ">
-                  El archivo a subir no debe ser mayor de 4.5 MB
-                </span>
-              )}
 
               <p>(*) campos obligatorios</p>
             </Flex>
