@@ -53,6 +53,7 @@ const ActivityQuestionPage = async (props: any) => {
     activity_id: activity?.id,
     subject_title: subject?.title,
     date_max: activity?.date_max,
+    activity_rubric: activity?.rubric ?? [],
     answers,
   };
 

@@ -1,8 +1,16 @@
 "use client";
 
+import { getActivityById } from "@/controllers/activity.controller";
 import { saveTask } from "@/controllers/task.controller";
+import { getScores } from "@/lib/utils";
 import {
+  Activity,
   PRIMARY_COLOR,
+  QUALITY_BAD,
+  QUALITY_EXCELENT,
+  QUALITY_INSUFICIENT,
+  RubricDetail,
+  ScoreRubricDetail,
   TOAST_BD_ERROR,
   TOAST_LOADING,
   TOAST_TASK_EVALUATED,
@@ -17,8 +25,9 @@ import {
   TextField,
 } from "@radix-ui/themes";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
+import { BsEyeFill } from "react-icons/bs";
 import { toast } from "sonner";
 import LoadingGeneric from "./loadingGeneric";
 
@@ -27,16 +36,24 @@ const Rubric = ({
   readonly,
   disabled,
   target,
+  id_activity,
+  iconTrigger,
 }: {
   title: string;
   readonly?: boolean;
   disabled?: boolean;
   target?: Task;
+  id_activity?: { id_activity: number | null };
+  iconTrigger?: boolean;
 }) => {
   const router = useRouter();
   const [submitted, setSubmitted] = useState<boolean | null>(null);
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const [task, setTask] = useState<Task | undefined>(undefined);
+  const [activity, setActivity] = useState<Activity | undefined | null>(
+    undefined
+  );
+  const [noRubric, setNoRubric] = useState<boolean>(false);
 
   const [scoresValue, setScoresValue] = useState<
     Array<Array<number | undefined>>
@@ -69,22 +86,32 @@ const Rubric = ({
   } = useForm();
 
   useEffect(() => {
-    const setData = () => {
+    const setData = async () => {
+      if (target && target.id_activity) {
+        updateActivity(target.id_activity);
+      }
       setTask(target);
     };
     setData();
   }, [target]);
 
   useEffect(() => {
+    const setData = async () => {
+      id_activity?.id_activity && updateActivity(id_activity.id_activity);
+    };
+    setData();
+  }, [id_activity]);
+
+  useEffect(() => {
     const subscription = watch((value, { name, type }) => {
       if (name === "score") return;
-      const score1 = +(value["score1"] ?? 0);
-      const score2 = +(value["score2"] ?? 0);
-      const score3 = +(value["score3"] ?? 0);
-      const score4 = +(value["score4"] ?? 0);
-      const score5 = +(value["score5"] ?? 0);
-      updateArrayValues(score1, score2, score3, score4, score5);
-      setValue("score", score1 + score2 + score3 + score4 + score5);
+      let score = 0;
+      /*  Object.keys(value).forEach((e) => {
+        if (e.startsWith("score") && e !== "score") score += +(value[e] ?? 0);
+      }); */
+
+      task && activity && updateArrayValues(task.scores, activity.rubric);
+      setValue("score", score);
     });
     return () => subscription.unsubscribe();
   }, [watch]);
@@ -102,11 +129,7 @@ const Rubric = ({
           image1: task.image1,
           date_upload: task.date_upload,
           score: +data.score,
-          score1: +data.score1,
-          score2: +data.score2,
-          score3: +data.score3,
-          score4: +data.score4,
-          score5: +data.score5,
+          scores: [],
           comment: data.comment,
           type: task.type,
           id_user: task.id_user,
@@ -132,30 +155,29 @@ const Rubric = ({
     );
   };
 
-  const toggleDialog = (e: boolean) => {
+  const toggleDialog = async (e: boolean) => {
     setOpenDialog(e);
-    if (e && task) {
-      const score1 = task.score1 ?? 0;
-      const score2 = task.score2 ?? 0;
-      const score3 = task.score3 ?? 0;
-      const score4 = task.score4 ?? 0;
-      const score5 = task.score5 ?? 0;
-      updateArrayValues(score1, score2, score3, score4, score5);
-      setValue("score", score1 + score2 + score3 + score4 + score5);
+    if (e && task && activity) {
+      updateArrayValues(task.scores, activity.rubric);
+      const score = getScores(task.scores).reduce(
+        (acc, current) => acc + current,
+        0
+      );
+      setValue("score", score);
     } else {
       reset();
     }
   };
 
-  const updateArrayValues = (
-    score1: number,
-    score2: number,
-    score3: number,
-    score4: number,
-    score5: number
-  ) => {
+  const updateArrayValues = (scoresJson: string[], rubricJson: string[]) => {
+    const scores: ScoreRubricDetail[] = scoresJson.map((e) => JSON.parse(e));
+    const rubric: RubricDetail[] = rubricJson.map((e) => JSON.parse(e));
+    console.log(scores);
+    console.log(rubric);
+    //ScoreRubricDetail
+    //RubricDetail
     const arr = [...scoresValue];
-    arr[0][0] = score1 === 3 ? score1 : undefined;
+    /* arr[0][0] = score1 === 3 ? score1 : undefined;
     arr[0][1] = score1 >= 1 && score1 <= 2 ? score1 : undefined;
     arr[0][2] = score1 === 0 ? score1 : undefined;
     arr[1][0] = score2 === 3 ? score2 : undefined;
@@ -169,664 +191,246 @@ const Rubric = ({
     arr[3][2] = score4 === 0 ? score4 : undefined;
     arr[4][0] = score5 === 5 ? score5 : undefined;
     arr[4][1] = score5 >= 1 && score5 <= 4 ? score5 : undefined;
-    arr[4][2] = score5 === 0 ? score5 : undefined;
+    arr[4][2] = score5 === 0 ? score5 : undefined; */
     setScoresValue([...arr]);
   };
 
+  const updateActivity = (id_activity: number) => {
+    getActivityById(id_activity).then((_activity) => {
+      setNoRubric(_activity?.rubric.length === 0);
+      setActivity(_activity);
+    });
+  };
   return (
     <Dialog.Root open={openDialog} onOpenChange={toggleDialog}>
       <Dialog.Trigger>
-        {task ? (
-          <Button
-            size={"3"}
-            style={{ width: "150px", backgroundColor: PRIMARY_COLOR }}
-            disabled={disabled}
-          >
-            {_readonly ? "Ver Evaluación" : "Evaluar"}
-          </Button>
-        ) : !target ? (
-          <Button
-            size={"3"}
-            style={{ width: "150px", backgroundColor: PRIMARY_COLOR }}
-          >
-            Ver Rúbrica
-          </Button>
+        {activity ? (
+          task ? (
+            <Button
+              size={"3"}
+              style={{
+                width: iconTrigger ? "auto" : "150px",
+                backgroundColor: PRIMARY_COLOR,
+              }}
+              disabled={disabled}
+            >
+              {_readonly ? "Ver Evaluación" : "Evaluar"}
+            </Button>
+          ) : (
+            !target && (
+              <Button
+                size={"3"}
+                style={{
+                  width: iconTrigger ? "auto" : "150px",
+                  backgroundColor: PRIMARY_COLOR,
+                }}
+              >
+                {iconTrigger ? <BsEyeFill /> : "Ver Rúbrica"}
+              </Button>
+            )
+          )
         ) : (
           <div style={{ height: "50px" }} className="py-4">
             <LoadingGeneric size={30} />
           </div>
         )}
       </Dialog.Trigger>
-      {(task || !target) && (
+      {activity && (task || !target) && (
         <Dialog.Content style={{ maxWidth: 950 }}>
-          <Dialog.Title align={"center"}>{title}</Dialog.Title>
-          <form className="w-full mt-4" onSubmit={handleSubmit(onSubmit)}>
-            <Table.Root variant="surface">
-              <Table.Header style={{ backgroundColor: PRIMARY_COLOR }}>
-                <Table.Row>
-                  <Table.ColumnHeaderCell
-                    justify={"center"}
-                  ></Table.ColumnHeaderCell>
-                  <Table.ColumnHeaderCell justify={"center"}>
-                    Excelente
-                  </Table.ColumnHeaderCell>
-                  <Table.ColumnHeaderCell justify={"center"}>
-                    Malo
-                  </Table.ColumnHeaderCell>
-                  <Table.ColumnHeaderCell justify={"center"}>
-                    Insuficiente
-                  </Table.ColumnHeaderCell>
-                </Table.Row>
-              </Table.Header>
+          {!noRubric ? (
+            <>
+              <Dialog.Title align={"center"}>{title}</Dialog.Title>
+              <form className="w-full mt-4" onSubmit={handleSubmit(onSubmit)}>
+                <Table.Root variant="surface">
+                  <Table.Header style={{ backgroundColor: PRIMARY_COLOR }}>
+                    <Table.Row>
+                      <Table.ColumnHeaderCell
+                        justify={"center"}
+                      ></Table.ColumnHeaderCell>
+                      <Table.ColumnHeaderCell justify={"center"}>
+                        {QUALITY_EXCELENT}
+                      </Table.ColumnHeaderCell>
+                      <Table.ColumnHeaderCell justify={"center"}>
+                        {QUALITY_BAD}
+                      </Table.ColumnHeaderCell>
+                      <Table.ColumnHeaderCell justify={"center"}>
+                        {QUALITY_INSUFICIENT}
+                      </Table.ColumnHeaderCell>
+                    </Table.Row>
+                  </Table.Header>
+                  <Table.Body>
+                    {activity.rubric.map((i, index) => {
+                      const rubricDetail = JSON.parse(i) as RubricDetail;
+                      const scores: ScoreRubricDetail[] =
+                        _readonly || !task
+                          ? []
+                          : task.scores.map((e) => JSON.parse(e));
+                      const defaultValue =
+                        scores.find(
+                          (scoreDetail) =>
+                            scoreDetail.titleRubricDetail === rubricDetail.title
+                        )?.value ?? 0;
 
-              <Table.Body>
-                <Table.Row align={"center"}>
-                  <Table.Cell rowSpan={3} justify={"center"}>
-                    <Flex direction={"column"} gap="2">
-                      <span>Planteamiento del Problema y Alcance</span>
-                      {!_readonly && (
-                        <TextField.Input
-                          style={{ textAlign: "center" }}
-                          defaultValue={task?.score1 ?? 0}
-                          size="3"
-                          color="gray"
-                          variant="surface"
-                          type="number"
-                          placeholder="0"
-                          min={0}
-                          max={3}
-                          required
-                          {...register("score1")}
-                        />
-                      )}
-                    </Flex>
-                  </Table.Cell>
-                </Table.Row>
-                <Table.Row align={"start"}>
-                  <Table.Cell>
-                    <ul
-                      style={{ listStyle: "outside", listStyleType: "initial" }}
+                      return (
+                        <React.Fragment key={index}>
+                          <Table.Row align={"center"}>
+                            <Table.Cell rowSpan={3} justify={"center"}>
+                              <Flex direction={"column"} gap="2">
+                                <span>{rubricDetail.title}</span>
+                                {!_readonly && (
+                                  <TextField.Input
+                                    style={{ textAlign: "center" }}
+                                    defaultValue={defaultValue}
+                                    size="3"
+                                    color="gray"
+                                    variant="surface"
+                                    type="number"
+                                    placeholder="0"
+                                    min={0}
+                                    max={3}
+                                    required
+                                    {...register("score1")}
+                                  />
+                                )}
+                              </Flex>
+                            </Table.Cell>
+                          </Table.Row>
+                          <Table.Row align={"start"}>
+                            {rubricDetail.items.map(
+                              (item, rubricDetailIndex) => (
+                                <React.Fragment key={rubricDetailIndex}>
+                                  <Table.Cell>
+                                    <ul
+                                      style={{ listStyle: "outside" }}
+                                      className="pl-4"
+                                    >
+                                      {item.descriptions.map(
+                                        (description, index) => (
+                                          <li key={index}>{description}</li>
+                                        )
+                                      )}
+                                    </ul>
+                                  </Table.Cell>
+                                </React.Fragment>
+                              )
+                            )}
+                          </Table.Row>
+                          <Table.Row>
+                            {rubricDetail.items.map((item, index) => {
+                              let points = "0";
+                              switch (index) {
+                                case 0:
+                                  points = rubricDetail.maxPoints.toString();
+                                  break;
+                                case 1:
+                                  points = `[1-${rubricDetail.maxPoints - 1}]`;
+                                  break;
+                              }
+                              return (
+                                <React.Fragment key={index}>
+                                  <Table.Cell
+                                    justify={"center"}
+                                    className={cellClasses}
+                                  >
+                                    {points}
+                                  </Table.Cell>
+                                </React.Fragment>
+                              );
+                            })}
+                          </Table.Row>
+                          <Table.Row align={"center"}>
+                            <Table.Cell justify={"center"}>puntaje</Table.Cell>
+                            {rubricDetail.items.map((item, index) => {
+                              let clases = `${cellClasses}`;
+                              switch (index) {
+                                case 0:
+                                  clases += "text-blue-600";
+                                  break;
+                                case 1:
+                                  clases += "text-yellow-600";
+                                  break;
+                                case 2:
+                                  clases += "text-red-600";
+                                  break;
+                              }
+                              return (
+                                <React.Fragment key={index}>
+                                  <Table.Cell
+                                    justify={"center"}
+                                    className={cellClasses}
+                                  >
+                                    {target && scoresValue[0][0]}
+                                  </Table.Cell>
+                                </React.Fragment>
+                              );
+                            })}
+                          </Table.Row>
+                        </React.Fragment>
+                      );
+                    })}
+                  </Table.Body>
+                </Table.Root>
+
+                {target && (
+                  <Flex direction="row" gap="4" className="mt-4">
+                    <Flex
+                      direction="column"
+                      gap="2"
+                      className="h-full"
+                      align={"start"}
                     >
-                      <li>
-                        Justifica las necesidades y/o problemática que origina
-                        la realización de su proyecto.
-                      </li>
-                      <li>
-                        Describe las causas más probables del evento o situación
-                        problema a resolver.
-                      </li>
-                      <li>
-                        Presenta información a partir de fuentes relevantes que
-                        sustentan el planteamiento de sus necesidades o
-                        problemtica.
-                      </li>
-                    </ul>
-                  </Table.Cell>
-                  <Table.Cell>
-                    <ul style={{ listStyle: "outside" }}>
-                      <li>
-                        Realiza una Justificación incompleta de las necesidades
-                        y/o problemática que origina la realización de su
-                        proyecto.
-                      </li>
-                      <li>
-                        Describe sin consistencia las causas más probables del
-                        evento o situación problema a resolver.
-                      </li>
-                      <li>
-                        El informe presentado no se encuentra avalado a partir
-                        de fuentes relevantes que sustentan el planteamiento de
-                        sus necesidades o problemática
-                      </li>
-                    </ul>
-                  </Table.Cell>
-                  <Table.Cell>
-                    <ul style={{ listStyle: "outside" }}>
-                      <li>
-                        NO Justifica las necesidades y/o problemática que
-                        origina la realización de su proyecto.
-                      </li>
-                      <li>
-                        NO Describe las causas más probables del evento o
-                        situación problema a resolver.
-                      </li>
-                      <li>
-                        NO Presenta información a partir de fuentes relevantes
-                        que sustentan el planteamiento de sus necesidades o
-                        problemática.
-                      </li>
-                    </ul>
-                  </Table.Cell>
-                </Table.Row>
-                <Table.Row>
-                  <Table.Cell justify={"center"} className={cellClasses}>
-                    3 puntos
-                  </Table.Cell>
-                  <Table.Cell justify={"center"} className={cellClasses}>
-                    [1-2] puntos
-                  </Table.Cell>
-                  <Table.Cell justify={"center"} className={cellClasses}>
-                    0 puntos
-                  </Table.Cell>
-                </Table.Row>
-                <Table.Row align={"center"}>
-                  <Table.Cell justify={"center"}>puntaje</Table.Cell>
-                  <Table.Cell
-                    justify={"center"}
-                    className={`text-blue-600 ${cellClasses}`}
-                  >
-                    {target && scoresValue[0][0]}
-                  </Table.Cell>
-                  <Table.Cell
-                    justify={"center"}
-                    className={`text-yellow-600 ${cellClasses}`}
-                  >
-                    {target && scoresValue[0][1]}
-                  </Table.Cell>
-                  <Table.Cell
-                    justify={"center"}
-                    className={`text-red-600 ${cellClasses}`}
-                  >
-                    {target && scoresValue[0][2]}
-                  </Table.Cell>
-                </Table.Row>
-
-                <Table.Row align={"center"}>
-                  <Table.Cell rowSpan={3} justify={"center"}>
-                    <Flex direction={"column"} gap="2">
-                      <span>Objetivos e Indicadores</span>
-                      {!_readonly && (
-                        <TextField.Input
-                          style={{ textAlign: "center" }}
-                          defaultValue={task?.score2 ?? 0}
-                          size="3"
-                          color="gray"
-                          variant="surface"
-                          type="number"
-                          placeholder="0"
-                          min={0}
-                          max={3}
-                          required
-                          {...register("score2")}
-                        />
-                      )}
+                      <strong>Puntaje final</strong>
+                      <TextField.Input
+                        style={{ width: 180, textAlign: "center" }}
+                        size="3"
+                        color="gray"
+                        variant="surface"
+                        readOnly
+                        type="number"
+                        placeholder=""
+                        min={0}
+                        max={20}
+                        required
+                        {...register("score")}
+                      />
                     </Flex>
-                  </Table.Cell>
-                </Table.Row>
-                <Table.Row align={"start"}>
-                  <Table.Cell>
-                    <ul
-                      style={{ listStyle: "outside", listStyleType: "initial" }}
+
+                    <TextArea
+                      style={{ width: "auto" }}
+                      defaultValue={task?.comment ?? ""}
+                      readOnly={_readonly}
+                      id="desc"
+                      maxLength={255}
+                      size="3"
+                      color="gray"
+                      variant="surface"
+                      {...register("comment")}
+                      placeholder="Observaciones"
+                    />
+                  </Flex>
+                )}
+
+                {_interactive && (
+                  <Flex gap="3" mt="4" justify="end">
+                    <Dialog.Close>
+                      <Button size="3" variant="soft" color="gray">
+                        Cancelar
+                      </Button>
+                    </Dialog.Close>
+                    <Button
+                      size="3"
+                      disabled={Boolean(submitted)}
+                      style={{ backgroundColor: PRIMARY_COLOR }}
                     >
-                      <li>
-                        Formula claramente y de manera objetiva el/ los
-                        objeto(s) o sujeto(s) que intervienen directamente en el
-                        problema.
-                      </li>
-                      <li>
-                        Indica el propósito del prototipo, experimento, estudio,
-                        análisis técnico o económico, o desarrollo tecnológico
-                      </li>
-                      <li>
-                        Los indicadores de éxito del proyecto tienen el respaldo
-                        de expertos en el marco de proyecto.
-                      </li>
-                    </ul>
-                  </Table.Cell>
-                  <Table.Cell>
-                    <ul style={{ listStyle: "outside" }}>
-                      <li>
-                        Realiza una pobre formulación o poco objetiva del/ los
-                        objeto(s) o sujeto(s) que intervienen directamente en el
-                        problema.
-                      </li>
-                      <li>
-                        Indica medianamente el propósito del prototipo,
-                        experimento, estudio, análisis técnico o económico, o
-                        desarrollo tecnológico para resolver cada situación
-                        problema.
-                      </li>
-                      <li>
-                        Más del 80% de los indicadores de éxito del proyecto
-                        tienen el respaldo de expertos en el marco de proyecto.
-                      </li>
-                    </ul>
-                  </Table.Cell>
-                  <Table.Cell>
-                    <ul style={{ listStyle: "outside" }}>
-                      <li>
-                        NO Formula claramente y de manera objetiva el/ los
-                        objeto(s) o sujeto(s) que intervienen directamente en el
-                        problema.
-                      </li>
-                      <li>
-                        NO Indica el propósito del prototipo, experimento,
-                        estudio, análisis técnico o económico, o desarrollo
-                        tecnológico para resolver cada situación problema.
-                      </li>
-                      <li>
-                        Los indicadores de éxito del proyecto NO tienen el
-                        respaldo de expertos en el marco de proyecto.
-                      </li>
-                    </ul>
-                  </Table.Cell>
-                </Table.Row>
-                <Table.Row>
-                  <Table.Cell justify={"center"} className={cellClasses}>
-                    3 puntos
-                  </Table.Cell>
-                  <Table.Cell justify={"center"} className={cellClasses}>
-                    [1-2] puntos
-                  </Table.Cell>
-                  <Table.Cell justify={"center"} className={cellClasses}>
-                    0 puntos
-                  </Table.Cell>
-                </Table.Row>
-                <Table.Row align={"center"}>
-                  <Table.Cell justify={"center"}>puntaje</Table.Cell>
-                  <Table.Cell
-                    justify={"center"}
-                    className={`text-blue-600 ${cellClasses}`}
-                  >
-                    {target && scoresValue[1][0]}
-                  </Table.Cell>
-                  <Table.Cell
-                    justify={"center"}
-                    className={`text-yellow-600 ${cellClasses}`}
-                  >
-                    {target && scoresValue[1][1]}
-                  </Table.Cell>
-                  <Table.Cell
-                    justify={"center"}
-                    className={`text-red-600 ${cellClasses}`}
-                  >
-                    {target && scoresValue[1][2]}
-                  </Table.Cell>
-                </Table.Row>
-
-                <Table.Row align={"center"}>
-                  <Table.Cell rowSpan={3} justify={"center"}>
-                    <Flex direction={"column"} gap="2">
-                      <span>Resultados del Proyecto</span>
-                      {!_readonly && (
-                        <TextField.Input
-                          style={{ textAlign: "center" }}
-                          defaultValue={task?.score3 ?? 0}
-                          size="3"
-                          color="gray"
-                          variant="surface"
-                          type="number"
-                          placeholder="0"
-                          min={0}
-                          max={4}
-                          required
-                          {...register("score3")}
-                        />
-                      )}
-                    </Flex>
-                  </Table.Cell>
-                </Table.Row>
-                <Table.Row align={"start"}>
-                  <Table.Cell>
-                    <ul
-                      style={{ listStyle: "outside", listStyleType: "initial" }}
-                    >
-                      <li>
-                        Expresa claramente el resultado final del proyecto y
-                        cubre la totalidad a la necesidad planteada.
-                      </li>
-                      <li>
-                        Describe claramente los beneficios que podría obtener al
-                        aplicar el proyecto.
-                      </li>
-                      <li>
-                        Demuestra que sus competencias de carrera avalan los
-                        resultados propuestos.
-                      </li>
-                      <li>
-                        Establece una metodologia de validación de resultados
-                        del proyecto.{" "}
-                      </li>
-                    </ul>
-                  </Table.Cell>
-                  <Table.Cell>
-                    <ul style={{ listStyle: "outside" }}>
-                      <li>
-                        Expresa de una forma poco clara el resultado final del
-                        proyecto y deja incertidumbre si cubre la totalidad a la
-                        necesidad planteada.
-                      </li>
-                      <li>
-                        Describe de una forma poco clara los beneficios que
-                        podría obtener al aplicar el proyecto.
-                      </li>
-                      <li>
-                        Las competencias de carrera avalan los resultados
-                        propuestos.
-                      </li>
-                      <li>
-                        Establece una metodologia de validación de resultados
-                        del proyecto.
-                      </li>
-                    </ul>
-                  </Table.Cell>
-                  <Table.Cell>
-                    <ul style={{ listStyle: "outside" }}>
-                      <li>
-                        NO Expresa claramente el resultado final del proyecto y
-                        cubre la totalidad a la necesidad planteada.
-                      </li>
-                      <li>
-                        NO Describe claramente los beneficios que podría obtener
-                        al aplicar el proyecto.
-                      </li>
-                      <li>
-                        NO Demuestra que sus competencias de carrera avalan los
-                        resultados propuestos.
-                      </li>
-                      <li>
-                        NO Establece una metodologia de validación de resultados
-                        del proyecto.
-                      </li>
-                    </ul>
-                  </Table.Cell>
-                </Table.Row>
-                <Table.Row>
-                  <Table.Cell justify={"center"} className={cellClasses}>
-                    4 puntos
-                  </Table.Cell>
-                  <Table.Cell justify={"center"} className={cellClasses}>
-                    [1-3] puntos
-                  </Table.Cell>
-                  <Table.Cell justify={"center"} className={cellClasses}>
-                    0 puntos
-                  </Table.Cell>
-                </Table.Row>
-                <Table.Row align={"center"}>
-                  <Table.Cell justify={"center"}>puntaje</Table.Cell>
-                  <Table.Cell
-                    justify={"center"}
-                    className={`text-blue-600 ${cellClasses}`}
-                  >
-                    {target && scoresValue[2][0]}
-                  </Table.Cell>
-                  <Table.Cell
-                    justify={"center"}
-                    className={`text-yellow-600 ${cellClasses}`}
-                  >
-                    {target && scoresValue[2][1]}
-                  </Table.Cell>
-                  <Table.Cell
-                    justify={"center"}
-                    className={`text-red-600 ${cellClasses}`}
-                  >
-                    {target && scoresValue[2][2]}
-                  </Table.Cell>
-                </Table.Row>
-
-                <Table.Row align={"center"}>
-                  <Table.Cell rowSpan={3} justify={"center"}>
-                    <Flex direction={"column"} gap="2">
-                      <span>Presentación del proyecto</span>
-                      {!_readonly && (
-                        <TextField.Input
-                          style={{ textAlign: "center" }}
-                          defaultValue={task?.score4 ?? 0}
-                          size="3"
-                          color="gray"
-                          variant="surface"
-                          type="number"
-                          placeholder="0"
-                          min={0}
-                          max={5}
-                          required
-                          {...register("score4")}
-                        />
-                      )}
-                    </Flex>
-                  </Table.Cell>
-                </Table.Row>
-                <Table.Row align={"start"}>
-                  <Table.Cell>
-                    <ul
-                      style={{ listStyle: "outside", listStyleType: "initial" }}
-                    >
-                      <li>Es clara la presentación del proyecto.</li>
-                      <li>
-                        Demuestra competencia de comunicación oral expresandose
-                        fluidamente.
-                      </li>
-                      <li>Puntualidad.</li>
-                      <li>Demuestra competencia de trabajo en equipo.</li>
-                      <li>Demuestra competencia de comunicación escrita.</li>
-                    </ul>
-                  </Table.Cell>
-                  <Table.Cell>
-                    <ul style={{ listStyle: "outside" }}>
-                      <li>La presentacion del proyecto es poco clara</li>
-                      <li>
-                        Demuestra que la competencia de comunicación oral no
-                        esta cubierta en su totalidad.
-                      </li>
-                      <li>Puntualidad.</li>
-                      <li>
-                        Demuestra competencia de trabajo en equipo no esta
-                        cubierta en su totalidad.
-                      </li>
-                      <li>
-                        Demuestra competencia de comunicación escrita no esta
-                        cubierta en su totalidad.
-                      </li>
-                    </ul>
-                  </Table.Cell>
-                  <Table.Cell>
-                    <ul style={{ listStyle: "outside" }}>
-                      <li>NO Es clara la presentación del proyecto.</li>
-                      <li>
-                        NO Demuestra competencia de comunicación oral
-                        expresandose fluidamente.
-                      </li>
-                      <li>NO es Puntual.</li>
-                      <li>NO Demuestra competencia de trabajo en equipo.</li>
-                      <li>NO Demuestra competencia de comunicación escrita.</li>
-                    </ul>
-                  </Table.Cell>
-                </Table.Row>
-                <Table.Row>
-                  <Table.Cell justify={"center"} className={cellClasses}>
-                    5 puntos
-                  </Table.Cell>
-                  <Table.Cell justify={"center"} className={cellClasses}>
-                    [1-4] puntos
-                  </Table.Cell>
-                  <Table.Cell justify={"center"} className={cellClasses}>
-                    0 puntos
-                  </Table.Cell>
-                </Table.Row>
-                <Table.Row align={"center"}>
-                  <Table.Cell justify={"center"}>puntaje</Table.Cell>
-                  <Table.Cell
-                    justify={"center"}
-                    className={`text-blue-600 ${cellClasses}`}
-                  >
-                    {target && scoresValue[3][0]}
-                  </Table.Cell>
-                  <Table.Cell
-                    justify={"center"}
-                    className={`text-yellow-600 ${cellClasses}`}
-                  >
-                    {target && scoresValue[3][1]}
-                  </Table.Cell>
-                  <Table.Cell
-                    justify={"center"}
-                    className={`text-red-600 ${cellClasses}`}
-                  >
-                    {target && scoresValue[3][2]}
-                  </Table.Cell>
-                </Table.Row>
-
-                <Table.Row align={"center"}>
-                  <Table.Cell rowSpan={3} justify={"center"}>
-                    <Flex direction={"column"} gap="2">
-                      <span>Argumentación y consistencia del proyecto</span>
-                      {!_readonly && (
-                        <TextField.Input
-                          style={{ textAlign: "center" }}
-                          defaultValue={task?.score5 ?? 0}
-                          size="3"
-                          color="gray"
-                          variant="surface"
-                          type="number"
-                          placeholder="0"
-                          min={0}
-                          max={5}
-                          required
-                          {...register("score5")}
-                        />
-                      )}
-                    </Flex>
-                  </Table.Cell>
-                </Table.Row>
-                <Table.Row align={"start"}>
-                  <Table.Cell>
-                    <ul
-                      style={{ listStyle: "outside", listStyleType: "initial" }}
-                    >
-                      <li>Demuestra dominio sobre el tema planteado.</li>
-                      <li>
-                        Reconoce las oportunidades de mejora aceptando alguna
-                        critica constructiva.
-                      </li>
-                      <li>
-                        Responde objetivamente ante las preguntas planteadas.
-                      </li>
-                      <li>Justifca claramente su proyecto.</li>
-                      <li>Gestiona claramente el plan del proyecto.</li>
-                    </ul>
-                  </Table.Cell>
-
-                  <Table.Cell>
-                    <ul style={{ listStyle: "outside" }}>
-                      <li>Demuestra dominio sobre el tema planteado.</li>
-                      <li>
-                        Reconoce a medias las oportunidades de mejora aceptando
-                        alguna critica constructiva.
-                      </li>
-                      <li>
-                        Responde objetivamente ante las preguntas planteadas.
-                      </li>
-                      <li>Justifca medianamente su proyecto.</li>
-                      <li>
-                        Gestiona de una forma poco clara el plan del proyecto.
-                      </li>
-                    </ul>
-                  </Table.Cell>
-                  <Table.Cell>
-                    <ul style={{ listStyle: "outside" }}>
-                      <li>NO Demuestra dominio sobre el tema planteado.</li>
-                      <li>
-                        NO Reconoce las oportunidades de mejora aceptando alguna
-                        critica constructiva.
-                      </li>
-                      <li>
-                        NO Responde objetivamente ante las preguntas planteadas.
-                      </li>
-                      <li>NO Justifca claramente su proyecto.</li>
-                      <li>NO Gestiona claramente el plan del proyecto.</li>
-                    </ul>
-                  </Table.Cell>
-                </Table.Row>
-                <Table.Row>
-                  <Table.Cell justify={"center"} className={cellClasses}>
-                    5 puntos
-                  </Table.Cell>
-                  <Table.Cell justify={"center"} className={cellClasses}>
-                    [1-4] puntos
-                  </Table.Cell>
-                  <Table.Cell justify={"center"} className={cellClasses}>
-                    0 puntos
-                  </Table.Cell>
-                </Table.Row>
-                <Table.Row align={"center"}>
-                  <Table.Cell justify={"center"}>puntaje</Table.Cell>
-                  <Table.Cell
-                    justify={"center"}
-                    className={`text-blue-600 ${cellClasses}`}
-                  >
-                    {target && scoresValue[4][0]}
-                  </Table.Cell>
-                  <Table.Cell
-                    justify={"center"}
-                    className={`text-yellow-600 ${cellClasses}`}
-                  >
-                    {target && scoresValue[4][1]}
-                  </Table.Cell>
-                  <Table.Cell
-                    justify={"center"}
-                    className={`text-red-600 ${cellClasses}`}
-                  >
-                    {target && scoresValue[4][2]}
-                  </Table.Cell>
-                </Table.Row>
-              </Table.Body>
-            </Table.Root>
-
-            {target && (
-              <Flex direction="row" gap="4" className="mt-4">
-                <Flex
-                  direction="column"
-                  gap="2"
-                  className="h-full"
-                  align={"start"}
-                >
-                  <strong>Puntaje final</strong>
-                  <TextField.Input
-                    style={{ width: 180, textAlign: "center" }}
-                    size="3"
-                    color="gray"
-                    variant="surface"
-                    readOnly
-                    type="number"
-                    placeholder=""
-                    min={0}
-                    max={20}
-                    required
-                    {...register("score")}
-                  />
-                </Flex>
-
-                <TextArea
-                  style={{ width: "auto" }}
-                  defaultValue={task?.comment ?? ""}
-                  readOnly={_readonly}
-                  id="desc"
-                  maxLength={255}
-                  size="3"
-                  color="gray"
-                  variant="surface"
-                  {...register("comment")}
-                  placeholder="Observaciones"
-                />
-              </Flex>
-            )}
-
-            {_interactive && (
-              <Flex gap="3" mt="4" justify="end">
-                <Dialog.Close>
-                  <Button size="3" variant="soft" color="gray">
-                    Cancelar
-                  </Button>
-                </Dialog.Close>
-                <Button
-                  size="3"
-                  disabled={Boolean(submitted)}
-                  style={{ backgroundColor: PRIMARY_COLOR }}
-                >
-                  Guardar
-                </Button>
-              </Flex>
-            )}
-          </form>
+                      Guardar
+                    </Button>
+                  </Flex>
+                )}
+              </form>
+            </>
+          ) : (
+            <div className="italic text-center w-full">Sin Rúbrica</div>
+          )}
         </Dialog.Content>
       )}
     </Dialog.Root>

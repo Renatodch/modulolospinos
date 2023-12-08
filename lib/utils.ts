@@ -5,6 +5,7 @@ import {
   NOT_INIT,
   REPROVED,
   Score,
+  ScoreRubricDetail,
   Subject,
   Task,
   TaskActivityDetail,
@@ -54,6 +55,7 @@ export const getTasksActivityDetail = (
         image: task?.image1,
         task_title: task?.title ?? "",
         task_description: task?.description ?? null,
+        activity_rubric: a.rubric,
       };
     });
   return tasksDetail;
@@ -100,4 +102,9 @@ export const getScoreListSummary = (scores: Score[]) => {
     }
   }
   return _scoreListSummary;
+};
+
+export const getScores = (scoresJson: string[]) => {
+  const scores = scoresJson.map((e) => JSON.parse(e));
+  return scores.map((score: ScoreRubricDetail) => score?.value);
 };

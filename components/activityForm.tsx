@@ -60,6 +60,7 @@ const ActivityForm = ({ target }: { target?: Activity }) => {
           id_subject: +data.subject,
           type: +data.type,
           url: data.url,
+          rubric: [],
           date_max: new Date(data.dateMax),
         };
 

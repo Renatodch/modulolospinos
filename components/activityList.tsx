@@ -16,6 +16,8 @@ import React, { useState } from "react";
 import { AiFillDelete } from "react-icons/ai";
 import { toast } from "sonner";
 import ActivityForm from "./activityForm";
+import Rubric from "./rubric";
+import RubricForm from "./rubricForm";
 
 const ActivityList = ({
   activities,
@@ -32,7 +34,9 @@ const ActivityList = ({
           <Table.ColumnHeaderCell>Título</Table.ColumnHeaderCell>
           <Table.ColumnHeaderCell>Tipo</Table.ColumnHeaderCell>
           <Table.ColumnHeaderCell>Tema</Table.ColumnHeaderCell>
+          <Table.ColumnHeaderCell>Ver Rúbrica</Table.ColumnHeaderCell>
           <Table.ColumnHeaderCell>Modificar</Table.ColumnHeaderCell>
+          <Table.ColumnHeaderCell>Editar Rúbrica</Table.ColumnHeaderCell>
           <Table.ColumnHeaderCell>Borrar</Table.ColumnHeaderCell>
         </Table.Row>
       </Table.Header>
@@ -95,14 +99,28 @@ const ActivityListRow = ({
     <Table.Row key={activity.id}>
       <Table.RowHeaderCell width={100}>{activity.id}</Table.RowHeaderCell>
       <Table.Cell width={300}>{activity.title}</Table.Cell>
-      <Table.Cell width={250}>
+      <Table.Cell width={150}>
         {ACTIVITY_TYPES.find((a) => a.value === activity.type)?.name}
       </Table.Cell>
       <Table.Cell width={250}>
         {subjects.find((s) => s.id === activity.id_subject)?.title}
       </Table.Cell>
       <Table.Cell width={100}>
+        {activity.rubric.length > 0 ? (
+          <Rubric
+            title="Rúbrica de Actividad (Vista Previa)"
+            iconTrigger
+            id_activity={{ id_activity: activity.id }}
+          />
+        ) : (
+          <span className="text-center italic">Sin Rúbrica</span>
+        )}
+      </Table.Cell>
+      <Table.Cell width={100}>
         <ActivityForm target={activity} />
+      </Table.Cell>
+      <Table.Cell width={100}>
+        <RubricForm target={activity} />
       </Table.Cell>
       <Table.Cell width={100}>
         <Button

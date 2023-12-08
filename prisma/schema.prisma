@@ -15,6 +15,7 @@ model activity {
   type        Int
   date_max    DateTime? @db.Timestamp(6)
   url         String?   @db.VarChar(255)
+  rubric      String[]  @db.VarChar
   id_subject  Int?
   subject     subject?  @relation(fields: [id_subject], references: [id], onDelete: NoAction, onUpdate: NoAction)
   task        task[]
@@ -27,15 +28,11 @@ model task {
   image1      String?   @db.VarChar(255)
   date_upload DateTime  @db.Timestamp(6)
   score       Int?
+  scores      String[]  @db.VarChar
   comment     String?   @db.VarChar(255)
   type        Int
   id_activity Int?
   id_user     Int?
-  score1      Int?
-  score2      Int?
-  score3      Int?
-  score4      Int?
-  score5      Int?
   activity    activity? @relation(fields: [id_activity], references: [id], onDelete: NoAction, onUpdate: NoAction)
   user        user?     @relation(fields: [id_user], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
@@ -44,7 +41,7 @@ model user {
   id          Int           @id @default(autoincrement())
   password    String        @db.VarChar(50)
   type        Int
-  email       String        @db.VarChar(255)
+  email       String        @unique @db.VarChar(255)
   name        String        @db.VarChar(50)
   score       score[]
   task        task[]

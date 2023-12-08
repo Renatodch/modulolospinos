@@ -17,7 +17,10 @@ const ActivitiesPage = async () => {
 
   return isTeacher(_user?.type) ? (
     <div className="flex flex-col items-center justify-center w-full py-8 px-16">
-      <div className="flex flex-col flex-wrap items-center justify-center w-2/3">
+      <div
+        className="flex flex-col flex-wrap items-center justify-center"
+        style={{ width: "70%" }}
+      >
         <div className="flex justify-start w-full mb-4">
           <ActivityForm />
         </div>

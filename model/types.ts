@@ -25,6 +25,7 @@ export interface Activity {
   type: number;
   date_max: Date | null;
   url: string | null;
+  rubric: string[];
   id_subject: number | null;
 }
 export interface Score {
@@ -47,17 +48,26 @@ export interface Task {
   image1: string | null;
   date_upload: Date;
   score: number | null;
-  score1: number | null;
-  score2: number | null;
-  score3: number | null;
-  score4: number | null;
-  score5: number | null;
+  scores: string[];
   comment: string | null;
   type: number;
   id_activity: number | null;
   id_user: number | null;
 }
 /*********************************************************************** */
+export interface RubricDetail {
+  title: string;
+  maxPoints: number;
+  items: RubricItemDetail[];
+}
+export interface RubricItemDetail {
+  quality: Quality;
+  descriptions: string[];
+}
+export interface ScoreRubricDetail {
+  titleRubricDetail: string;
+  value: number;
+}
 export interface TaskActivityDetail {
   done: boolean;
   id_task: number;
@@ -75,6 +85,7 @@ export interface TaskActivityDetail {
   task_title: string;
   activity_url: string | null;
   task_description: string | null;
+  activity_rubric: string[];
 }
 
 export type Answer = Task & { user_name?: string };
@@ -84,6 +95,7 @@ export interface QuestionAnswers {
   activity_id?: number;
   subject_title?: string;
   date_max?: Date | null;
+  activity_rubric: string[];
   answers: Answer[];
 }
 
@@ -114,6 +126,11 @@ export const USER_PROGRESS = [
 
 export const PRIMARY_COLOR = "#98bf64";
 
+export const QUALITY_EXCELENT = "Excelente";
+export const QUALITY_BAD = "Malo";
+export const QUALITY_INSUFICIENT = "Insuficiente";
+export type Quality = "Excelente" | "Malo" | "Insuficiente";
+
 export const MIN_SCORE_APPROVED = 10.5;
 export const COURSE_ITEMS_LENGHT = 5;
 export const DEVELOPER = 2;
@@ -121,6 +138,7 @@ export const TEACHER = 1;
 export const STUDENT = 0;
 export const PROJECT = 1;
 export const QUESTION = 0;
+export const MIN_SCORE_BY_ITEM = 2;
 
 export function isStudent(type: number | null | undefined) {
   return type === STUDENT || type === DEVELOPER;
@@ -170,7 +188,10 @@ export const TOAST_ACTIVITY_DELETE_ERROR =
   "Actividad no se puede borrar porque hay tareas hechas para ella";
 export const TOAST_ACTIVITY_DELETE_SUCCESS = "Actividad borrada con éxito";
 export const TOAST_ACTIVITY_SAVE_SUCCESS = "Actitividad guardada con éxito";
+export const TOAST_RUBRIC_SAVE_SUCCESS = "Rúbrica guardada con éxito";
 export const TOAST_SAVE_ERROR_RUBRIC = "Ocurrió un error subiendo la rúbrica";
+export const TOAST_RUBRIC_SAVE_ERROR_POINTS =
+  "Los puntos acumulados en la rúbrica no acumulan 20";
 
 export const TOAST_BD_ERROR = "Ocurrió un error con la operación";
 
