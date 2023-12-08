@@ -30,6 +30,7 @@ import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
 import { BsEyeFill } from "react-icons/bs";
+import { MdEdit } from "react-icons/md";
 import { toast } from "sonner";
 
 const Rubric = ({
@@ -287,7 +288,7 @@ const Rubric = ({
             ) : (
               <>
                 <BsEyeFill />
-                Ver Rúbrica
+                Rúbrica
               </>
             )}
           </Button>
@@ -296,12 +297,22 @@ const Rubric = ({
             <Button
               size={"3"}
               style={{
-                width: onlyIcon ? "auto" : "150px",
+                width: readonly ? "150px" : "auto",
                 backgroundColor: PRIMARY_COLOR,
               }}
               disabled={disabled}
             >
-              {readonly ? "Ver Evaluación" : "Evaluar"}
+              {readonly ? (
+                <>
+                  <BsEyeFill />
+                  Evaluación
+                </>
+              ) : (
+                <>
+                  <MdEdit />
+                  Evaluar
+                </>
+              )}
             </Button>
           )
         )}
