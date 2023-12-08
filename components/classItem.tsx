@@ -82,7 +82,14 @@ const TaskActivity = ({ task }: { task: TaskActivityDetail }) => {
 
       <div className=" w-full text-md my-4">{task.activity_description}</div>
       <div className=" w-full flex  justify-between items-center ">
-        <Rubric title={"Rúbrica de Actividad"} />
+        {task.activity_rubric.length > 0 ? (
+          <Rubric
+            title="Rúbrica de Actividad"
+            rubric={{ data: task.activity_rubric }}
+          />
+        ) : (
+          <span className="text-center italic">Sin Rúbrica</span>
+        )}
         <div>
           {task.activity_type === PROJECT ? (
             <ProjectForm taskActivityDetail={task} />

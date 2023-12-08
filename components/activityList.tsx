@@ -109,8 +109,8 @@ const ActivityListRow = ({
         {activity.rubric.length > 0 ? (
           <Rubric
             title="Rúbrica de Actividad (Vista Previa)"
-            iconTrigger
-            id_activity={{ id_activity: activity.id }}
+            onlyIcon
+            rubric={{ data: activity.rubric }}
           />
         ) : (
           <span className="text-center italic">Sin Rúbrica</span>

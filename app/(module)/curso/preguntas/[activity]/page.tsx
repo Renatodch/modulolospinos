@@ -1,4 +1,5 @@
 import ActivityQuestionItem from "@/components/activityQuestionItem";
+import ErrorData from "@/components/errorData";
 import { getActivityById } from "@/controllers/activity.controller";
 import { getSubjectById } from "@/controllers/subject.controller";
 import { getTasks, getTasksByUserId } from "@/controllers/task.controller";
@@ -22,42 +23,45 @@ const ActivityQuestionPage = async (props: any) => {
   const type = _user?.type!;
 
   const activity = await getActivityById(id);
-
-  let users: User[] = [];
-  let tasks: Task[] = [];
-  if (type === STUDENT) {
-    tasks = await getTasksByUserId(_user?.id!, QUESTION);
-    users.push(_user!);
-  } else {
-    tasks = await getTasks(QUESTION);
-    const res = await getUsers();
-    users = getStudents(res);
-  }
-
   const subject = await getSubjectById(activity?.id_subject ?? undefined);
 
-  const answers: Answer[] = [];
-  tasks.forEach((t) => {
-    const user = users.find((u) => u.id === t.id_user);
+  if (activity) {
+    let users: User[] = [];
+    let tasks: Task[] = [];
+    if (type === STUDENT) {
+      tasks = await getTasksByUserId(_user?.id!, QUESTION);
+      users.push(_user!);
+    } else {
+      tasks = await getTasks(QUESTION);
+      const res = await getUsers();
+      users = getStudents(res);
+    }
 
-    t.id_activity === activity?.id &&
-      answers.push({
-        ...t,
-        user_name: user?.name,
-      });
-  });
+    const answers: Answer[] = [];
+    tasks.forEach((t) => {
+      const user = users.find((u) => u.id === t.id_user);
 
-  const questionAnswers: QuestionAnswers = {
-    activity_title: activity?.title,
-    activity_description: activity?.description,
-    activity_id: activity?.id,
-    subject_title: subject?.title,
-    date_max: activity?.date_max,
-    activity_rubric: activity?.rubric ?? [],
-    answers,
-  };
+      t.id_activity === activity?.id &&
+        answers.push({
+          ...t,
+          user_name: user?.name,
+        });
+    });
 
-  return <ActivityQuestionItem questionAnswers={questionAnswers} />;
+    const questionAnswers: QuestionAnswers = {
+      activity_title: activity.title,
+      activity_description: activity.description,
+      activity_id: activity.id,
+      subject_title: subject?.title,
+      date_max: activity.date_max,
+      activity_rubric: activity.rubric ?? [],
+      answers,
+    };
+
+    return <ActivityQuestionItem questionAnswers={questionAnswers} />;
+  } else {
+    return <ErrorData msg="La actividad no existe" />;
+  }
 };
 
 export default ActivityQuestionPage;

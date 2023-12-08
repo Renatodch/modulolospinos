@@ -113,21 +113,63 @@ INSERT INTO activity (title, description, id_subject, type, date_max) VALUES ('A
 INSERT INTO activity (url,title, description, id_subject, type, rubric) VALUES ('https://www.youtube.com/embed/qJtoI1ipxs8?si=3lhYpUKrMrkFhmtb','Actividad Proyecto 2-2', 'Proyecto 1', 2, 1,
 array[
   '{
-    "title":"Planteamiento",
+    "title":"Planteamiento del Problema y Alcance",
     "maxPoints":"10",
     "items":[
-      {"quality":"Excelente","descriptions": ["criterio 1a","criterio 2a","criterio 3a"]},
-      {"quality":"Malo","descriptions": ["criterio 1b","criterio 2b","criterio 3b"]},
-      {"quality":"Insuficiente","descriptions": ["criterio 1c","criterio 2c","criterio 3c"]}
+      {
+        "quality":"Excelente",
+        "descriptions": [
+          "Justifica las necesidades y/o problemática que origina la realización de su proyecto.",
+          "Describe las causas más probables del evento o situación problema a resolver.",
+          "Presenta información a partir de fuentes relevantes que sustentan el planteamiento de sus necesidades o problemtica."
+        ]
+      },
+      {
+        "quality":"Malo",
+        "descriptions": [
+          "Realiza una Justificación incompleta de las necesidades y/o problemática que origina la realización de su proyecto.",
+          "Describe sin consistencia las causas más probables del evento o situación problema a resolver.",
+          "El informe presentado no se encuentra avalado a partir de fuentes relevantes que sustentan el planteamiento de sus necesidades o problemática."
+        ]
+      },
+      {
+        "quality":"Insuficiente",
+        "descriptions": [
+          "NO  Justifica las necesidades y/o problemática que origina la realización de su proyecto.",
+          "NO  Describe las causas más probables del evento o situación problema a resolver.",
+          "NO  Presenta información a partir de fuentes relevantes que sustentan el planteamiento de sus necesidades o problemática."
+        ]
+      }
     ]
   }',
   '{
-    "title":"Argumentación",
+    "title":"Objetivos e Indicadores",
     "maxPoints":"10",
     "items":[
-      {"quality":"Excelente","descriptions": ["criterio 1a","criterio 2a","criterio 3a"]},
-      {"quality":"Malo","descriptions": ["criterio 1b","criterio 2b","criterio 3b"]},
-      {"quality":"Insuficiente","descriptions": ["criterio 1c","criterio 2c","criterio 3c"]}
+      {
+        "quality":"Excelente",
+        "descriptions": [
+          "Formula claramente y de manera objetiva el/ los objeto(s) o sujeto(s) que intervienen directamente en el problema.",
+          "Indica el propósito del prototipo, experimento, estudio, análisis técnico o económico, o desarrollo tecnológico para resolver cada situación problema.",
+          "Los indicadores de éxito del proyecto tienen el respaldo de expertos en el marco de proyecto."
+        ]
+      },
+      {
+        "quality":"Malo",
+        "descriptions": [
+          "Realiza una pobre formulación o poco objetiva del/ los objeto(s) o sujeto(s) que intervienen directamente en el problema.",
+          "Indica medianamente el propósito del prototipo, experimento, estudio, análisis técnico o económico, o desarrollo tecnológico para resolver cada situación problema.",
+          "Más del 80% de los  indicadores de éxito del proyecto tienen el respaldo de expertos en el marco de proyecto."
+        ]
+      },
+      {
+        "quality":"Insuficiente",
+        "descriptions": [
+          "NO  Formula claramente y de manera objetiva el/ los objeto(s) o sujeto(s) que intervienen directamente en el problema.",
+          "NO Indica el propósito del prototipo, experimento, estudio, análisis técnico o económico, o desarrollo tecnológico para resolver cada situación problema.",
+          "Los indicadores de éxito del proyecto NO tienen el respaldo de expertos en el marco de proyecto."
+        ]
+      }
     ]
   }'
 ]);

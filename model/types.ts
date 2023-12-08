@@ -90,9 +90,9 @@ export interface TaskActivityDetail {
 
 export type Answer = Task & { user_name?: string };
 export interface QuestionAnswers {
-  activity_title?: string;
+  activity_title: string;
   activity_description?: string;
-  activity_id?: number;
+  activity_id: number;
   subject_title?: string;
   date_max?: Date | null;
   activity_rubric: string[];

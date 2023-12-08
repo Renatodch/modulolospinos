@@ -2,7 +2,15 @@
 import { MIN_SCORE_APPROVED, Task, isTeacher } from "@/model/types";
 import Rubric from "./rubric";
 
-const TaskEvalDetail = ({ task, type }: { task: Task; type: number }) => {
+const TaskEvalDetail = ({
+  task,
+  type,
+  rubric,
+}: {
+  task: Task;
+  type: number;
+  rubric: { data: string[] };
+}) => {
   return (
     <div className="flex flex-col w-full">
       <div className="w-full flex justify-between items-center p-4">
@@ -19,7 +27,11 @@ const TaskEvalDetail = ({ task, type }: { task: Task; type: number }) => {
           </p>
         )}
         {isTeacher(type) && task && (
-          <Rubric target={task as Task} title="Rúbrica de Evaluación" />
+          <Rubric
+            target={task as Task}
+            title="Rúbrica de Evaluación"
+            rubric={rubric}
+          />
         )}
       </div>
       {task?.comment && (

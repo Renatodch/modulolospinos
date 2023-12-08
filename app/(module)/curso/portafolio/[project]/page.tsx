@@ -1,3 +1,4 @@
+import ErrorData from "@/components/errorData";
 import ProjectItem from "@/components/projectItem";
 import { getActivitiesProject } from "@/controllers/activity.controller";
 import { getSubjects } from "@/controllers/subject.controller";
@@ -15,13 +16,18 @@ const ProjectPage = async (props: any) => {
   const subjects = await getSubjects();
   const activity = activities.find((a) => a.id === project?.id_activity);
   const subject = subjects.find((s) => s.id === activity?.id_subject);
-  return (
-    <ProjectItem
-      student={user}
-      project={project}
-      activity={activity}
-      subject={subject}
-    />
+  const error = !activity || !subject || !user;
+  return project ? (
+    !error && (
+      <ProjectItem
+        student={user}
+        project={project}
+        activity={activity}
+        subject={subject}
+      />
+    )
+  ) : (
+    <ErrorData msg="El proyecto no existe" />
   );
 };
 

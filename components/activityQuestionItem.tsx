@@ -50,7 +50,10 @@ const ActivityQuestionItem = ({
             </span>
           )}
           <div className="mt-2">
-            <Rubric title={"Rúbrica de Actividad"} />
+            <Rubric
+              title={"Rúbrica de Actividad"}
+              rubric={{ data: questionAnswers.activity_rubric }}
+            />
           </div>
         </div>
       </div>
@@ -102,12 +105,17 @@ const ActivityQuestionItem = ({
                 />
 
                 <div className="flex justify-center items-start md:flex-row lg:flex-row flex-col w-full">
-                  <TaskEvalDetail type={user?.type!} task={a as Task} />
+                  <TaskEvalDetail
+                    type={user?.type!}
+                    task={a as Task}
+                    rubric={{ data: questionAnswers.activity_rubric }}
+                  />
                   <div className="p-4">
                     <Rubric
                       target={a as Task}
                       title={"Resultados de la Evaluación"}
                       readonly
+                      rubric={{ data: questionAnswers.activity_rubric }}
                       disabled={a.score === null}
                     />
                   </div>

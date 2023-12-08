@@ -4,6 +4,7 @@ import {
   IN_PROGRESS,
   NOT_INIT,
   REPROVED,
+  RubricDetail,
   Score,
   ScoreRubricDetail,
   Subject,
@@ -108,3 +109,7 @@ export const getScores = (scoresJson: string[]) => {
   const scores = scoresJson.map((e) => JSON.parse(e));
   return scores.map((score: ScoreRubricDetail) => score?.value);
 };
+export const getScoreObjects = (scoresJson: string[]) =>
+  scoresJson.map((e) => JSON.parse(e) as ScoreRubricDetail);
+export const getRubricDetailObjects = (rubricJson: string[]) =>
+  rubricJson.map((e) => JSON.parse(e) as RubricDetail);

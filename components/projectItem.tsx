@@ -10,7 +10,6 @@ import {
   User,
   getFormatId,
 } from "@/model/types";
-import { Strong } from "@radix-ui/themes";
 import Image from "next/image";
 import Rubric from "./rubric";
 import TaskEvalDetail from "./taskEvalDetail";
@@ -20,37 +19,33 @@ const ProjectItem = ({
   activity,
   subject,
 }: {
-  student: User | null | undefined;
-  project: Task | null | undefined;
-  activity: Activity | null | undefined;
-  subject: Subject | null | undefined;
+  student: User;
+  project: Task;
+  activity: Activity;
+  subject: Subject;
 }) => {
   const { user } = useUserContext();
   const titleClases = "font-bold uppercase text-lg text-left mt-4 mb-2 italic";
-  return !project ? (
-    <div className="w-full flex justify-center mt-16">
-      <Strong>El proyecto no existe</Strong>
-    </div>
-  ) : (
+  return (
     <div className="w-full px-12">
       <div className="w-full italic pt-8 pb-2 flex justify-between text-md mb-4">
         <div className="flex flex-col">
           <strong className={titleClases}>Datos de la actividad</strong>
 
           <span>
-            <strong>Título: &nbsp;</strong> {activity?.title}
+            <strong>Título: &nbsp;</strong> {activity.title}
           </span>
           <span>
-            <strong>iD: &nbsp;</strong> {activity?.id}
+            <strong>iD: &nbsp;</strong> {activity.id}
           </span>
           <span>
             <strong>Tema al que pertenece: &nbsp;</strong>
-            {subject?.title}
+            {subject.title}
           </span>
-          {activity?.date_max ? (
+          {activity.date_max ? (
             <span
               className={`${
-                project.date_upload > activity?.date_max
+                project.date_upload > activity.date_max
                   ? "text-red-600"
                   : "text-black"
               }`}
@@ -58,7 +53,7 @@ const ProjectItem = ({
               <strong className="text-black">
                 Fecha de vencimiento: &nbsp;
               </strong>
-              {getDateString(activity?.date_max)}
+              {getDateString(activity.date_max)}
             </span>
           ) : (
             <span>
@@ -66,7 +61,10 @@ const ProjectItem = ({
             </span>
           )}
           <div className="mt-2">
-            <Rubric title={"Rúbrica de Actividad"} />
+            <Rubric
+              title={"Rúbrica de Actividad"}
+              rubric={{ data: activity.rubric }}
+            />
           </div>
         </div>
 
@@ -82,7 +80,7 @@ const ProjectItem = ({
           </span>
           <span
             className={`${
-              activity?.date_max && project.date_upload > activity.date_max
+              activity.date_max && project.date_upload > activity.date_max
                 ? "text-red-600"
                 : "text-black"
             }`}
@@ -124,10 +122,15 @@ const ProjectItem = ({
       <hr style={{ borderColor: PRIMARY_COLOR }} className="border-3" />
 
       <div className="flex justify-center items-start md:flex-row lg:flex-row flex-col w-full mb-16">
-        <TaskEvalDetail type={user?.type!} task={project as Task} />
+        <TaskEvalDetail
+          type={user?.type!}
+          task={project as Task}
+          rubric={{ data: activity.rubric }}
+        />
         <div className="p-4">
           <Rubric
             target={project as Task}
+            rubric={{ data: activity.rubric }}
             title={"Resultados de la Evaluación"}
             readonly
             disabled={project.score === null}

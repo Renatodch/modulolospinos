@@ -17,6 +17,7 @@ import {
   Button,
   Dialog,
   Flex,
+  IconButton,
   Table,
   TextArea,
   TextField,
@@ -35,7 +36,6 @@ const RubricForm = ({ target }: { target: Activity }) => {
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const [loaded, setLoaded] = useState(false);
   const [rubricDetails, setRubricDetails] = useState<RubricDetail[]>([]);
-  //const [iterations, setIterations] = useState<RubricDetail[]>([]);
   const cellClasses = "border-l-2 border-gray-100";
 
   const {
@@ -48,6 +48,7 @@ const RubricForm = ({ target }: { target: Activity }) => {
     getValues,
     watch,
     unregister,
+    clearErrors,
   } = useForm();
 
   useEffect(() => {
@@ -64,13 +65,13 @@ const RubricForm = ({ target }: { target: Activity }) => {
       Object.keys(value).forEach((e) => {
         if (e.startsWith("point")) score += +(value[e] ?? 0);
       });
-      setValue("scoresTotal", score);
+      setValue("scoresTotal", score, { shouldValidate: true });
     });
     return () => subscription.unsubscribe();
   }, [watch]);
 
   const onSubmit = async (data: FieldValues) => {
-    //setSubmitted(true);
+    setSubmitted(true);
     const inputs = watch();
     let rubric: string[] = [];
 
@@ -223,7 +224,7 @@ const RubricForm = ({ target }: { target: Activity }) => {
       </Dialog.Trigger>
 
       {loaded && (
-        <Dialog.Content style={{ maxWidth: 1000 }}>
+        <Dialog.Content style={{ maxWidth: 1200 }}>
           <Dialog.Title align={"center"}>Formulario de Rúbrica</Dialog.Title>
           <Dialog.Description size="2" mb="4"></Dialog.Description>
           <form className="w-full" onSubmit={handleSubmit(onSubmit)}>
@@ -233,23 +234,33 @@ const RubricForm = ({ target }: { target: Activity }) => {
                   <Table.Header style={{ backgroundColor: PRIMARY_COLOR }}>
                     <Table.Row>
                       <Table.ColumnHeaderCell justify={"center"}>
-                        <strong>Total Puntos</strong>
-                        <TextField.Input
-                          style={{ textAlign: "center" }}
-                          readOnly
-                          size="3"
-                          color="gray"
-                          variant="surface"
-                          type="number"
-                          max={20}
-                          min={MIN_SCORE_BY_ITEM}
-                          placeholder="20 Puntos"
-                          required
-                          {...register(`scoresTotal`, {
-                            max: 20,
-                            min: 20,
-                          })}
-                        />
+                        <strong className="mb-2">Total Puntos</strong>
+                        <div className="mt-2">
+                          <TextField.Input
+                            className="rounded-md text-center"
+                            style={{
+                              background: "#f0f0f0",
+                              color:
+                                errors.scoresTotal?.type === "min" ||
+                                errors.scoresTotal?.type === "max"
+                                  ? "red"
+                                  : "black",
+                            }}
+                            readOnly
+                            size="3"
+                            color="gray"
+                            variant="surface"
+                            type="number"
+                            max={20}
+                            min={MIN_SCORE_BY_ITEM}
+                            placeholder="20 Puntos"
+                            required
+                            {...register(`scoresTotal`, {
+                              max: 20,
+                              min: 20,
+                            })}
+                          />
+                        </div>
                       </Table.ColumnHeaderCell>
                       <Table.ColumnHeaderCell justify={"center"}>
                         <div className="flex items-center justify-center h-full">
@@ -276,7 +287,7 @@ const RubricForm = ({ target }: { target: Activity }) => {
                           <Table.Row align={"center"}>
                             <Table.Cell rowSpan={3} justify={"center"}>
                               <TextArea
-                                style={{ textAlign: "center", height: "100%" }}
+                                style={{ textAlign: "center" }}
                                 defaultValue={rubricDetail.title}
                                 size="3"
                                 color="gray"
@@ -301,53 +312,51 @@ const RubricForm = ({ target }: { target: Activity }) => {
                                           key={index}
                                           className="flex justify-center items-start gap-1 mb-2"
                                         >
-                                          <div>
-                                            <TextArea
-                                              style={{ textAlign: "center" }}
-                                              defaultValue={description}
-                                              size="3"
-                                              color="gray"
-                                              variant="surface"
-                                              placeholder="Descripción*"
-                                              required
-                                              {...register(
-                                                `desc_${indexRubricDetail}_${itemIndex}_${index}`
-                                              )}
-                                            />
-                                          </div>
+                                          <TextArea
+                                            style={{ textAlign: "left" }}
+                                            defaultValue={description}
+                                            size="2"
+                                            color="gray"
+                                            variant="surface"
+                                            placeholder="Descripción*"
+                                            required
+                                            {...register(
+                                              `desc_${indexRubricDetail}_${itemIndex}_${index}`
+                                            )}
+                                          />
                                         </li>
                                       )
                                     )}
-                                    <Button
-                                      className="w-full"
-                                      onClick={(e: any) =>
-                                        handleClickAddDescription(
-                                          e,
-                                          indexRubricDetail,
-                                          itemIndex
-                                        )
-                                      }
-                                    >
-                                      <span>Agregar Descripción</span>
-                                      <FaPlusCircle />
-                                    </Button>
-
-                                    {item.descriptions.length > 0 && (
-                                      <Button
-                                        className="w-full"
+                                    <div className="flex gap-8 justify-center items-center w-full">
+                                      <IconButton
+                                        size={"2"}
                                         onClick={(e: any) =>
-                                          handleClickRemoveDescription(
+                                          handleClickAddDescription(
                                             e,
                                             indexRubricDetail,
                                             itemIndex
                                           )
                                         }
-                                        color="red"
                                       >
-                                        <span>Remover descripción</span>
-                                        <MdOutlineRemoveCircle />
-                                      </Button>
-                                    )}
+                                        <FaPlusCircle />
+                                      </IconButton>
+
+                                      {item.descriptions.length > 0 && (
+                                        <IconButton
+                                          size={"2"}
+                                          onClick={(e: any) =>
+                                            handleClickRemoveDescription(
+                                              e,
+                                              indexRubricDetail,
+                                              itemIndex
+                                            )
+                                          }
+                                          color="red"
+                                        >
+                                          <MdOutlineRemoveCircle />
+                                        </IconButton>
+                                      )}
+                                    </div>
                                   </ul>
                                 </Table.Cell>
                               </React.Fragment>
@@ -404,32 +413,34 @@ const RubricForm = ({ target }: { target: Activity }) => {
                 </Table.Root>
               )}
 
-              <Button onClick={(e: any) => handleClickAddRubricDetail(e)}>
-                <span>Agregar Criterio de Evaluación</span>
-                <FaPlusCircle />
-              </Button>
-              {rubricDetails.length > 0 && (
-                <Button
-                  className="w-full"
-                  onClick={(e: any) => handleClickRemoveRubricDetail(e)}
-                  color="red"
-                >
-                  <span>Remover Criterio de Evaluación</span>
-                  <MdOutlineRemoveCircle />
+              <div className="flex justify-center gap-4 items-center mt-4">
+                <Button onClick={(e: any) => handleClickAddRubricDetail(e)}>
+                  <span>Agregar Criterio de Evaluación</span>
+                  <FaPlusCircle />
                 </Button>
-              )}
+                {rubricDetails.length > 0 && (
+                  <Button
+                    onClick={(e: any) => handleClickRemoveRubricDetail(e)}
+                    color="red"
+                  >
+                    <span>Remover Criterio de Evaluación</span>
+                    <MdOutlineRemoveCircle />
+                  </Button>
+                )}
+              </div>
             </Flex>
             {rubricDetails.length > 0 && (
-              <p className="mt-2">(*) campos obligatorios</p>
+              <p className="mt-2">Todos los campos obligatorios</p>
             )}
-            {(errors.scoresTotal?.type === "min" ||
-              errors.scoresTotal?.type === "max") && (
-              <div className="w-full flex justify-end">
-                <span role="alert" className="font-semibold text-red-500 ">
-                  Total puntos debe ser igual a 20
-                </span>
-              </div>
-            )}
+            {rubricDetails.length > 0 &&
+              (errors.scoresTotal?.type === "min" ||
+                errors.scoresTotal?.type === "max") && (
+                <div className="w-full flex justify-end">
+                  <span role="alert" className="font-semibold text-red-500 ">
+                    Total puntos debe ser igual a 20
+                  </span>
+                </div>
+              )}
             <Flex gap="3" mt="4" justify="end">
               <Dialog.Close>
                 <Button
@@ -443,7 +454,12 @@ const RubricForm = ({ target }: { target: Activity }) => {
               </Dialog.Close>
               <Button
                 size="3"
-                disabled={submitted}
+                disabled={
+                  submitted ||
+                  (rubricDetails.length > 0 &&
+                    (errors.scoresTotal?.type === "min" ||
+                      errors.scoresTotal?.type === "max"))
+                }
                 style={{ backgroundColor: PRIMARY_COLOR }}
               >
                 Guardar
