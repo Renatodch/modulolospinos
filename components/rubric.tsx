@@ -31,11 +31,11 @@ import React, { useEffect, useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
 import { BsEyeFill } from "react-icons/bs";
 import { toast } from "sonner";
-import LoadingGeneric from "./loadingGeneric";
 
 const Rubric = ({
   title,
   readonly,
+  preview,
   disabled,
   target,
   rubric,
@@ -43,6 +43,7 @@ const Rubric = ({
 }: {
   title: string;
   readonly?: boolean;
+  preview?: boolean;
   disabled?: boolean;
   target?: Task;
   rubric: { data: string[] };
@@ -52,17 +53,14 @@ const Rubric = ({
   const [submitted, setSubmitted] = useState<boolean | null>(null);
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const [task, setTask] = useState<Task | undefined>(undefined);
-  /*  const [activity, setActivity] = useState<Activity | undefined | null>(
-    undefined
-  ); */
 
-  const [noRubric, setNoRubric] = useState<boolean>(false);
+  const isrubric = rubric.data.length > 0;
   const [scoresValue, setScoresValue] = useState<
     Array<Array<number | undefined>>
   >([]);
 
   const cellClasses = "border-l-2 border-gray-100";
-  const _interactive = target && !readonly;
+  const _interactive = !preview && !readonly;
 
   const {
     register,
@@ -74,7 +72,15 @@ const Rubric = ({
   } = useForm();
 
   useEffect(() => {
-    const setData = async () => {
+    const setData = () => {
+      if (target) {
+        setInitialScoreValues(target);
+        const score = getScores(target.scores).reduce(
+          (acc, current) => acc + current,
+          0
+        );
+        setValue("score", score);
+      }
       setTask(target);
     };
     setData();
@@ -82,7 +88,7 @@ const Rubric = ({
 
   useEffect(() => {
     const subscription = watch((value, { name, type }) => {
-      if (name === "score") return;
+      if (name === "score" || name === "comment") return;
 
       const scores = Object.keys(value).filter((val) =>
         val.startsWith("score_")
@@ -100,6 +106,17 @@ const Rubric = ({
 
     toast.promise(
       new Promise((resolve, reject) => {
+        const inputs = watch();
+        const details = getRubricDetailObjects(rubric.data);
+        const scores: string[] = [];
+        details.forEach((detail, detailIndex) => {
+          const scoreDetail: ScoreRubricDetail = {
+            titleRubricDetail: detail.title,
+            value: +inputs[`score_${detailIndex}`],
+          };
+          scores.push(JSON.stringify(scoreDetail));
+        });
+
         const temp: Task = {
           id: task.id,
           title: task.title,
@@ -107,7 +124,7 @@ const Rubric = ({
           image1: task.image1,
           date_upload: task.date_upload,
           score: +data.score,
-          scores: [],
+          scores,
           comment: data.comment,
           type: task.type,
           id_user: task.id_user,
@@ -135,13 +152,17 @@ const Rubric = ({
 
   const toggleDialog = async (open: boolean) => {
     setOpenDialog(open);
-    if (open && task) {
-      console.log("open dialog");
-      setInitialScoreValues(task);
-      const score = getScores(task.scores).reduce(
-        (acc, current) => acc + current,
-        0
-      );
+    if (open && target) {
+      let score = 0;
+      if (isrubric) {
+        setInitialScoreValues(target);
+        score = getScores(target.scores).reduce(
+          (acc, current) => acc + current,
+          0
+        );
+      } else if (target.score != null) {
+        score = target.score;
+      }
       setValue("score", score);
     } else {
       reset();
@@ -152,8 +173,7 @@ const Rubric = ({
     inputValues: { [x: string]: any },
     scores: string[]
   ) => {
-    if (!_interactive || !rubric.data.length) return;
-    console.log("last");
+    if (!_interactive || !isrubric) return;
 
     const details: RubricDetail[] = getRubricDetailObjects(rubric.data);
     const arr: Array<Array<number | undefined>> = [];
@@ -165,21 +185,25 @@ const Rubric = ({
 
       detail.items.forEach((item, ItemIndex) => {
         let value;
-        if (inputValue !== undefined)
-          switch (ItemIndex) {
-            case 0:
-              value = inputValue === +detail.maxPoints ? inputValue : undefined;
-              break;
-            case 1:
-              value =
-                inputValue > 0 && inputValue < +detail.maxPoints
-                  ? inputValue
-                  : undefined;
-              break;
-            case 2:
-              value = inputValue === 0 ? inputValue : undefined;
-              break;
-          }
+        switch (ItemIndex) {
+          case 0:
+            value = inputValue === +detail.maxPoints ? inputValue : undefined;
+            break;
+          case 1:
+            value =
+              inputValue && inputValue < +detail.maxPoints
+                ? inputValue
+                : undefined;
+            break;
+          case 2:
+            value =
+              inputValue === undefined
+                ? 0
+                : inputValue === 0
+                ? inputValue
+                : undefined;
+            break;
+        }
         score.push(value);
       });
       arr.push(score);
@@ -188,7 +212,7 @@ const Rubric = ({
   };
 
   const setInitialScoreValues = (task?: Task) => {
-    if (!_interactive || !task || !rubric.data.length) return;
+    if (preview || !task || !isrubric) return;
 
     const details: RubricDetail[] = getRubricDetailObjects(rubric.data);
     const taskScores = getScoreObjects(task.scores);
@@ -202,44 +226,73 @@ const Rubric = ({
 
       detail.items.forEach((item, ItemIndex) => {
         let value;
-        if (currentScore)
-          switch (ItemIndex) {
-            case 0:
-              value =
-                currentScore?.value === +detail.maxPoints
-                  ? currentScore?.value
-                  : undefined;
-              break;
-            case 1:
-              value =
-                currentScore?.value > 0 &&
-                currentScore?.value < +detail.maxPoints
-                  ? currentScore?.value
-                  : undefined;
-              break;
-            case 2:
-              value =
-                currentScore?.value === 0 ? currentScore?.value : undefined;
-              break;
-          }
+        switch (ItemIndex) {
+          case 0:
+            value =
+              currentScore?.value === +detail.maxPoints
+                ? currentScore.value
+                : undefined;
+            break;
+          case 1:
+            value =
+              currentScore &&
+              currentScore?.value > 0 &&
+              currentScore?.value < +detail.maxPoints
+                ? currentScore?.value
+                : undefined;
+            break;
+          case 2:
+            value =
+              currentScore === undefined
+                ? 0
+                : currentScore.value === 0
+                ? currentScore.value
+                : undefined;
+            break;
+        }
         score.push(value);
       });
       arr.push(score);
     });
-    console.log(arr);
     setScoresValue([...arr]);
   };
 
-  /*   const updateActivity = () => {
-    setNoRubric(activity?.rubric.length === 0);
+  const getDefaultValue = (_rubricDetail: RubricDetail) => {
+    const scores: ScoreRubricDetail[] =
+      preview || readonly || !task
+        ? []
+        : task.scores.map((score) => JSON.parse(score));
 
-    updateArrayValues2(task, activity);
-  }; */
+    const defaultValue = +(
+      scores.find(
+        (scoreDetail) => scoreDetail.titleRubricDetail === _rubricDetail.title
+      )?.value ?? 0
+    );
+    return defaultValue;
+  };
+
   return (
     <Dialog.Root open={openDialog} onOpenChange={toggleDialog}>
       <Dialog.Trigger>
-        {rubric ? (
-          task ? (
+        {preview ? (
+          <Button
+            size={"3"}
+            style={{
+              width: onlyIcon ? "auto" : "150px",
+              backgroundColor: PRIMARY_COLOR,
+            }}
+          >
+            {onlyIcon ? (
+              <BsEyeFill />
+            ) : (
+              <>
+                <BsEyeFill />
+                Ver Rúbrica
+              </>
+            )}
+          </Button>
+        ) : (
+          (_interactive || (readonly && isrubric)) && (
             <Button
               size={"3"}
               style={{
@@ -250,36 +303,15 @@ const Rubric = ({
             >
               {readonly ? "Ver Evaluación" : "Evaluar"}
             </Button>
-          ) : (
-            <Button
-              size={"3"}
-              style={{
-                width: onlyIcon ? "auto" : "150px",
-                backgroundColor: PRIMARY_COLOR,
-              }}
-            >
-              {onlyIcon ? (
-                <BsEyeFill />
-              ) : (
-                <>
-                  <BsEyeFill />
-                  Ver Rúbrica
-                </>
-              )}
-            </Button>
           )
-        ) : (
-          <div style={{ height: "50px" }} className="py-4">
-            <LoadingGeneric size={30} />
-          </div>
         )}
       </Dialog.Trigger>
-      {rubric && (
+      {
         <Dialog.Content style={{ maxWidth: 950 }}>
-          {!noRubric ? (
-            <>
-              <Dialog.Title align={"center"}>{title}</Dialog.Title>
-              <form className="w-full mt-4" onSubmit={handleSubmit(onSubmit)}>
+          <>
+            <Dialog.Title align={"center"}>{title}</Dialog.Title>
+            <form className="w-full mt-4" onSubmit={handleSubmit(onSubmit)}>
+              {isrubric && (preview || task) && (
                 <Table.Root variant="surface">
                   <Table.Header style={{ backgroundColor: PRIMARY_COLOR }}>
                     <Table.Row>
@@ -302,16 +334,7 @@ const Rubric = ({
                       const _rubricDetail = JSON.parse(
                         rubricDetail
                       ) as RubricDetail;
-                      const scores: ScoreRubricDetail[] = !(readonly && task)
-                        ? []
-                        : task.scores.map((score) => JSON.parse(score));
-                      const defaultValue =
-                        scores.find(
-                          (scoreDetail) =>
-                            scoreDetail.titleRubricDetail ===
-                            _rubricDetail.title
-                        )?.value ?? 0;
-
+                      const defaultValue = getDefaultValue(_rubricDetail);
                       return (
                         <React.Fragment key={indexDetail}>
                           <Table.Row align={"center"}>
@@ -328,7 +351,7 @@ const Rubric = ({
                                     type="number"
                                     placeholder="0"
                                     min={0}
-                                    max={_rubricDetail.maxPoints}
+                                    max={+_rubricDetail.maxPoints}
                                     required
                                     {...register(`score_${indexDetail}`)}
                                   />
@@ -362,7 +385,9 @@ const Rubric = ({
                                   points = _rubricDetail.maxPoints.toString();
                                   break;
                                 case 1:
-                                  points = `[1-${_rubricDetail.maxPoints - 1}]`;
+                                  points = `[1-${
+                                    +_rubricDetail.maxPoints - 1
+                                  }]`;
                                   break;
                               }
                               return (
@@ -377,33 +402,33 @@ const Rubric = ({
                               );
                             })}
                           </Table.Row>
-                          {_interactive && (
+                          {!preview && (
                             <Table.Row align={"center"}>
                               <Table.Cell justify={"center"}>
                                 puntaje
                               </Table.Cell>
                               {_rubricDetail.items.map((item, index) => {
-                                let clases = `${cellClasses}`;
+                                let cellStyle = `${cellClasses} `;
                                 let value = scoresValue
                                   .at(indexDetail)
                                   ?.at(index);
 
                                 switch (index) {
                                   case 0:
-                                    clases += "text-blue-600";
+                                    cellStyle += "text-blue-600";
                                     break;
                                   case 1:
-                                    clases += "text-yellow-600";
+                                    cellStyle += "text-yellow-600";
                                     break;
                                   case 2:
-                                    clases += "text-red-600";
+                                    cellStyle += "text-red-600";
                                     break;
                                 }
                                 return (
                                   <React.Fragment key={index}>
                                     <Table.Cell
                                       justify={"center"}
-                                      className={cellClasses}
+                                      className={cellStyle}
                                     >
                                       {value}
                                     </Table.Cell>
@@ -417,69 +442,66 @@ const Rubric = ({
                     })}
                   </Table.Body>
                 </Table.Root>
-
-                {target && (
-                  <Flex direction="row" gap="4" className="mt-4">
-                    <Flex
-                      direction="column"
-                      gap="2"
-                      className="h-full"
-                      align={"start"}
-                    >
-                      <strong>Puntaje final</strong>
-                      <TextField.Input
-                        style={{ width: 180, textAlign: "center" }}
-                        size="3"
-                        color="gray"
-                        variant="surface"
-                        readOnly
-                        type="number"
-                        placeholder=""
-                        min={0}
-                        max={20}
-                        required
-                        {...register("score")}
-                      />
-                    </Flex>
-
-                    <TextArea
-                      style={{ width: "auto" }}
-                      defaultValue={task?.comment ?? ""}
-                      readOnly={readonly}
-                      id="desc"
-                      maxLength={255}
+              )}
+              {task && !preview && (
+                <Flex direction="row" gap="4" className="mt-4">
+                  <Flex
+                    direction="column"
+                    gap="2"
+                    className="h-full"
+                    align={"start"}
+                  >
+                    <strong>Puntaje final</strong>
+                    <TextField.Input
+                      style={{ width: 180, textAlign: "center" }}
                       size="3"
                       color="gray"
                       variant="surface"
-                      {...register("comment")}
-                      placeholder="Observaciones"
+                      readOnly={isrubric}
+                      type="number"
+                      placeholder=""
+                      min={0}
+                      max={20}
+                      required
+                      {...register("score")}
                     />
                   </Flex>
-                )}
 
-                {_interactive && (
-                  <Flex gap="3" mt="4" justify="end">
-                    <Dialog.Close>
-                      <Button size="3" variant="soft" color="gray">
-                        Cancelar
-                      </Button>
-                    </Dialog.Close>
-                    <Button
-                      size="3"
-                      disabled={Boolean(submitted)}
-                      style={{ backgroundColor: PRIMARY_COLOR }}
-                    >
-                      Guardar
+                  <TextArea
+                    style={{ width: "auto" }}
+                    defaultValue={task?.comment ?? ""}
+                    readOnly={readonly}
+                    id="desc"
+                    maxLength={255}
+                    size="3"
+                    color="gray"
+                    variant="surface"
+                    {...register("comment")}
+                    placeholder="Observaciones"
+                  />
+                </Flex>
+              )}
+
+              {_interactive && (
+                <Flex gap="3" mt="4" justify="end">
+                  <Dialog.Close>
+                    <Button size="3" variant="soft" color="gray">
+                      Cancelar
                     </Button>
-                  </Flex>
-                )}
-              </form>
-            </>
-          ) : (
-            <div className="italic text-center w-full">Sin Rúbrica</div>
-          )}
+                  </Dialog.Close>
+                  <Button
+                    size="3"
+                    disabled={Boolean(submitted)}
+                    style={{ backgroundColor: PRIMARY_COLOR }}
+                  >
+                    Guardar
+                  </Button>
+                </Flex>
+              )}
+            </form>
+          </>
         </Dialog.Content>
-      )}
+      }
     </Dialog.Root>
   );
 };

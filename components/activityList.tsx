@@ -108,6 +108,7 @@ const ActivityListRow = ({
       <Table.Cell width={100}>
         {activity.rubric.length > 0 ? (
           <Rubric
+            preview
             title="Rúbrica de Actividad (Vista Previa)"
             onlyIcon
             rubric={{ data: activity.rubric }}

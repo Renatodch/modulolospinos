@@ -89,7 +89,7 @@ INSERT INTO subject (title, description) VALUES ('Seccion final', 'En hora buena
 INSERT INTO activity (url,title, description, id_subject, type, rubric) VALUES ('https://www.youtube.com/embed/g2rI5mAWPeU?si=gaIOzQXC2YIck04Q','Actividad Pregunta 1-1', 'Pregunta 1', 1, 0,
   array['{
     "title":"Planteamiento",
-    "maxPoints":"10",
+    "maxPoints":10,
     "items":[
       {"quality":"Excelente","descriptions": ["criterio 1a","criterio 2a","criterio 3a"]},
       {"quality":"Malo","descriptions": ["criterio 1b","criterio 2b","criterio 3b"]},
@@ -98,7 +98,7 @@ INSERT INTO activity (url,title, description, id_subject, type, rubric) VALUES (
   }',
   '{
     "title":"Argumentación",
-    "maxPoints":"10",
+    "maxPoints":10,
     "items":[
       {"quality":"Excelente","descriptions": ["criterio 1a","criterio 2a","criterio 3a"]},
       {"quality":"Malo","descriptions": ["criterio 1b","criterio 2b","criterio 3b"]},
@@ -114,7 +114,7 @@ INSERT INTO activity (url,title, description, id_subject, type, rubric) VALUES (
 array[
   '{
     "title":"Planteamiento del Problema y Alcance",
-    "maxPoints":"10",
+    "maxPoints":3,
     "items":[
       {
         "quality":"Excelente",
@@ -144,7 +144,7 @@ array[
   }',
   '{
     "title":"Objetivos e Indicadores",
-    "maxPoints":"10",
+    "maxPoints":3,
     "items":[
       {
         "quality":"Excelente",
@@ -168,6 +168,111 @@ array[
           "NO  Formula claramente y de manera objetiva el/ los objeto(s) o sujeto(s) que intervienen directamente en el problema.",
           "NO Indica el propósito del prototipo, experimento, estudio, análisis técnico o económico, o desarrollo tecnológico para resolver cada situación problema.",
           "Los indicadores de éxito del proyecto NO tienen el respaldo de expertos en el marco de proyecto."
+        ]
+      }
+    ]
+  }',
+  '{
+    "title":"Resultados del Proyecto",
+    "maxPoints":4,
+    "items":[
+      {
+        "quality":"Excelente",
+        "descriptions": [
+          "Expresa claramente el resultado final del proyecto y cubre la totalidad a la necesidad planteada.",
+          "Describe claramente los beneficios que podría obtener al aplicar el proyecto.",
+          "Demuestra que sus competencias de carrera avalan los resultados propuestos.",
+          "Establece una metodologia de validación de resultados del proyecto."
+        ]
+      },
+      {
+        "quality":"Malo",
+        "descriptions": [
+          "Expresa de una forma poco clara  el resultado final del proyecto y deja incertidumbre si cubre la totalidad a la necesidad planteada.",
+          "Describe de una forma poco clara los beneficios que podría obtener al aplicar el proyecto.",
+          "Las competencias de carrera avalan los resultados propuestos.",
+          "Establece una metodologia de validación de resultados del proyecto."
+        ]
+      },
+      {
+        "quality":"Insuficiente",
+        "descriptions": [
+          "NO Expresa claramente el resultado final del proyecto y cubre la totalidad a la necesidad planteada.",
+          "NO Describe claramente los beneficios que podría obtener al aplicar el proyecto.",
+          "NO Demuestra que sus competencias de carrera avalan los resultados propuestos.",
+          "NO Establece una metodologia de validación de resultados del proyecto."
+        ]
+      }
+    ]
+  }',
+    '{
+    "title":"Presentación del proyecto",
+    "maxPoints":5,
+    "items":[
+      {
+        "quality":"Excelente",
+        "descriptions": [
+          "Es clara la presentación del proyecto.",
+          "Demuestra competencia de comunicación oral expresandose fluidamente.",
+          "Puntualidad.",
+          "Demuestra competencia de trabajo en equipo.",
+          "Demuestra competencia de comunicación escrita."
+        ]
+      },
+      {
+        "quality":"Malo",
+        "descriptions": [
+          "La presentacion del proyecto es poco clara.",
+          "Demuestra que la competencia de comunicación oral no esta cubierta en su totalidad.",
+          "Puntualidad",
+          "Demuestra competencia de trabajo en equipo no esta cubierta en su totalidad.",
+          "Demuestra competencia de comunicación escrita no esta cubierta en su totalidad."
+        ]
+      },
+      {
+        "quality":"Insuficiente",
+        "descriptions": [
+          "NO Es clara la presentación del proyecto.",
+          "NO Demuestra competencia de comunicación oral expresandose fluidamente.",
+          "NO es Puntual.",
+          "NO Demuestra competencia de trabajo en equipo.",
+          "NO Demuestra competencia de comunicación escrita."
+        ]
+      }
+    ]
+  }',
+  '{
+    "title":"Argumentación y consistencia del proyecto",
+    "maxPoints":5,
+    "items":[
+      {
+        "quality":"Excelente",
+        "descriptions": [
+          "Demuestra dominio sobre el tema planteado.",
+          "Reconoce las oportunidades de mejora aceptando alguna critica constructiva.",
+          "Responde objetivamente ante las preguntas planteadas.",
+          "Justifca claramente su proyecto.",
+          "Gestiona claramente el plan del proyecto."
+        ]
+      },
+      {
+        "quality":"Malo",
+        "descriptions": [
+          "Demuestra dominio sobre el tema planteado.",
+          "Reconoce a medias las oportunidades de mejora aceptando alguna critica constructiva.",
+          "Responde objetivamente ante las preguntas planteadas.",
+          "Justifca medianamente su proyecto.",
+          "Gestiona de una forma poco clara el plan del proyecto."
+        ]
+      },
+      {
+        "quality":"Insuficiente",
+        "descriptions": [
+          "NO Demuestra dominio sobre el tema planteado.",
+          "NO Reconoce las oportunidades de mejora aceptando alguna critica constructiva.",
+          "NO Responde objetivamente ante las preguntas planteadas.",
+          "NO Justifca claramente su proyecto.",
+          "NO Gestiona claramente el plan del proyecto."
         ]
       }
     ]

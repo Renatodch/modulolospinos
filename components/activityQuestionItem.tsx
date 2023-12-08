@@ -50,10 +50,15 @@ const ActivityQuestionItem = ({
             </span>
           )}
           <div className="mt-2">
-            <Rubric
-              title={"Rúbrica de Actividad"}
-              rubric={{ data: questionAnswers.activity_rubric }}
-            />
+            {questionAnswers.activity_rubric.length > 0 ? (
+              <Rubric
+                preview
+                title={"Rúbrica de Actividad Pregunta"}
+                rubric={{ data: questionAnswers.activity_rubric }}
+              />
+            ) : (
+              <span className="text-center italic">Sin Rúbrica</span>
+            )}
           </div>
         </div>
       </div>

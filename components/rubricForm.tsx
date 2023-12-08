@@ -138,10 +138,10 @@ const RubricForm = ({ target }: { target: Activity }) => {
     } else {
       const details: RubricDetail[] = [];
       let scoresTotal = 0;
-      target.rubric.forEach((detail, detailIndex) => {
-        const json = JSON.parse(detail);
+      target.rubric.forEach((detail) => {
+        const json: RubricDetail = JSON.parse(detail);
         details.push(json);
-        scoresTotal += +(json as RubricDetail).maxPoints;
+        scoresTotal += +json.maxPoints;
       });
       setValue("scoresTotal", scoresTotal);
       setRubricDetails(details);
@@ -327,7 +327,7 @@ const RubricForm = ({ target }: { target: Activity }) => {
                                         </li>
                                       )
                                     )}
-                                    <div className="flex gap-8 justify-center items-center w-full">
+                                    <div className="flex gap-4 justify-center items-center w-full">
                                       <IconButton
                                         size={"2"}
                                         onClick={(e: any) =>
@@ -362,7 +362,7 @@ const RubricForm = ({ target }: { target: Activity }) => {
                               </React.Fragment>
                             ))}
                           </Table.Row>
-                          <Table.Row>
+                          <Table.Row align={"center"}>
                             {rubricDetail.items.map((item, itemIndex) => {
                               const current =
                                 +(

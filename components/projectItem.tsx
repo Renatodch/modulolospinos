@@ -61,10 +61,15 @@ const ProjectItem = ({
             </span>
           )}
           <div className="mt-2">
-            <Rubric
-              title={"Rúbrica de Actividad"}
-              rubric={{ data: activity.rubric }}
-            />
+            {activity.rubric.length > 0 ? (
+              <Rubric
+                preview
+                title={"Rúbrica de Actividad Proyecto"}
+                rubric={{ data: activity.rubric }}
+              />
+            ) : (
+              <span className="text-center italic">Sin Rúbrica</span>
+            )}
           </div>
         </div>
 

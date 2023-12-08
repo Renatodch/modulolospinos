@@ -106,8 +106,8 @@ export const getScoreListSummary = (scores: Score[]) => {
 };
 
 export const getScores = (scoresJson: string[]) => {
-  const scores = scoresJson.map((e) => JSON.parse(e));
-  return scores.map((score: ScoreRubricDetail) => score?.value);
+  const scores: ScoreRubricDetail[] = scoresJson.map((e) => JSON.parse(e));
+  return scores.map((score: ScoreRubricDetail) => +score.value);
 };
 export const getScoreObjects = (scoresJson: string[]) =>
   scoresJson.map((e) => JSON.parse(e) as ScoreRubricDetail);

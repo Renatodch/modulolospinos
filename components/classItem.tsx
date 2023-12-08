@@ -84,6 +84,7 @@ const TaskActivity = ({ task }: { task: TaskActivityDetail }) => {
       <div className=" w-full flex  justify-between items-center ">
         {task.activity_rubric.length > 0 ? (
           <Rubric
+            preview
             title="Rúbrica de Actividad"
             rubric={{ data: task.activity_rubric }}
           />

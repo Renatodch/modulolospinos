@@ -154,6 +154,7 @@ const ActivityForm = ({ target }: { target?: Activity }) => {
                           }
                         >
                           <Select.Trigger
+                            disabled={!!target}
                             className="w-full"
                             placeholder={"Tema del curso al que pertenece*"}
                           />
@@ -200,6 +201,7 @@ const ActivityForm = ({ target }: { target?: Activity }) => {
                         }
                       >
                         <Select.Trigger
+                          disabled={!!target}
                           className="w-full"
                           placeholder={"Tipo de actividad*"}
                         />
