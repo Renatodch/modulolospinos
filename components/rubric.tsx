@@ -31,6 +31,7 @@ import React, { useEffect, useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
 import { BsEyeFill } from "react-icons/bs";
 import { MdEdit } from "react-icons/md";
+import { PiNoteFill } from "react-icons/pi";
 import { toast } from "sonner";
 
 const Rubric = ({
@@ -284,10 +285,10 @@ const Rubric = ({
             }}
           >
             {onlyIcon ? (
-              <BsEyeFill />
+              <PiNoteFill />
             ) : (
               <>
-                <BsEyeFill />
+                <PiNoteFill />
                 Rúbrica
               </>
             )}
@@ -297,7 +298,7 @@ const Rubric = ({
             <Button
               size={"3"}
               style={{
-                width: readonly ? "150px" : "auto",
+                width: readonly ? "180px" : "auto",
                 backgroundColor: PRIMARY_COLOR,
               }}
               disabled={disabled}
@@ -305,7 +306,7 @@ const Rubric = ({
               {readonly ? (
                 <>
                   <BsEyeFill />
-                  Evaluación
+                  Ver Evaluación
                 </>
               ) : (
                 <>
@@ -396,9 +397,10 @@ const Rubric = ({
                                   points = _rubricDetail.maxPoints.toString();
                                   break;
                                 case 1:
-                                  points = `[1-${
-                                    +_rubricDetail.maxPoints - 1
-                                  }]`;
+                                  points =
+                                    +_rubricDetail.maxPoints == 2
+                                      ? "1"
+                                      : `[1-${+_rubricDetail.maxPoints - 1}]`;
                                   break;
                               }
                               return (

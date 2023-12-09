@@ -281,7 +281,6 @@ const RubricForm = ({ target }: { target: Activity }) => {
                   </Table.Header>
                   <Table.Body>
                     {rubricDetails.map((rubricDetail, indexRubricDetail) => {
-                      //console.log(rubricDetails);
                       return (
                         <React.Fragment key={indexRubricDetail}>
                           <Table.Row align={"center"}>
